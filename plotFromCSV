@@ -1,0 +1,39 @@
+"""
+Author : Thibault Thetier
+Date : 18/03/2020
+
+Python Script to plot live data coming from CSV file
+
+"""
+
+
+from itertools import count
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+plt.style.use('fivethirtyeight')
+index = count()
+
+
+def animate(i):
+    data = pd.read_csv('data.csv').tail(50)  # We take only the last n rows of the file, number to be decided
+    x = data['X']
+    y1 = data['P']
+    y2 = data['V']
+    y3 = data['Tr']
+
+    plt.cla()
+    plt.ylim(0, 2000)  # fixed axis for now, maybe not best solution, depending on the data
+    plt.plot(x, y1, label='P')
+    plt.plot(x, y2, label='V')
+    plt.plot(x, y3*1500, label='Trigger')  # Trigger is 0 or 1, just plotting something visible if triggered
+
+    plt.legend(loc='upper left')
+    plt.tight_layout()
+
+
+ani = FuncAnimation(plt.gcf(), animate, interval=100)
+
+plt.tight_layout()
+plt.show()
