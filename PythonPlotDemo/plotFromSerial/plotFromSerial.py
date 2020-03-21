@@ -35,7 +35,7 @@ ax02.set_title('Breath (Inspiration or Expiration)')
 ax03.set_title('Inspiratory pressure and Volume Tidal vs Time')
 
 # Data Update
-xmax = 50.0  # time span of x-axis (in seconds)
+xmax = 60.0 * 5  # time span of x-axis (in seconds)
 x = 0.0
 
 # Data Placeholders
@@ -73,12 +73,12 @@ ax01.axis('off')
 # set label names
 ax02.set_xlabel("t (in seconds)")
 #ax02.set_ylabel("Breath (Inspiration/Expiration)")
-ax03.set_xlabel("t")
+ax03.set_xlabel("t (in seconds)")
 ax03.set_ylabel("Inspiratory Pressure (cmH2O)")
 ax04.set_ylabel("Volume Tidal (ml)")
 
 # set line plots
-pBreath, = ax02.plot(t, vt, 'b-')
+pBreath, = ax02.plot(t, br, 'b-')
 
 pIP, = ax03.plot(t, ip, 'b-', label="Inspiratory Pressure")
 pVT, = ax04.plot(t, vt, 'g-', label="Volume Tidal")
@@ -96,24 +96,6 @@ tBBTxt = ax01.text(1, 3, 'Time Between Breaths = ', fontsize=12)
 ax03.legend([pIP, pVT], [pIP.get_label(), pVT.get_label()])
 
 
-'''is_connected = False
-# Initialize communication with Arduino
-while not is_connected:
-    print("Waiting for arduino...")
-    arduinoData.write(struct.pack('<i', 1))
-    #answer = int(arduinoData.read(1).decode('utf-8'))
-    answer = struct.unpack('<b', bytearray(arduinoData.read(1)))[0]
-    print(answer)
-    if not (answer == 1 or answer == 2):
-        time.sleep(2)
-        continue
-    else:
-        is_connected = True
-
-print("Connected to Arduino")'''
-
-
-
 def updateData(self):
     global x
     global peep
@@ -121,20 +103,24 @@ def updateData(self):
     global rr
     global ip
     global trigger
+    global br
     global timestamp
     global timeBetweenBreaths
     global t
     global start_time
     global cumulatedTime
 
-    #arduinoData.write(struct.pack('<i', 1))
+    arduinoData.write(struct.pack('<i', 1))
+    while arduinoData.inWaiting() == 0:  # wait for data
+        arduinoData.write(struct.pack('<i', 1))
+        time.sleep(0.1)
 
+    #print("Waiting before: " + str(arduinoData.inWaiting()))
     arduinoString = arduinoData.readline().decode('utf-8')
+    arduinoData.flush()
+    #print("Waiting after: " + str(arduinoData.inWaiting()))
     print(arduinoString)
     dataArray = arduinoString.split(',')
-
-    while arduinoData.inWaiting() == 0:  # wait for data
-        pass
 
     ipValue = float(dataArray[0])
     vtValue = float(dataArray[1])
@@ -157,10 +143,11 @@ def updateData(self):
     br.append(brValue)
     t.append(cumulatedTime)
 
-    x += 0.04
+    #x += 0.04
     cumulatedTime += round(time.time() - start_time, 2)
     start_time = round(time.time(), 2)
     #print('x = ' + str(x) + ' time = ' + str(round(cumulatedTime, 2)) + ' diff = ' + str(round(cumulatedTime - x, 2)))
+    #print(' time = ' + str(round(cumulatedTime, 2)))
 
     pBreath.set_data(t, br)
 
@@ -186,6 +173,7 @@ def updateData(self):
         vt.pop(0)
         rr.pop(0)
         peep.pop(0)
+        br.pop(0)
         t.pop(0)
     return pVT, pIP, pBreath
 
@@ -193,7 +181,7 @@ def updateData(self):
 start_time = round(time.time(), 2)
 timestamp = start_time
 # interval: draw new frame every 'interval' ms
-simulation = animation.FuncAnimation(f0, updateData, interval=40)
+simulation = animation.FuncAnimation(f0, updateData, interval=1000)
 
 
 plt.show()
