@@ -18,6 +18,7 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_BME280.h>
+#include <Adafruit_MPL3115A2.h>
 
 #define BME_SPI_SCK 52
 #define BME_SPI_MISO 50
@@ -31,10 +32,13 @@ Adafruit_Sensor *bme_pressure_patient1 = bme1.getPressureSensor();
 Adafruit_Sensor *bme_pressure_patient2 = bme2.getPressureSensor();
 Adafruit_Sensor *bme_pressure_ref = bme3.getPressureSensor();
 
+Adafruit_MPL3115A2 redundant = Adafruit_MPL3115A2();
+
 #define hPa2cmh2o_scale 1.0197442889221
 //-----------------------------------------------------------------------------------------------
 bool BME280_Setup() 
 {
+    bool allfound = true;
     if (!bme1.begin(0x76)) 
     {    
         while (1) delay(10);
@@ -47,7 +51,11 @@ bool BME280_Setup()
     {    
         while (1) delay(10);
     }
-    return true;
+    /*if (!redundant.begin()) 
+    {
+        allfound=false;
+    }*/
+    return allfound;
 }
 //-----------------------------------------------------------------------------------------------
 bool BME280_readPressurePatient(float *value) 
@@ -60,7 +68,7 @@ bool BME280_readPressurePatient(float *value)
     bme_pressure_patient2->getEvent(&pressure_event2);
     sensor2 =  pressure_event2.pressure*hPa2cmh2o_scale;
 
-    if (abs(sensor1-sensor2)<2)
+    if (abs(sensor1-sensor2)<100)
     {
       float ambient = BME280_readPressureRef();
       *value=(sensor1+sensor2)/2 - BME280_readPressureRef() + 0.6;
@@ -74,5 +82,10 @@ float BME280_readPressureRef()
     sensors_event_t  pressure_event;
     bme_pressure_ref->getEvent(&pressure_event);
     return pressure_event.pressure*hPa2cmh2o_scale;
+}
+//-----------------------------------------------------------------------------------------------
+float BME280_readRedundant()
+{
+    return hPa2cmh2o_scale*redundant.getPressure()/100;
 }
 //-----------------------------------------------------------------------------------------------
