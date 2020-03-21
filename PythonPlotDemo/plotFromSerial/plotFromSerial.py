@@ -1,6 +1,10 @@
-# Uncomment the next two lines if you want to save the animation
-# import matplotlib
-# matplotlib.use("Agg")
+"""
+Author : Thibault Thetier
+Date : 20/03/2020
+
+Python Script to plot live data coming from serial port
+
+"""
 
 import serial
 import numpy
