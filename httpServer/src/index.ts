@@ -7,22 +7,31 @@ import { MongoValuesRepository } from './Repositories/MongoValuesRepository';
 import { TriggerValuesController } from './Controllers/TriggerValuesController';
 import { PressureValuesController } from './Controllers/PressureValuesController';
 import { BreathsPerMinuteValuesController } from './Controllers/BreathsPerMinuteValuesController';
-import minimist = require('minimist');
+import * as fs from 'fs';
 
 /* define configuration */
 
-const host = '0.0.0.0';
-const port = 3000;
+const envData = fs.readFileSync('env.json', 'utf-8');
+let environment = JSON.parse(envData);
 
-const argv: minimist.ParsedArgs = minimist(process.argv.slice(2));
+if (fs.existsSync('env-local.json')) {
+    const envLocalData = fs.readFileSync('env-local.json', 'utf-8');
+    const environmentLocal = JSON.parse(envLocalData);
+    environment = { ...environment, ...environmentLocal };
+}
+
+console.log(environment);
+
+const host = environment.ListenInterface;
+const port = environment.Port;
 
 const repositoryFactory = function(): IValuesRepository {
     let repository: IValuesRepository = null;
 
-    if (argv.test) {
+    if (environment.RepositoryMode === 'test') {
         repository = new TestRepository();
     } else {
-        repository = new MongoValuesRepository('mongodb://mongo:27017/');
+        repository = new MongoValuesRepository(`mongodb://${environment.DatabaseHost}:${environment.DatabasePort}/`);
     }
 
     return repository;
