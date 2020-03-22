@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  interface:
+    image: beademingstoestel/interface
+    build:
+      context: .
+      args:
+        environment: test
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongo
+    restart: always
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: beademing
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
