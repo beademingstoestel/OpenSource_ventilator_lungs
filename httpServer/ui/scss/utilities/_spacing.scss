@@ -1,0 +1,44 @@
+.u {
+    @each $size, $length in $spacers {
+        &-m-#{$size} { margin: $length !important; }
+
+        &-mt-#{$size} { margin-top: $length !important; }
+
+        &-mr-#{$size} { margin-right: $length !important; }
+
+        &-mb-#{$size} { margin-bottom: $length !important; }
+
+        &-ml-#{$size} { margin-left: $length !important; }
+
+        &-mx-#{$size} {
+            margin-right: $length !important;
+            margin-left: $length !important;
+        }
+
+        &-my-#{$size} {
+            margin-top: $length !important;
+            margin-bottom: $length !important;
+        }
+    }
+
+    // Some special margin utils
+    &-m-auto { margin: auto !important; }
+
+    &-mt-auto { margin-top: auto !important; }
+
+    &-mr-auto { margin-right: auto !important; }
+
+    &-mb-auto { margin-bottom: auto !important; }
+
+    &-ml-auto { margin-left: auto !important; }
+
+    &-mx-auto {
+        margin-right: auto !important;
+        margin-left: auto !important;
+    }
+
+    &-my-auto {
+        margin-top: auto !important;
+        margin-bottom: auto !important;
+    }
+}

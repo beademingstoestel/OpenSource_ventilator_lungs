@@ -1,0 +1,14 @@
+$b: 'master-layout';
+
+.#{$b} {
+    display: flex;
+    min-height: 100vh;
+
+    &__content {
+        flex: 1 1 auto;
+
+        > * {
+            height: 100%;
+        }
+    }
+}

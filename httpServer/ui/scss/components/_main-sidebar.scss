@@ -1,0 +1,22 @@
+$b: 'main-sidebar';
+
+.#{$b} {
+    background-color: get-brand-color();
+    color: #fff;
+    padding: 2rem;
+
+    &__menu {
+        display: flex;
+        flex-direction: column;
+        list-style-type: none;
+        padding: 0;
+    }
+
+    &__link {
+        color: inherit;
+
+        &:hover, &:focus {
+            color: inherit;
+        }
+    }
+}

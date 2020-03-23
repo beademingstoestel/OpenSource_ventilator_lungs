@@ -1,0 +1,20 @@
+$b: 'page-dashboard';
+
+.#{$b} {
+    display: flex;
+    flex-direction: column;
+
+    &__header {
+        box-shadow: 0 1px 5px rgba(#000, 0.25);
+        padding: 1rem;
+        color: get-gray-color();
+        position: relative;
+        z-index: 1;
+    }
+
+    &__body {
+        padding: 1rem;
+        background-color: #f8f9fc;
+        flex: 1 0 auto;
+    }
+}
