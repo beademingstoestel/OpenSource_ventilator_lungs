@@ -43,6 +43,8 @@ export default class DataPlot extends React.Component {
                     ticks: {
                         beginAtZero: false,
                         display: true,
+                        suggestedMin: -5,
+                        suggestedMax: 0,
                     },
                 }],
             },

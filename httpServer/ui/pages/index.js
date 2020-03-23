@@ -8,6 +8,10 @@ import React from 'react';
 const xLengthMs = 5000;
 
 export default class Index extends React.Component {
+    rawPressureValues = [];
+    animationInterval = 0;
+    client = null;
+
     constructor(props) {
         super(props);
 
@@ -17,33 +21,57 @@ export default class Index extends React.Component {
     }
 
     async componentDidMount() {
-        const client = new Client('ws://localhost:3001');
-        await client.connect();
+        // todo: no hardcoded values
+        this.client = new Client('ws://localhost:3001');
+        await this.client.connect();
 
-        client.subscribe('/api/pressure_values', (newPoints) => {
+        this.client.subscribe('/api/pressure_values', (newPoints) => {
             var cutoffTime = new Date().getTime() - xLengthMs;
-            const newValues = [];
 
-            this.state.pressureValues.forEach((point) => {
-                if (point.x >= cutoffTime) {
-                    newValues.push(point);
+            // shift old values
+            let i = 0;
+            for (i = 0; i < this.rawPressureValues.length; i++) {
+                if (this.rawPressureValues[i].x > cutoffTime) {
+                    break;
                 }
-            });
+            }
 
-            for (let i = 0; i < newPoints.length; i++) {
-                const newPoint = newPoints[i];
-                newValues.push({
+            if (i > 0) {
+                this.rawPressureValues.splice(0, i);
+            }
+
+            newPoints.forEach((newPoint) => {
+                this.rawPressureValues.push({
                     x: new Date(newPoint.loggedAt).getTime(),
                     y: newPoint.value,
                 });
-            }
-
-            console.log(newValues);
-            this.setState({
-                pressureValues: newValues,
             });
         });
 
+        const self = this;
+        this.animationInterval = setInterval(() => {
+            var now = new Date().getTime();
+            const newValues = [];
+
+            this.rawPressureValues.forEach((point) => {
+                var newX = (point.x - now);
+
+                if (newX <= 0 && newX >= -xLengthMs) {
+                    newValues.push({
+                        y: point.y,
+                        x: newX / 1000.0,
+                    });
+                }
+            });
+
+            self.setState({
+                pressureValues: newValues,
+            });
+        }, 100);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.animationInterval);
     }
 
     render() {
