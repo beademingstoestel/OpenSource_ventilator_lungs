@@ -9,7 +9,7 @@ class DbClient():
 
     def __init__(self, db_queue, addr='mongodb://localhost:27017'):
         client = MongoClient(addr)
-        self.db = client.testdb
+        self.db = client.beademing
         self.queue = db_queue
 
     def store_pressure(self, pressure_val):

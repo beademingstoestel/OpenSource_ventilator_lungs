@@ -13,6 +13,7 @@ import queue
 import time
 from ventilator_database import DbClient
 from ventilator_serial import SerialHandler
+from ventilator_websocket import WebsocketHandler
 
 
 def run():
@@ -23,6 +24,8 @@ def run():
 
     ser_handler = SerialHandler(db_queue)
     db_handler = DbClient(db_queue)
+    websocket_handler = WebsocketHandler()
+
 
     ser_thread = threading.Thread(target=ser_handler.run,
                                   daemon=True,
@@ -30,13 +33,18 @@ def run():
     db_thread = threading.Thread(target=db_handler.run,
                                  daemon=True,
                                  args=('db thread',))
+    websocket_thread = threading.Thread(target=websocket_handler.run,
+                                        daemon=True,
+                                        args=('websocket thread',))
 
     ser_thread.start()
     db_thread.start()
+    websocket_thread.start()
 
     # Start waiting on Godot
     ser_thread.join()
     db_thread.join()
+    websocket_thread.join()
 
 
 
