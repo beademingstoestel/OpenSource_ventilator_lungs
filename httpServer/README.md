@@ -82,3 +82,20 @@ Create a file called env-local.json in the root of the project. It is advisable 
 - Port: the local port the http server should be listening on
 - ListenInterface: the interface the http server should be listening on
 - UpdateRate: the minimum time between websocket pushes of new data
+
+# Endpoints and @hapi/nes subscribable paths
+
+- /api/error:
+  - @hapi/nes: listen for errors raised by the controller or python
+  - PUT: raise new error
+- /api/settings:
+  - @hapi/nes: listen for changes in the settings object
+  - GET: retrieve the settings object
+  - PUT: change the settings object
+- /api/pressure_values
+- /api/volume_values
+- /api/trigger_values
+- /api/breathsperminute_values
+  - GET: retrieve an array with values
+    - query parameter: since Date object, default 5 seconds ago
+  - @hapi/nes: listen for new values coming in

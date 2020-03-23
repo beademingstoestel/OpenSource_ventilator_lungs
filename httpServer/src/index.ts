@@ -13,7 +13,8 @@ import { ISettingsRepository } from './Repositories/ISettingsRepository';
 import { TestSettingsRepository } from './Repositories/TestSettingsRepository';
 import { MongoSettingsRepository } from './Repositories/MongoSettingsRepository';
 import { SettingsController } from './Controllers/SettingsController';
-import { MongoClient } from 'mongodb';
+// eslint-disable-next-line no-unused-vars
+import { MongoClient, Db } from 'mongodb';
 
 /* define configuration */
 
@@ -32,12 +33,13 @@ const host = environment.ListenInterface;
 const port = environment.Port;
 
 let mongoClient: MongoClient;
+
 if (environment.RepositoryMode !== 'test') {
     const connectionString = `mongodb://${environment.DatabaseHost}:${environment.DatabasePort}/`;
     mongoClient = new MongoClient(connectionString, { useUnifiedTopology: true });
 }
 
-const valuesRepositoryFactory = function(): IValuesRepository {
+const valuesRepositoryFactory = function (): IValuesRepository {
     let repository: IValuesRepository = null;
 
     if (environment.RepositoryMode === 'test') {
@@ -50,7 +52,7 @@ const valuesRepositoryFactory = function(): IValuesRepository {
 };
 
 const testSettingsRepository = new TestSettingsRepository();
-const settingsRepositoryFactory = function(): ISettingsRepository {
+const settingsRepositoryFactory = function (): ISettingsRepository {
     let repository: ISettingsRepository = null;
 
     if (environment.RepositoryMode === 'test') {
@@ -125,11 +127,20 @@ const start = async function () {
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new SettingsController(settingsRepositoryFactory(), broadcastSettings).HandlePut(request, h),
     });
 
+    server.route({
+        method: 'PUT',
+        path: '/api/error',
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+            server.publish('/api/error', request.payload);
+        },
+    });
+
     server.subscription('/api/volume_values');
     server.subscription('/api/pressure_values');
     server.subscription('/api/breathsperminute_values');
     server.subscription('/api/trigger_values');
     server.subscription('/api/settings');
+    server.subscription('/api/error');
 
     await server.start();
 
