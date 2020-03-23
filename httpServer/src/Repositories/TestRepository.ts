@@ -5,13 +5,23 @@ import { TimeStampedValue } from '../Models/TimeStampedValue';
 
 export class TestRepository implements IValuesRepository {
     ReadValues(collection: string, since: Date): Promise<TimeStampedValue[]> {
-        return new Promise((resolve, reject) => {
-            resolve([
-                {
-                    value: 100,
-                    loggedAt: new Date(),
-                },
-            ]);
-        });
+        // return a random value for each 100 ms since since
+        const now = new Date().getTime();
+
+        const randAmplitude = Math.random() * 80;
+
+        const steps = (now - since.getTime()) / 100;
+
+        const ret = [];
+
+        for (let i = 0; i < steps; i++) {
+            const time = now + i * 100;
+            ret.push({
+                value: Math.abs(Math.sin(time) * randAmplitude),
+                loggedAt: new Date(time),
+            });
+        }
+
+        return new Promise((resolve, reject) => resolve(ret));
     }
 }

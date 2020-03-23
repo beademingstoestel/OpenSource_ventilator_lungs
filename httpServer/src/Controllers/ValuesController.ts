@@ -15,7 +15,7 @@ export class ValuesController {
         } else {
             // default last minute
             since = new Date();
-            since.setTime(since.getTime() - 60000);
+            since.setTime(since.getTime() - 5000);
         }
 
         return since;
