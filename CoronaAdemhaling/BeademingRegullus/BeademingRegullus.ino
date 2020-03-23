@@ -11,7 +11,7 @@ motor_state_t motor_state=DOWN;
 float CurrentPressurePatient;
 //----------------------------------------------------------------------------------------------------
 //-----------------------------------------    BEGIN OF SETUP ----------------------------------------
-void setup()
+void beademing_setup()
 {
   Serial.begin(115200);  
   timestamp = millis();
@@ -23,7 +23,7 @@ void setup()
 }
 //----------------------------------------------------------------------------------------------------
 //-----------------------------------------    END OF SETUP ------------------------------------------
-void loop()
+void beademing_loop()
 {   
   BREATHE_CONTROL_setPointInhalePressure(75);  
   long new_time = millis();
