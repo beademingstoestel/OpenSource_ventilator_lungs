@@ -29,15 +29,27 @@ export default class DataPlot extends React.Component {
         const chartOptions = {
             layout: { padding: { top: 0, bottom: 0, left: 0, right: 0 } },
             maintainAspectRatio: false,
+            animation: false,
             scales: {
                 yAxes: [{
-                    ticks: { beginAtZero: true, display: true },
+                    ticks: {
+                        beginAtZero: true,
+                        display: true,
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                    },
                 }],
                 xAxes: [{
-                    ticks: { beginAtZero: false, display: true },
+                    ticks: {
+                        beginAtZero: false,
+                        display: true,
+                    },
                 }],
             },
             legend: { display: false },
+            tooltips: {
+                enabled: false,
+            },
             title: {
                 display: true,
                 text: title,

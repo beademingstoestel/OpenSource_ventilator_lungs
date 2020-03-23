@@ -5,7 +5,7 @@ import { Client } from '@hapi/nes/lib/client';
 import DataPlot from '../components/data-plot';
 import React from 'react';
 
-const xLengthMs = 50000;
+const xLengthMs = 5000;
 
 export default class Index extends React.Component {
     constructor(props) {
