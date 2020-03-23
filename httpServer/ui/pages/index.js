@@ -10,6 +10,8 @@ const refreshRate = 50;
 
 export default class Index extends React.Component {
     rawPressureValues = [];
+    rawVolumeValues = [];
+    rawBpmValues = [];
     animationInterval = 0;
     client = null;
 
@@ -18,8 +20,33 @@ export default class Index extends React.Component {
 
         this.state = {
             pressureValues: [],
+            volumeValues: [],
+            bpmValues: [],
             timeScale: xLengthMs / 1000,
         };
+    }
+
+    processIncomingPoints(toArray, newPoints) {
+        var cutoffTime = new Date().getTime() - xLengthMs;
+
+        // shift old values
+        let i = 0;
+        for (i = 0; i < toArray.length; i++) {
+            if (toArray[i].x > cutoffTime) {
+                break;
+            }
+        }
+
+        if (i > 0) {
+            toArray.splice(0, i);
+        }
+
+        newPoints.forEach((newPoint) => {
+            toArray.push({
+                x: new Date(newPoint.loggedAt).getTime(),
+                y: newPoint.value,
+            });
+        });
     }
 
     async componentDidMount() {
@@ -28,38 +55,51 @@ export default class Index extends React.Component {
         await this.client.connect();
 
         this.client.subscribe('/api/pressure_values', (newPoints) => {
-            var cutoffTime = new Date().getTime() - xLengthMs;
+            this.processIncomingPoints(this.rawPressureValues, newPoints);
+        });
 
-            // shift old values
-            let i = 0;
-            for (i = 0; i < this.rawPressureValues.length; i++) {
-                if (this.rawPressureValues[i].x > cutoffTime) {
-                    break;
-                }
-            }
+        this.client.subscribe('/api/volume_values', (newPoints) => {
+            this.processIncomingPoints(this.rawVolumeValues, newPoints);
+        });
 
-            if (i > 0) {
-                this.rawPressureValues.splice(0, i);
-            }
-
-            newPoints.forEach((newPoint) => {
-                this.rawPressureValues.push({
-                    x: new Date(newPoint.loggedAt).getTime(),
-                    y: newPoint.value,
-                });
-            });
+        this.client.subscribe('/api/breathsperminute_values', (newPoints) => {
+            this.processIncomingPoints(this.rawBpmValues, newPoints);
         });
 
         const self = this;
         this.animationInterval = setInterval(() => {
             var now = new Date().getTime();
-            const newValues = [];
+            const newPressureValues = [];
+            const newVolumeValues = [];
+            const newBpmValues = [];
 
             this.rawPressureValues.forEach((point) => {
                 var newX = (point.x - now);
 
                 if (newX <= 0 && newX >= -xLengthMs) {
-                    newValues.push({
+                    newPressureValues.push({
+                        y: point.y,
+                        x: newX / 1000.0,
+                    });
+                }
+            });
+
+            this.rawVolumeValues.forEach((point) => {
+                var newX = (point.x - now);
+
+                if (newX <= 0 && newX >= -xLengthMs) {
+                    newVolumeValues.push({
+                        y: point.y,
+                        x: newX / 1000.0,
+                    });
+                }
+            });
+
+            this.rawBpmValues.forEach((point) => {
+                var newX = (point.x - now);
+
+                if (newX <= 0 && newX >= -xLengthMs) {
+                    newBpmValues.push({
                         y: point.y,
                         x: newX / 1000.0,
                     });
@@ -67,7 +107,9 @@ export default class Index extends React.Component {
             });
 
             self.setState({
-                pressureValues: newValues,
+                pressureValues: newPressureValues,
+                volumeValues: newVolumeValues,
+                bpmValues: newBpmValues,
             });
         }, refreshRate);
     }
@@ -113,8 +155,8 @@ export default class Index extends React.Component {
                                     <div className="box__header">Graphs</div>
                                     <div className="box__body">
                                         <DataPlot title='Pressure' data={this.state.pressureValues} timeScale={this.state.timeScale} />
-                                        <DataPlot title='BPM' data={this.state.pressureValues} timeScale={this.state.timeScale} />
-                                        <DataPlot title='Volume' data={this.state.pressureValues} timeScale={this.state.timeScale} />
+                                        <DataPlot title='BPM' data={this.state.bpmValues} timeScale={this.state.timeScale} />
+                                        <DataPlot title='Volume' data={this.state.volumeValues} timeScale={this.state.timeScale} />
                                     </div>
                                 </div>
                             </div>
