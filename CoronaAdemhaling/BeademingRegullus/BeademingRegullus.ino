@@ -1,5 +1,5 @@
 unsigned long timestamp; 
-unsigned long time_diff = 5; // try to loop every 40 ms​
+unsigned long time_diff = 5; // try to loop every 5 ms​
 unsigned int STEP_PIN=9;
 unsigned int DIR_PIN=10;
 #define ENDSIWTCH_FULL_PIN 7
@@ -15,7 +15,7 @@ void setup()
 {
   Serial.begin(115200);  
   timestamp = millis();
-  BME280_Setup(); 
+  //BME280_Setup(); 
   Stepper_SETUP(DIR_PIN, STEP_PIN);
   Stepper_ENABLE(true);
   pinMode(ENDSIWTCH_FULL_PIN,INPUT);
@@ -25,7 +25,7 @@ void setup()
 //-----------------------------------------    END OF SETUP ------------------------------------------
 void loop()
 {   
-  BREATHE_CONTROL_setPointInhalePressure(25);  
+  BREATHE_CONTROL_setPointInhalePressure(75);  
   long new_time = millis();
   //--- read buttons here
   int END_SWITCH_VALUE_STOP = digitalRead(ENDSIWTCH_FULL_PIN);
@@ -33,26 +33,30 @@ void loop()
 
   if (timestamp+time_diff<=new_time)
   {
-    if (BME280_readPressurePatient(&CurrentPressurePatient))
+    //if (BME280_readPressurePatient(&CurrentPressurePatient))
     {   
       BREATHE_setCurrentTime(new_time);      
-      BREATHE_CONTROL_setInhalePressure(CurrentPressurePatient);
+      //BREATHE_CONTROL_setInhalePressure(CurrentPressurePatient);
       float angle = BREATHE_CONTROL_Regulate();  
       Stepper_Speed((int)angle);     
       BREATHE_setToEXHALE(END_SWITCH_VALUE_STOP);
       BREATHE_setToINHALE(END_SWITCH_VALUE_START);
-       
-      Serial.print("Pinhale: ");
+      
+      Serial.print("P:");
       Serial.print(CurrentPressurePatient);       
-      Serial.print(" PID: ");
+      Serial.print(";PID=");
       Serial.print(angle);
-      Serial.print(" , bpm: ");
+      Serial.print(";bpm=");
       Serial.println(BREATHE_getBPM());
     }
-    else
+    //else
     {
-      Serial.println("Pressure sensors failing");
+      //Serial.println("Pressure sensors failing");
     }
+    /*float sens = getSensor1();
+    //Serial.print(new_time);
+    //Serial.print(";");
+    Serial.println(sens-1020);*/
     timestamp=new_time;
   }
 

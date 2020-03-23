@@ -33,7 +33,7 @@ void Stepper_Speed(int spd)
 {
    if (spd<0) 
    {
-    if (STEPPER_direction==1) 
+    if (STEPPER_direction==0) 
     {      
       spd = 0;
       current_freq = ref_point;
@@ -42,17 +42,17 @@ void Stepper_Speed(int spd)
     {
       spd = -spd;
     }
-    STEPPER_direction = 0;
+    STEPPER_direction =1;
     digitalWrite(STEPPER_DIR_PIN,STEPPER_direction);
    }
    else 
    {
-    if (STEPPER_direction==0) 
+    if (STEPPER_direction==1) 
     {      
       spd = 0;
       current_freq = ref_point;
     }
-    STEPPER_direction = 1;
+    STEPPER_direction = 0;
     digitalWrite(STEPPER_DIR_PIN,STEPPER_direction); 
    }
 
@@ -61,6 +61,7 @@ void Stepper_Speed(int spd)
    if (STEPPER_speed>ref_point) STEPPER_speed = ref_point;
    if (STEPPER_speed<10) STEPPER_speed = 10;
 
+  //Serial.println(STEPPER_speed);
    /*Serial.print("Old = ");
    Serial.print(current_freq);
    Serial.print(" New = ");

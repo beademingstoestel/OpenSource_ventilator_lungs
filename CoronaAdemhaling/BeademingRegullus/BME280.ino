@@ -17,7 +17,7 @@
  ***************************************************************************/
 #include <Wire.h>
 #include <SPI.h>
-#include <Adafruit_BME280.h>
+#include "Adafruit_BME280.h"
 #include <Adafruit_MPL3115A2.h>
 
 #define BME_SPI_SCK 52
@@ -41,16 +41,34 @@ bool BME280_Setup()
     bool allfound = true;
     if (!bme1.begin(0x76)) 
     {    
-        while (1) delay(10);
+        while (1) delay(10);        
     }
+    bme1.setSampling(Adafruit_BME280::MODE_NORMAL,
+        Adafruit_BME280::SAMPLING_NONE,
+        Adafruit_BME280::SAMPLING_X1,
+        Adafruit_BME280::SAMPLING_NONE,
+        Adafruit_BME280::FILTER_OFF,
+        Adafruit_BME280::STANDBY_MS_0_5);
     if (!bme2.begin(0x77)) 
     {    
-        while (1) delay(10);
+        while (1) delay(10);        
     }
-        if (!bme3.begin()) 
+    bme2.setSampling(Adafruit_BME280::MODE_NORMAL,
+        Adafruit_BME280::SAMPLING_NONE,
+        Adafruit_BME280::SAMPLING_X1,
+        Adafruit_BME280::SAMPLING_NONE,
+        Adafruit_BME280::FILTER_OFF,
+        Adafruit_BME280::STANDBY_MS_0_5);
+    if (!bme3.begin()) 
     {    
-        while (1) delay(10);
+        while (1) delay(10);        
     }
+    bme3.setSampling(Adafruit_BME280::MODE_NORMAL,
+        Adafruit_BME280::SAMPLING_NONE,
+        Adafruit_BME280::SAMPLING_X1,
+        Adafruit_BME280::SAMPLING_NONE,
+        Adafruit_BME280::FILTER_OFF,
+        Adafruit_BME280::STANDBY_MS_0_5);
     /*if (!redundant.begin()) 
     {
         allfound=false;
@@ -71,7 +89,7 @@ bool BME280_readPressurePatient(float *value)
     if (abs(sensor1-sensor2)<100)
     {
       float ambient = BME280_readPressureRef();
-      *value=(sensor1+sensor2)/2 - BME280_readPressureRef() + 0.6;
+      *value=(sensor1+sensor2)/2 - BME280_readPressureRef() + 30;
       return true;
     }
     return false;
@@ -89,3 +107,9 @@ float BME280_readRedundant()
     return hPa2cmh2o_scale*redundant.getPressure()/100;
 }
 //-----------------------------------------------------------------------------------------------
+float getSensor1()
+{
+    sensors_event_t  pressure_event;
+    bme_pressure_patient1->getEvent(&pressure_event);
+    return pressure_event.pressure*hPa2cmh2o_scale;
+}
