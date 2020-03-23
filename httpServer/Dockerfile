@@ -7,6 +7,13 @@ RUN npm install
 RUN npm install -g typescript 
 RUN tsc
 
-EXPOSE 3000
+WORKDIR /app/ui
+RUN npm install
+RUN npm run build
+RUN npm run export
+
+WORKDIR /app
+
+EXPOSE 3001
 
 CMD [ "node", "./build/index.js" ]

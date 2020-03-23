@@ -16,7 +16,7 @@ docker-compose up --build
 
 This will automatically create the necessary mongo database and collections, this database will be exposed on the standard port 27017.
 
-To access the webinterface surf to http://localhost:3000
+To access the webinterface surf to http://localhost:3001
 
 ## Using volumes to work on a running docker instance
 
@@ -31,7 +31,7 @@ services:
   interface:
     image: beademingstoestel/interface
     volumes:
-      - ./public:/app/public
+      - ./ui/public:/app/ui/public
 ```
 
 # Using a local development setup
@@ -39,6 +39,15 @@ services:
 ## Prerequisites
 
 The project needs node 12 or higher to run. Make sure node, npm and typescript are installed. When testing with a database, a mongodb server should be available.
+
+## Running the next.js interface in dev mode
+
+Go the the ui directory and execute command:
+
+```
+npm install
+npm run dev
+```
 
 ## Running without docker
 
