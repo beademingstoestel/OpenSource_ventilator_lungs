@@ -20,6 +20,20 @@ To access the webinterface surf to http://localhost:3000
 
 ## Using volumes to work on a running docker instance
 
+To override some of the docker compose values and create volumes, start by adding a file named docker-compose.override.yml to the root of the project.
+
+Edit it as shown to synchronize your local public folder with the docker public folder:
+
+```
+version: '3.4'
+
+services:
+  interface:
+    image: beademingstoestel/interface
+    volumes:
+      - ./public:/app/public
+```
+
 # Using a local development setup
 
 ## Prerequisites

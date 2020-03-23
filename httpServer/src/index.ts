@@ -45,7 +45,7 @@ const server: Hapi.Server = new Hapi.Server(
 
 const start = async function () {
     /* add plugins to server */
-    await server.register(require('@hapi/inert'));
+    await server.register([require('@hapi/inert'), require('@hapi/nes')]);
 
     /* define routes */
     server.route({
@@ -84,7 +84,7 @@ const start = async function () {
         handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new TriggerValuesController(repositoryFactory()).HandleGet(request, h),
     });
 
-    server.start();
+    await server.start();
 };
 
 start();
