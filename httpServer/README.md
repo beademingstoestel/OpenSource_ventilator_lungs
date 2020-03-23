@@ -72,3 +72,4 @@ Create a file called env-local.json in the root of the project. It is advisable 
 - RepositoryMode: _mongo_ to use the database or _test_ to return random values
 - Port: the local port the http server should be listening on
 - ListenInterface: the interface the http server should be listening on
+- UpdateRate: the minimum time between websocket pushes of new data

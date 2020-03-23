@@ -6,15 +6,14 @@ import { TimeStampedValue } from '../Models/TimeStampedValue';
 import { MongoClient, Db } from 'mongodb';
 
 export class MongoValuesRepository implements IValuesRepository {
-    private mongoClient: MongoClient;
 
-    constructor(connectionString: string) {
-        this.mongoClient = new MongoClient(connectionString, { useUnifiedTopology: true });
-    }
+    constructor(private mongoClient: MongoClient) { }
 
     async ReadValues(collection: string, since: Date): Promise<TimeStampedValue[]> {
         try {
-            await this.mongoClient.connect();
+            if (!this.mongoClient.isConnected()) {
+                await this.mongoClient.connect();
+            }
 
             const db: Db = this.mongoClient.db('beademing');
 

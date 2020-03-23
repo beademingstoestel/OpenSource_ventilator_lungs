@@ -4,11 +4,8 @@ import { ISettingsRepository } from './ISettingsRepository';
 import { MongoClient, Db } from 'mongodb';
 
 export class MongoSettingsRepository implements ISettingsRepository {
-    private mongoClient: MongoClient;
 
-    constructor(connectionString: string) {
-        this.mongoClient = new MongoClient(connectionString, { useUnifiedTopology: true });
-    }
+    constructor(private mongoClient: MongoClient) {}
 
     async GetSettings(): Promise<any> {
         try {

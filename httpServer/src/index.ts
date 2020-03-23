@@ -13,6 +13,7 @@ import { ISettingsRepository } from './Repositories/ISettingsRepository';
 import { TestSettingsRepository } from './Repositories/TestSettingsRepository';
 import { MongoSettingsRepository } from './Repositories/MongoSettingsRepository';
 import { SettingsController } from './Controllers/SettingsController';
+import { MongoClient } from 'mongodb';
 
 /* define configuration */
 
@@ -30,13 +31,19 @@ console.log(environment);
 const host = environment.ListenInterface;
 const port = environment.Port;
 
+let mongoClient: MongoClient;
+if (environment.RepositoryMode !== 'test') {
+    const connectionString = `mongodb://${environment.DatabaseHost}:${environment.DatabasePort}/`;
+    mongoClient = new MongoClient(connectionString, { useUnifiedTopology: true });
+}
+
 const valuesRepositoryFactory = function(): IValuesRepository {
     let repository: IValuesRepository = null;
 
     if (environment.RepositoryMode === 'test') {
         repository = new TestRepository();
     } else {
-        repository = new MongoValuesRepository(`mongodb://${environment.DatabaseHost}:${environment.DatabasePort}/`);
+        repository = new MongoValuesRepository(mongoClient);
     }
 
     return repository;
@@ -49,7 +56,7 @@ const settingsRepositoryFactory = function(): ISettingsRepository {
     if (environment.RepositoryMode === 'test') {
         repository = testSettingsRepository;
     } else {
-        repository = new MongoSettingsRepository(`mongodb://${environment.DatabaseHost}:${environment.DatabasePort}/`);
+        repository = new MongoSettingsRepository(mongoClient);
     }
 
     return repository;
@@ -119,6 +126,27 @@ const start = async function () {
     });
 
     await server.start();
+
+    // start sending updates over websocket
+    const now = new Date();
+    const lastDateTime = {
+        volume_values: now,
+        pressure_values: now,
+        breathsperminute_values: now,
+        trigger_values: now,
+    };
+    const valuesRepository = valuesRepositoryFactory();
+
+    setInterval(async () => {
+        for (const key in lastDateTime) {
+            const newValues = await valuesRepository.ReadValues(key, lastDateTime[key]);
+
+            if (newValues.length > 0) {
+                server.publish(`/api/${key}`, newValues);
+                lastDateTime[key] = newValues[newValues.length - 1].loggedAt;
+            }
+        };
+    }, environment.UpdateRate);
 };
 
 start();
