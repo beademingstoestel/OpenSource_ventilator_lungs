@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { Line } from 'react-chartjs-2';
+import { Scatter } from 'react-chartjs-2';
 import React from 'react';
 
 export default class DataPlot extends React.Component {
@@ -20,6 +20,7 @@ export default class DataPlot extends React.Component {
                     pointBorderWidth: 3,
                     lineTension: 0,
                     data: this.props.data,
+                    showLine: true,
                     fill: false,
                 },
             ],
@@ -49,7 +50,7 @@ export default class DataPlot extends React.Component {
 
         return (
             <div className="position-relative h-50 w-100 d-flex align-items-center border-bottom border-gray">
-                <Line data={chartData} width='100%' height='200' options={chartOptions} />
+                <Scatter data={chartData} width='100%' height='200' options={chartOptions} />
             </div>
         );
     }

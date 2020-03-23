@@ -40,24 +40,7 @@ export default class Index extends React.Component {
 
             console.log(newValues);
             this.setState({
-                pressureValues: [
-                    {
-                        x: 10,
-                        y: 30,
-                    },
-                    {
-                        x: 20,
-                        y: 10,
-                    },
-                    {
-                        x: 30,
-                        y: 60,
-                    },
-                    {
-                        x: 40,
-                        y: 60,
-                    },
-                ],
+                pressureValues: newValues,
             });
         });
 
