@@ -5,7 +5,8 @@ import { Client } from '@hapi/nes/lib/client';
 import DataPlot from '../components/data-plot';
 import React from 'react';
 
-const xLengthMs = 5000;
+const xLengthMs = 10000;
+const refreshRate = 50;
 
 export default class Index extends React.Component {
     rawPressureValues = [];
@@ -17,6 +18,7 @@ export default class Index extends React.Component {
 
         this.state = {
             pressureValues: [],
+            timeScale: xLengthMs / 1000,
         };
     }
 
@@ -67,11 +69,12 @@ export default class Index extends React.Component {
             self.setState({
                 pressureValues: newValues,
             });
-        }, 100);
+        }, refreshRate);
     }
 
     componentWillUnmount() {
         clearInterval(this.animationInterval);
+        // todo unsubscribe websocket
     }
 
     render() {
@@ -109,9 +112,9 @@ export default class Index extends React.Component {
                                 <div className="box u-mt-2">
                                     <div className="box__header">Graphs</div>
                                     <div className="box__body">
-                                        <DataPlot title='Pressure' data={this.state.pressureValues} />
-                                        <DataPlot title='BPM' />
-                                        <DataPlot title='Volume' />
+                                        <DataPlot title='Pressure' data={this.state.pressureValues} timeScale={this.state.timeScale} />
+                                        <DataPlot title='BPM' data={this.state.pressureValues} timeScale={this.state.timeScale} />
+                                        <DataPlot title='Volume' data={this.state.pressureValues} timeScale={this.state.timeScale} />
                                     </div>
                                 </div>
                             </div>
