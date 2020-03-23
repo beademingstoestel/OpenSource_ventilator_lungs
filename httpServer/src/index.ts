@@ -78,7 +78,7 @@ const start = async function () {
         path: '/{param*}',
         handler: {
             directory: {
-                path: './public',
+                path: './ui/public',
                 index: ['index.html', 'default.html'],
                 listing: false,
             },
