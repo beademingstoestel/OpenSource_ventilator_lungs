@@ -83,7 +83,7 @@ Create a file called env-local.json in the root of the project. It is advisable 
 - ListenInterface: the interface the http server should be listening on
 - UpdateRate: the minimum time between websocket pushes of new data
 
-# Endpoints and @hapi/nes subscribable paths
+# Endpoints and @hapi/nes subscribeable paths
 
 - /api/error:
   - @hapi/nes: listen for errors raised by the controller or python
