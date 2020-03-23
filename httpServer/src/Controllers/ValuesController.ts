@@ -13,7 +13,7 @@ export class ValuesController {
             const sinceString: string = <string>request.query.since;
             since = new Date(sinceString);
         } else {
-            // default last minute
+            // default last 5 seconds
             since = new Date();
             since.setTime(since.getTime() - 5000);
         }

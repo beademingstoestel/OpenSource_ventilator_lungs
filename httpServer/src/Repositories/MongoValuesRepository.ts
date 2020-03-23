@@ -9,7 +9,7 @@ export class MongoValuesRepository implements IValuesRepository {
     private mongoClient: MongoClient;
 
     constructor(connectionString: string) {
-        this.mongoClient = new MongoClient(connectionString);
+        this.mongoClient = new MongoClient(connectionString, { useUnifiedTopology: true });
     }
 
     async ReadValues(collection: string, since: Date): Promise<TimeStampedValue[]> {
