@@ -5,6 +5,8 @@ import { Client } from '@hapi/nes/lib/client';
 import DataPlot from '../components/data-plot';
 import React from 'react';
 
+const xLengthMs = 50000;
+
 export default class Index extends React.Component {
     constructor(props) {
         super(props);
@@ -14,17 +16,51 @@ export default class Index extends React.Component {
         };
     }
 
-    useEffect() {
+    async componentDidMount() {
         const client = new Client('ws://localhost:3001');
-        const start = async () => {
-            await client.connect();
+        await client.connect();
 
-            client.subscribe('/api/pressure_values', (update) => {
-                console.log(update);
+        client.subscribe('/api/pressure_values', (newPoints) => {
+            var cutoffTime = new Date().getTime() - xLengthMs;
+            const newValues = [];
+
+            this.state.pressureValues.forEach((point) => {
+                if (point.x >= cutoffTime) {
+                    newValues.push(point);
+                }
             });
-        };
 
-        start();
+            for (let i = 0; i < newPoints.length; i++) {
+                const newPoint = newPoints[i];
+                newValues.push({
+                    x: new Date(newPoint.loggedAt).getTime(),
+                    y: newPoint.value,
+                });
+            }
+
+            console.log(newValues);
+            this.setState({
+                pressureValues: [
+                    {
+                        x: 10,
+                        y: 30,
+                    },
+                    {
+                        x: 20,
+                        y: 10,
+                    },
+                    {
+                        x: 30,
+                        y: 60,
+                    },
+                    {
+                        x: 40,
+                        y: 60,
+                    },
+                ],
+            });
+        });
+
     }
 
     render() {
