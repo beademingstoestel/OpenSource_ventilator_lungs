@@ -125,6 +125,12 @@ const start = async function () {
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new SettingsController(settingsRepositoryFactory(), broadcastSettings).HandlePut(request, h),
     });
 
+    server.subscription('/api/volume_values');
+    server.subscription('/api/pressure_values');
+    server.subscription('/api/breathsperminute_values');
+    server.subscription('/api/trigger_values');
+    server.subscription('/api/settings');
+
     await server.start();
 
     // start sending updates over websocket
