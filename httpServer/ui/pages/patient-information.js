@@ -8,21 +8,26 @@ export class PatientInformation extends React.Component {
         super(props);
 
         this.state = {
-            firstName: 'John',
-            name: 'Doe',
-            dateOfAdmission: new Date().toLocaleDateString(),
+            firstName: '',
+            lastName: '',
+            admittanceDate: null,
+            info: '',
         };
     }
 
     async componentDidMount() {
         // Get the information about the patient
-        fetch('http://localhost:3001/api/patient_info')
-            .then((res) => {
-                res.json();
-            })
-            .then((json) => {
-                console.log(json);
-            });
+        const res = await fetch('http://localhost:3001/api/patient_info');
+        const resData = await res.json();
+
+        console.log(resData);
+
+        this.setState({
+            firstName: resData.firstName,
+            lastName: resData.lastName,
+            admittanceDate: resData.admittanceDate,
+            info: resData.info,
+        });
     }
 
     render() {
@@ -34,12 +39,16 @@ export class PatientInformation extends React.Component {
                         <input type="text" className="form__control" id="firstname" value={this.state.firstName} />
                     </div>
                     <div className="form__group">
-                        <label htmlFor="name" className="form__label">Name</label>
-                        <input type="text" className="form__control" id="name" value={this.state.name} />
+                        <label htmlFor="lastname" className="form__label">Last name</label>
+                        <input type="text" className="form__control" id="name" value={this.state.lastName} />
                     </div>
                     <div className="form__group">
-                        <label htmlFor="dateOfAdmission" className="form__label">Date of admission</label>
-                        <input type="text" className="form__control" id="dateOfAdmission" value={this.state.dateOfAdmission} />
+                        <label htmlFor="admittancedate" className="form__label">Admittance Date</label>
+                        <input type="text" className="form__control" id="admittancedate" value={this.state.admittanceDate} />
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="info" className="form__label">Info</label>
+                        <input type="text" className="form__control" id="info" value={this.state.info} />
                     </div>
                     <input type="submit" className="btn btn--secondary" />
                 </form>
