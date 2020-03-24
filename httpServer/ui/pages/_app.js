@@ -1,6 +1,11 @@
 import Head from 'next/head';
 import '../scss/index.scss';
 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+toast.configure();
+
 const CustomApp = ({ Component, pageProps }) => {
     return (
         <>
