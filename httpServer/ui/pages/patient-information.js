@@ -2,7 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import MasterLayout from '../components/master-layout';
 
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify';
 
 export class PatientInformation extends React.Component {
     constructor(props) {
