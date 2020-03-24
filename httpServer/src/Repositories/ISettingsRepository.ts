@@ -1,4 +1,4 @@
 export interface ISettingsRepository {
-    GetSettings(): Promise<any>;
-    SaveSettings(settings: any): Promise<void>;
+    GetSettings(type: string): Promise<any>;
+    SaveSettings(type: string, settings: any): Promise<void>;
 };

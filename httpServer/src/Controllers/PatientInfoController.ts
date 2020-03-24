@@ -3,19 +3,25 @@ import { Request, ResponseToolkit, HandlerDecorations, Lifecycle } from '@hapi/h
 // eslint-disable-next-line no-unused-vars
 import { ISettingsRepository } from '../Repositories/ISettingsRepository';
 
-export class SettingsController {
-    constructor(private settingsRepository: ISettingsRepository, private broadCastSettings: (settings: any) => void) {}
+export class PatientInfoController {
+    constructor(private settingsRepository: ISettingsRepository) {}
 
     async HandleGet(request: Request, h: ResponseToolkit) {
-        return await this.settingsRepository.GetSettings('setting');
+        const patientInfo = await this.settingsRepository.GetSettings('patient-info');
+        const retValue = {
+            firstName: '',
+            lastName: '',
+            admittanceDate: new Date(),
+            info: '',
+        };
+
+        return { ...retValue, ...patientInfo };
     }
 
     async HandlePut(request: Request, h: ResponseToolkit) {
         const settings = request.payload;
 
-        await this.settingsRepository.SaveSettings('setting', settings);
-
-        this.broadCastSettings(settings);
+        await this.settingsRepository.SaveSettings('patient-info', settings);
 
         return {
             result: true,

@@ -4,17 +4,23 @@ import { ISettingsRepository } from './ISettingsRepository';
 export class TestSettingsRepository implements ISettingsRepository {
     private settings: any = {};
 
-    async GetSettings(): Promise<any> {
-        return new Promise((resolve, reject) => resolve(this.settings));
-    }
-
-    async SaveSettings(settings: any): Promise<void> {
-        this.settings = settings;
-
+    async GetSettings(type: string): Promise<any> {
         return new Promise((resolve, reject) => {
+            let retValue = {};
 
-            resolve();
+            if (this.settings[type]) {
+                retValue = { ...retValue, ...this.settings[type] };
+            }
+
+            resolve(retValue);
         });
     }
 
+    async SaveSettings(type: string, settings: any): Promise<void> {
+        this.settings[type] = settings;
+
+        return new Promise((resolve, reject) => {
+            resolve();
+        });
+    }
 };

@@ -10,3 +10,4 @@ db.volume_values.createIndex( { loggedAt: 1 } );
 db.pressure_values.createIndex( { loggedAt: 1 } );
 db.breathsperminute_values.createIndex( { loggedAt: 1 } );
 db.trigger_values.createIndex( { loggedAt: 1 } );
+db.settings.createIndex( { type: 1 } );
