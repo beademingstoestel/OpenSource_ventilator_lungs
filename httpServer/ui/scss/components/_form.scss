@@ -1,0 +1,163 @@
+$b: 'form';
+
+$form-control-padding-y: 0.4rem !default;
+$form-control-padding-x: 0.5rem !default;
+$form-control-font-size: $font-size-base !default;
+$form-control-line-height: $line-height-base !default;
+$form-control-color: get-gray-color('dark') !default;
+$form-control-bg: #fff !default;
+$form-control-border-radius: 0 !default;
+$form-control-border-width: 1px !default;
+$form-control-border-color: get-brand-color('primary', 'dark') !default;
+$form-control-color-placeholder: get-gray-color() !default;
+$form-control-bg-disabled: get-gray-color() !default;
+$form-control-focus-color: get-brand-color();
+
+$form-label-color: $text-color !default;
+
+$form-group-spacing: 1.5rem !default;
+
+@mixin form-control-focus($color: $form-control-focus-color) {
+    outline: none;
+    border-color: $color;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 5px rgba($color, 0.6);
+}
+
+@mixin form-validation($color) {
+    color: $color;
+
+    .#{$b}__label, .#{$b}__control {
+        color: inherit;
+        border-color: inherit;
+    }
+}
+
+.#{$b} {
+    &__control {
+        display: block;
+        width: 100%;
+        padding: $form-control-padding-y $form-control-padding-x;
+        font-size: $form-control-font-size;
+        line-height: $form-control-line-height;
+        color: $form-control-color;
+        background-color: $form-control-bg;
+        background-image: none;
+        background-clip: padding-box;
+        border: $form-control-border-width solid $form-control-border-color;
+        border-radius: $form-control-border-radius;
+        text-align: left;
+
+        &:focus {
+            @include form-control-focus;
+        }
+
+        &:disabled, &[readonly], &[disabled] {
+            background-color: $form-control-bg-disabled;
+            cursor: not-allowed;
+        }
+
+        // Placeholder
+        &::placeholder {
+            color: $form-control-color-placeholder;
+        }
+
+        @at-root input[type='file']#{&} {
+            &::-webkit-file-upload-button {
+                background: #e4e4e4;
+                border: 0;
+                font-size: 12px;
+                border-radius: 500px;
+                padding: 3px 10px;
+            }
+
+            &::-ms-browse {
+                background: #e4e4e4;
+                border: 0;
+                font-size: 12px;
+                border-radius: 500px;
+                padding: 3px 10px;
+            }
+
+            &::-ms-value {
+                background: transparent;
+                border: 0;
+                padding: 0;
+            }
+        }
+    }
+
+    &__group {
+        margin-bottom: $form-group-spacing;
+        text-align: left;
+
+        &.is-hidden {
+            display: none;
+        }
+    }
+
+    &__label {
+        display: block;
+        text-align: left;
+        padding-bottom: $form-control-padding-y / 2;
+        color: $form-label-color;
+        font-weight: $font-weight-bold;
+        font-size: 0.875rem;
+    }
+
+    &__desc {
+        font-size: $font-size-small;
+        color: get-gray-color();
+    }
+
+    &__control-group {
+        display: flex;
+
+        *:first-child {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        *:last-child {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+
+    .has-error { @include form-validation(get-status-color('danger')); }
+    .has-success { @include form-validation(get-status-color('success')); }
+
+    @each $breakpoint in map-keys($breakpoints) {
+        @include media-breakpoint-up($breakpoint) {
+            $infix: breakpoint-infix($breakpoint);
+
+            &--horizontal-#{$infix} {
+                display: flex;
+                align-items: center;
+
+                .#{$b}__group {
+                    margin-bottom: 0;
+                    display: flex;
+                    align-items: center;
+                    flex: 1 1 auto;
+
+                    &--shrink {
+                        flex-grow: 0;
+                    }
+
+                    &:not(:last-child) {
+                        margin-right: $form-group-spacing;
+                    }
+                }
+
+                .#{$b}__control {
+                    flex: 1 1 auto;
+                }
+
+                .#{$b}__label {
+                    margin-right: 1rem;
+                    padding-bottom: 0;
+                }
+            }
+        }
+    }
+}

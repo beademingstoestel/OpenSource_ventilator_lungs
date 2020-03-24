@@ -4,8 +4,12 @@ $colors-brand: () !default;
 $colors-brand: map-merge(
     (
         primary: (
-            base: #4e73df,
-            dark: darken(#4e73df, 10%)
+            base: #003399,
+            dark: darken(#003399, 10%)
+        ),
+        secondary: (
+            base: #ff6600,
+            dark: darken(#ff6600, 10%)
         )
     ),
     $colors-brand
@@ -29,19 +33,19 @@ $colors-status: map-merge(
     (
         success: (
             light: #dff0d8,
-            base: #3c763d
+            base: #1cc88a,
         ),
         info: (
             light: #d9edf7,
-            base: #31708f
+            base: #31708f,
         ),
         warning: (
             light: #fcf8e3,
-            base: #8a6d3b
+            base: #f6c23e,
         ),
         danger: (
             light: #f2dede,
-            base: #a94442
+            base: #e74a3b,
         )
     ),
     $colors-status
