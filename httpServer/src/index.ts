@@ -65,11 +65,13 @@ const settingsRepositoryFactory = function (): ISettingsRepository {
     return repository;
 };
 
-const server: Hapi.Server = new Hapi.Server(
-    {
-        host,
-        port,
-    });
+const server: Hapi.Server = new Hapi.Server({
+    host,
+    port,
+    routes: {
+        cors: true,
+    },
+});
 
 const start = async function () {
     /* add plugins to server */
