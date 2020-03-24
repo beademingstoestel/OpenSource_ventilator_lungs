@@ -5,8 +5,8 @@ import { Client } from '@hapi/nes/lib/client';
 import DataPlot from '../components/data-plot';
 import React from 'react';
 
-const xLengthMs = 10000;
 const refreshRate = 50;
+const defaultXRange = 10000;
 
 export default class Index extends React.Component {
     rawPressureValues = [];
@@ -22,12 +22,12 @@ export default class Index extends React.Component {
             pressureValues: [],
             volumeValues: [],
             bpmValues: [],
-            timeScale: xLengthMs / 1000,
+            xLengthMs: defaultXRange,
         };
     }
 
     processIncomingPoints(toArray, newPoints) {
-        var cutoffTime = new Date().getTime() - xLengthMs;
+        var cutoffTime = new Date().getTime() - this.state.xLengthMs;
 
         // shift old values
         let i = 0;
@@ -76,7 +76,7 @@ export default class Index extends React.Component {
             this.rawPressureValues.forEach((point) => {
                 var newX = (point.x - now);
 
-                if (newX <= 0 && newX >= -xLengthMs) {
+                if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newPressureValues.push({
                         y: point.y,
                         x: newX / 1000.0,
@@ -87,7 +87,7 @@ export default class Index extends React.Component {
             this.rawVolumeValues.forEach((point) => {
                 var newX = (point.x - now);
 
-                if (newX <= 0 && newX >= -xLengthMs) {
+                if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newVolumeValues.push({
                         y: point.y,
                         x: newX / 1000.0,
@@ -98,7 +98,7 @@ export default class Index extends React.Component {
             this.rawBpmValues.forEach((point) => {
                 var newX = (point.x - now);
 
-                if (newX <= 0 && newX >= -xLengthMs) {
+                if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newBpmValues.push({
                         y: point.y,
                         x: newX / 1000.0,
@@ -117,6 +117,12 @@ export default class Index extends React.Component {
     componentWillUnmount() {
         clearInterval(this.animationInterval);
         // todo unsubscribe websocket
+    }
+
+    setSliderValue(ev) {
+        this.setState({
+            xLengthMs: ev.target.value,
+        });
     }
 
     render() {
@@ -139,7 +145,7 @@ export default class Index extends React.Component {
                                 <div className="row">
                                     <div className="col--lg-8">
                                         <div>
-                                            <input type="range" min="5" max="60" step="5" id="interval" />
+                                            <input type="range" min="5000" max="60000" step="5000" id="interval" defaultValue={defaultXRange} onChange={(ev) => this.setSliderValue(ev)} />
                                             <label htmlFor="interval">Interval</label>
                                         </div>
                                     </div>
@@ -154,9 +160,9 @@ export default class Index extends React.Component {
                                 <div className="box u-mt-2">
                                     <div className="box__header">Graphs</div>
                                     <div className="box__body">
-                                        <DataPlot title='Pressure' data={this.state.pressureValues} timeScale={this.state.timeScale} />
-                                        <DataPlot title='BPM' data={this.state.bpmValues} timeScale={this.state.timeScale} />
-                                        <DataPlot title='Volume' data={this.state.volumeValues} timeScale={this.state.timeScale} />
+                                        <DataPlot title='Pressure' data={this.state.pressureValues} timeScale={this.state.xLengthMs / 1000.0} />
+                                        <DataPlot title='BPM' data={this.state.bpmValues} timeScale={this.state.xLengthMs / 1000.0} />
+                                        <DataPlot title='Volume' data={this.state.volumeValues} timeScale={this.state.xLengthMs / 1000.0} />
                                     </div>
                                 </div>
                             </div>
