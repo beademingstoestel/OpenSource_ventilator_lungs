@@ -12,14 +12,14 @@ const MainSidebar = ({ className, ...other }) => {
 
     const menuItems = [
         { path: '/', label: 'Dashboard', icon: <GaugeIcon /> },
-        { path: '/machines-profile', label: 'Machines profile', icon: <PersonIcon /> },
+        { path: '/patient-information', label: 'Patient information', icon: <PersonIcon /> },
         { path: '/thresholds', label: 'Thresholds', icon: <GearIcon /> },
         { path: '/login', label: 'Log in', icon: <PersonIcon /> },
         { path: '/logs', label: 'System logs', icon: <TerminalIcon /> },
     ];
 
     return (
-        <nav className={ cx('main-sidebar', className) } { ...other }>
+        <nav className={cx('main-sidebar', className)} {...other}>
             Logo
 
             <ul className="main-sidebar__menu">
