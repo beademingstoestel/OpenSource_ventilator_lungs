@@ -36,8 +36,13 @@ const port = environment.Port;
 let mongoClient: MongoClient;
 
 if (environment.RepositoryMode !== 'test') {
-    const connectionString = `mongodb://${environment.DatabaseHost}:${environment.DatabasePort}/`;
-    mongoClient = new MongoClient(connectionString, { useUnifiedTopology: true });
+    let connectionString = `mongodb://${environment.DatabaseHost}:${environment.DatabasePort}/`;
+
+    if (environment.WatchMode) {
+        connectionString += '?connect=direct;replicaSet=rs0;readPreference=primaryPreferred';
+    }
+
+    mongoClient = new MongoClient(connectionString, { useUnifiedTopology: true, useNewUrlParser: true });
 }
 
 const valuesRepositoryFactory = function (): IValuesRepository {
@@ -160,25 +165,57 @@ const start = async function () {
     await server.start();
 
     // start sending updates over websocket
-    const now = new Date();
-    const lastDateTime = {
-        volume_values: now,
-        pressure_values: now,
-        breathsperminute_values: now,
-        trigger_values: now,
-    };
-    const valuesRepository = valuesRepositoryFactory();
-
-    setInterval(async () => {
-        for (const key in lastDateTime) {
-            const newValues = await valuesRepository.ReadValues(key, lastDateTime[key]);
-
-            if (newValues.length > 0) {
-                server.publish(`/api/${key}`, newValues);
-                lastDateTime[key] = newValues[newValues.length - 1].loggedAt;
-            }
+    if (environment.RepositoryMode === 'test' || !environment.WatchMode) {
+        const now = new Date();
+        const lastDateTime = {
+            volume_values: now,
+            pressure_values: now,
+            breathsperminute_values: now,
+            trigger_values: now,
         };
-    }, environment.UpdateRate);
+        const valuesRepository = valuesRepositoryFactory();
+
+        setInterval(async () => {
+            for (const key in lastDateTime) {
+                const newValues = await valuesRepository.ReadValues(key, lastDateTime[key]);
+
+                if (newValues.length > 0) {
+                    server.publish(`/api/${key}`, newValues);
+                    lastDateTime[key] = newValues[newValues.length - 1].loggedAt;
+                }
+            };
+        }, environment.UpdateRate);
+    } else {
+        if (!mongoClient.isConnected()) {
+            await mongoClient.connect();
+        }
+
+        const db: Db = mongoClient.db('beademing');
+
+        db.collection('pressure_values').watch().on('change', data => {
+            if (data.operationType === 'insert') {
+                server.publish('/api/pressure_values', [data.fullDocument]);
+            }
+        });
+
+        db.collection('volume_values').watch().on('change', data => {
+            if (data.operationType === 'insert') {
+                server.publish('/api/volume_values', [data.fullDocument]);
+            }
+        });
+
+        db.collection('trigger_values').watch().on('change', data => {
+            if (data.operationType === 'insert') {
+                server.publish('/api/trigger_values', [data.fullDocument]);
+            }
+        });
+
+        db.collection('breathsperminute_values').watch().on('change', data => {
+            if (data.operationType === 'insert') {
+                server.publish('/api/breathsperminute_values', [data.fullDocument]);
+            }
+        });
+    }
 };
 
 start();

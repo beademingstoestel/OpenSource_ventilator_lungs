@@ -6,7 +6,6 @@ import { TimeStampedValue } from '../Models/TimeStampedValue';
 import { MongoClient, Db } from 'mongodb';
 
 export class MongoValuesRepository implements IValuesRepository {
-
     constructor(private mongoClient: MongoClient) { }
 
     async ReadValues(collection: string, since: Date): Promise<TimeStampedValue[]> {

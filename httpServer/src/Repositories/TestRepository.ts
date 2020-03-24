@@ -8,7 +8,7 @@ export class TestRepository implements IValuesRepository {
         // return a random value for each 100 ms since since
         const now = new Date().getTime();
 
-        const randAmplitude = Math.random() * 80;
+        const randAmplitude = Math.random() * 800;
 
         const steps = (now - since.getTime()) / 100;
 

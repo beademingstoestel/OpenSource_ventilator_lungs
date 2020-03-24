@@ -10,6 +10,7 @@ import BellIcon from '../components/icons/bell';
 
 const refreshRate = 50;
 const defaultXRange = 10000;
+const integerPrecision = 10;
 
 export default class Index extends React.Component {
     rawPressureValues = [];
@@ -35,7 +36,7 @@ export default class Index extends React.Component {
 
     processIncomingPoints(toArray, newPoints) {
         var cutoffTime = new Date().getTime() - this.state.xLengthMs;
-
+        
         // shift old values
         let i = 0;
         for (i = 0; i < toArray.length; i++) {
@@ -88,7 +89,7 @@ export default class Index extends React.Component {
 
                 if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newPressureValues.push({
-                        y: point.y,
+                        y: point.y / integerPrecision,
                         x: newX / 1000.0,
                     });
                 }
@@ -99,7 +100,7 @@ export default class Index extends React.Component {
 
                 if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newVolumeValues.push({
-                        y: point.y,
+                        y: point.y / integerPrecision,
                         x: newX / 1000.0,
                     });
                 }
@@ -110,7 +111,7 @@ export default class Index extends React.Component {
 
                 if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newBpmValues.push({
-                        y: point.y,
+                        y: point.y / integerPrecision,
                         x: newX / 1000.0,
                     });
                 }
@@ -132,12 +133,12 @@ export default class Index extends React.Component {
                 pressureValues: newPressureValues,
                 volumeValues: newVolumeValues,
                 bpmValues: newBpmValues,
-                lastPressure: newLastPressure,
-                lastVolume: newLastVolume,
-                lastBpm: newLastBpm,
                 pressureStatus: 'normal',
                 bpmStatus: 'warning',
                 volumeStatus: 'alarm',
+                lastBpm: newBpmValues.length > 0 ? newBpmValues[newBpmValues.length - 1].y : 0.0,
+                lastPressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
+                lastVolume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
             });
         }, refreshRate);
     }
