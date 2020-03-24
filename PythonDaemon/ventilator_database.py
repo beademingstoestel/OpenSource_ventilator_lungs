@@ -29,7 +29,7 @@ class DbClient():
         self.__store_value(collection, trigger_val)
 
     def __store_value(self, collection, val):
-        collection.insert_one({'value': val, 'loggedAt': datetime.now()})
+        collection.insert_one({'value': val, 'loggedAt': datetime.utcnow()})
 
     def run(self, name):
         print("Starting {}".format(name))
