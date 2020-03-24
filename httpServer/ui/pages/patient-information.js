@@ -2,18 +2,19 @@ import React from 'react';
 import cx from 'classnames';
 import MasterLayout from '../components/master-layout';
 
-export class PatientInformation extends React.Component {
+import { toast } from "react-toastify";
 
+export class PatientInformation extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-<<<<<<< HEAD
             firstName: '',
             lastName: '',
-            admittanceDate: null,
+            admittanceDate: '',
             info: '',
         };
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     async componentDidMount() {
@@ -31,42 +32,59 @@ export class PatientInformation extends React.Component {
         });
     }
 
-=======
-            firstName: 'John',
-            name: 'Doe',
-            dateOfAdmission: new Date().toLocaleDateString(),
-        };
+    async handleSubmit(ev) {
+        ev.preventDefault();
+
+        const res = await fetch('http://localhost:3001/api/patient_info', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                firstName: this.state.firstName,
+                lastName: this.state.lastName,
+                admittanceDate: this.state.admittanceDate,
+                info: this.state.info,
+            }),
+        });
+
+        const resJson = await res.json();
+
+        if (!resJson.result) {
+            toast.error('Failed to update information!');
+        } else {
+            toast.success('Successfully updated!');
+        }
     }
 
->>>>>>> WIP: patient information form
+    handleInputChange(ev) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value,
+        });
+    }
+
     render() {
         return (
             <MasterLayout>
-                <form action="" className="form">
+                <form action="" className="form" onSubmit={(ev) => this.handleSubmit(ev)}>
                     <div className="form__group">
-                        <label htmlFor="firstname" className="form__label">First name</label>
-                        <input type="text" className="form__control" id="firstname" value={this.state.firstName} />
+                        <label htmlFor="firstName" className="form__label">First name</label>
+                        <input type="text" className="form__control" id="firstName" name="firstName" value={this.state.firstName} onChange={this.handleInputChange} />
                     </div>
                     <div className="form__group">
-<<<<<<< HEAD
-                        <label htmlFor="lastname" className="form__label">Last name</label>
-                        <input type="text" className="form__control" id="name" value={this.state.lastName} />
+                        <label htmlFor="lastName" className="form__label">Last name</label>
+                        <input type="text" className="form__control" id="lastName" name="lastName" value={this.state.lastName} onChange={this.handleInputChange} />
                     </div>
                     <div className="form__group">
-                        <label htmlFor="admittancedate" className="form__label">Admittance Date</label>
-                        <input type="text" className="form__control" id="admittancedate" value={this.state.admittanceDate} />
+                        <label htmlFor="admittanceDate" className="form__label">Admittance Date</label>
+                        <input type="text" className="form__control" id="admittanceDate" name="admittanceDate" value={this.state.admittanceDate} onChange={this.handleInputChange} />
                     </div>
                     <div className="form__group">
                         <label htmlFor="info" className="form__label">Info</label>
-                        <input type="text" className="form__control" id="info" value={this.state.info} />
-=======
-                        <label htmlFor="name" className="form__label">Name</label>
-                        <input type="text" className="form__control" id="name" value={this.state.name} />
-                    </div>
-                    <div className="form__group">
-                        <label htmlFor="dateOfAdmission" className="form__label">Date of admission</label>
-                        <input type="text" className="form__control" id="dateOfAdmission" value={this.state.dateOfAdmission} />
->>>>>>> WIP: patient information form
+                        <input type="text" className="form__control" id="info" name="info" value={this.state.info} onChange={this.handleInputChange} />
                     </div>
                     <input type="submit" className="btn btn--secondary" />
                 </form>
