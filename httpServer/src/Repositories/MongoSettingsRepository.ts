@@ -9,7 +9,9 @@ export class MongoSettingsRepository implements ISettingsRepository {
 
     async GetSettings(): Promise<any> {
         try {
-            await this.mongoClient.connect();
+            if (!this.mongoClient.isConnected()) {
+                await this.mongoClient.connect();
+            }
 
             const db: Db = this.mongoClient.db('beademing');
 
@@ -28,7 +30,9 @@ export class MongoSettingsRepository implements ISettingsRepository {
 
     async SaveSettings(settings: any): Promise<void> {
         try {
-            await this.mongoClient.connect();
+            if (!this.mongoClient.isConnected()) {
+                await this.mongoClient.connect();
+            }
 
             const db: Db = this.mongoClient.db('beademing');
 
