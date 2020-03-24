@@ -1,4 +1,5 @@
 #!/bin/bash
+#always make sure this file uses linux line endings otherwise you will get https://forums.docker.com/t/standard-init-linux-go-175-exec-user-process-caused-no-such-file/20025
 echo "Run customised docker-entrypoint file to enable replication, see original: https://github.com/docker-library/mongo/blob/master/docker-entrypoint.sh"
 
 mongodcommand="/usr/bin/mongod --bind_ip_all --replSet rs0"
