@@ -24,5 +24,5 @@ void loop() {
   Serial.println("Trig=3");
   Serial.println("Pres=4");
  
-  delay(10);
+  delay(40);
 }
