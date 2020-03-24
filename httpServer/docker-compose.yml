@@ -10,6 +10,8 @@ services:
         environment: test
     ports:
       - 3001:3001
+    volumes: 
+      - pid:/pid
     depends_on:
       - mongo
     restart: always  
@@ -19,9 +21,11 @@ services:
       context: ./docker/db
       dockerfile: ./Dockerfile
     restart: always
-    environment:
-      MONGO_INITDB_DATABASE: beademing
     ports:
       - 27017:27017
-    volumes:
+    volumes: 
+      - pid:/pid
       - ./docker/db/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+volumes: 
+  pid:
+    

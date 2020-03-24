@@ -1,12 +1,12 @@
 /* eslint-disable */
-printjson(db.createCollection("volume_values"));
-printjson(db.createCollection("pressure_values"));
-printjson(db.createCollection("breathsperminute_values"));
-printjson(db.createCollection("trigger_values"));
-printjson(db.createCollection("settings"));
-printjson(db.createCollection("alarms"));
+printjson(db.getSiblingDB("beademing").createCollection("volume_values"));
+printjson(db.getSiblingDB("beademing").createCollection("pressure_values"));
+printjson(db.getSiblingDB("beademing").createCollection("breathsperminute_values"));
+printjson(db.getSiblingDB("beademing").createCollection("trigger_values"));
+printjson(db.getSiblingDB("beademing").createCollection("settings"));
+printjson(db.getSiblingDB("beademing").createCollection("alarms"));
 
-printjson(db.volume_values.createIndex( { loggedAt: 1 } ));
-printjson(db.pressure_values.createIndex( { loggedAt: 1 } ));
-printjson(db.breathsperminute_values.createIndex( { loggedAt: 1 } ));
-printjson(db.trigger_values.createIndex( { loggedAt: 1 } ));
+printjson(db.getSiblingDB("beademing").volume_values.createIndex( { loggedAt: 1 } ));
+printjson(db.getSiblingDB("beademing").pressure_values.createIndex( { loggedAt: 1 } ));
+printjson(db.getSiblingDB("beademing").breathsperminute_values.createIndex( { loggedAt: 1 } ));
+printjson(db.getSiblingDB("beademing").trigger_values.createIndex( { loggedAt: 1 } ));
