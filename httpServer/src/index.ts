@@ -15,6 +15,7 @@ import { MongoSettingsRepository } from './Repositories/MongoSettingsRepository'
 import { SettingsController } from './Controllers/SettingsController';
 // eslint-disable-next-line no-unused-vars
 import { MongoClient, Db } from 'mongodb';
+import { PatientInfoController } from './Controllers/PatientInfoController';
 
 /* define configuration */
 
@@ -64,11 +65,13 @@ const settingsRepositoryFactory = function (): ISettingsRepository {
     return repository;
 };
 
-const server: Hapi.Server = new Hapi.Server(
-    {
-        host,
-        port,
-    });
+const server: Hapi.Server = new Hapi.Server({
+    host,
+    port,
+    routes: {
+        cors: true,
+    },
+});
 
 const start = async function () {
     /* add plugins to server */
@@ -125,6 +128,18 @@ const start = async function () {
         method: 'PUT',
         path: '/api/settings',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new SettingsController(settingsRepositoryFactory(), broadcastSettings).HandlePut(request, h),
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/api/patient_info',
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new PatientInfoController(settingsRepositoryFactory()).HandleGet(request, h),
+    });
+
+    server.route({
+        method: 'PUT',
+        path: '/api/patient_info',
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new PatientInfoController(settingsRepositoryFactory()).HandlePut(request, h),
     });
 
     server.route({

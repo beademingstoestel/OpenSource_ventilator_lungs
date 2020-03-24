@@ -92,6 +92,9 @@ Create a file called env-local.json in the root of the project. It is advisable 
   - @hapi/nes: listen for changes in the settings object
   - GET: retrieve the settings object
   - PUT: change the settings object
+- /api/patient_info:
+  - GET: retrieve the patient info
+  - PUT: change the patient info
 - /api/pressure_values
 - /api/volume_values
 - /api/trigger_values
