@@ -14,6 +14,17 @@ export class PatientInformation extends React.Component {
         };
     }
 
+    async componentDidMount() {
+        // Get the information about the patient
+        fetch('http://localhost:3001/api/patient_info')
+            .then((res) => {
+                res.json();
+            })
+            .then((json) => {
+                console.log(json);
+            });
+    }
+
     render() {
         return (
             <MasterLayout>
