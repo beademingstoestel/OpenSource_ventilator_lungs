@@ -23,6 +23,10 @@ export default class Index extends React.Component {
             volumeValues: [],
             bpmValues: [],
             xLengthMs: defaultXRange,
+            lastPressure: 0,
+            lastVolume: 0,
+            lastBpm: 0,
+            lastTrigger: 0,
         };
     }
 
@@ -114,9 +118,16 @@ export default class Index extends React.Component {
         }, refreshRate);
     }
 
-    componentWillUnmount() {
-        clearInterval(this.animationInterval);
-        // todo unsubscribe websocket
+    async componentWillUnmount() {
+        if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+        }
+
+        try {
+            await this.client.disconnect();
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     setSliderValue(ev) {
@@ -160,14 +171,17 @@ export default class Index extends React.Component {
                                 <div className="box u-mt-2">
                                     <div className="box__header">Graphs</div>
                                     <div className="box__body">
-                                        <DataPlot title='Pressure' data={this.state.pressureValues} timeScale={this.state.xLengthMs / 1000.0} />
-                                        <DataPlot title='BPM' data={this.state.bpmValues} timeScale={this.state.xLengthMs / 1000.0} />
-                                        <DataPlot title='Volume' data={this.state.volumeValues} timeScale={this.state.xLengthMs / 1000.0} />
+                                        <DataPlot title='Pressure' data={this.state.pressureValues} timeScale={this.state.xLengthMs / 1000.0} minY={0} maxY={100} />
+                                        <DataPlot title='BPM' data={this.state.bpmValues} timeScale={this.state.xLengthMs / 1000.0} minY={0} maxY={100} />
+                                        <DataPlot title='Volume' data={this.state.volumeValues} timeScale={this.state.xLengthMs / 1000.0} minY={0} maxY={100} />
                                     </div>
                                 </div>
                             </div>
                             <div className="col--lg-4">
-                                Pressure 1.3
+                                <div>Pressure: {this.state.lastPressure}</div>
+                                <div>Volume: {this.state.lastVolume}</div>
+                                <div>BPM: {this.state.lastBpm}</div>
+                                <div>Trigger: {this.state.lastTrigger}</div>
                             </div>
                         </div>
                     </div>
