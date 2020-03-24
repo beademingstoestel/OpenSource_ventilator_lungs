@@ -8,6 +8,7 @@ export class PatientInformation extends React.Component {
         super(props);
 
         this.state = {
+<<<<<<< HEAD
             firstName: '',
             lastName: '',
             admittanceDate: null,
@@ -30,6 +31,14 @@ export class PatientInformation extends React.Component {
         });
     }
 
+=======
+            firstName: 'John',
+            name: 'Doe',
+            dateOfAdmission: new Date().toLocaleDateString(),
+        };
+    }
+
+>>>>>>> WIP: patient information form
     render() {
         return (
             <MasterLayout>
@@ -39,6 +48,7 @@ export class PatientInformation extends React.Component {
                         <input type="text" className="form__control" id="firstname" value={this.state.firstName} />
                     </div>
                     <div className="form__group">
+<<<<<<< HEAD
                         <label htmlFor="lastname" className="form__label">Last name</label>
                         <input type="text" className="form__control" id="name" value={this.state.lastName} />
                     </div>
@@ -49,6 +59,14 @@ export class PatientInformation extends React.Component {
                     <div className="form__group">
                         <label htmlFor="info" className="form__label">Info</label>
                         <input type="text" className="form__control" id="info" value={this.state.info} />
+=======
+                        <label htmlFor="name" className="form__label">Name</label>
+                        <input type="text" className="form__control" id="name" value={this.state.name} />
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="dateOfAdmission" className="form__label">Date of admission</label>
+                        <input type="text" className="form__control" id="dateOfAdmission" value={this.state.dateOfAdmission} />
+>>>>>>> WIP: patient information form
                     </div>
                     <input type="submit" className="btn btn--secondary" />
                 </form>
