@@ -3,6 +3,7 @@ import MasterLayout from '../components/master-layout';
 import { Client } from '@hapi/nes/lib/client';
 // eslint-disable-next-line no-unused-vars
 import DataPlot from '../components/data-plot';
+import SingleValueDisplay from '../components/single-value-display';
 import React from 'react';
 
 const refreshRate = 50;
@@ -76,6 +77,9 @@ export default class Index extends React.Component {
             const newPressureValues = [];
             const newVolumeValues = [];
             const newBpmValues = [];
+            let newLastPressure = 0;
+            let newLastVolume = 0;
+            let newLastBpm = 0;
 
             this.rawPressureValues.forEach((point) => {
                 var newX = (point.x - now);
@@ -110,10 +114,25 @@ export default class Index extends React.Component {
                 }
             });
 
+            if (newPressureValues.length > 0) {
+                newLastPressure = newPressureValues[newPressureValues.length - 1].y;
+            }
+
+            if (newVolumeValues.length > 0) {
+                newLastVolume = newVolumeValues[newVolumeValues.length - 1].y;
+            }
+
+            if (newBpmValues.length > 0) {
+                newLastBpm = newBpmValues[newBpmValues.length - 1].y;
+            }
+
             self.setState({
                 pressureValues: newPressureValues,
                 volumeValues: newVolumeValues,
                 bpmValues: newBpmValues,
+                lastPressure: newLastPressure,
+                lastVolume: newLastVolume,
+                lastBpm: newLastBpm,
             });
         }, refreshRate);
     }
@@ -178,10 +197,10 @@ export default class Index extends React.Component {
                                 </div>
                             </div>
                             <div className="col--lg-4">
-                                <div>Pressure: {this.state.lastPressure}</div>
-                                <div>Volume: {this.state.lastVolume}</div>
-                                <div>BPM: {this.state.lastBpm}</div>
-                                <div>Trigger: {this.state.lastTrigger}</div>
+                                <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
+                                <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
+                                <SingleValueDisplay name="BPM" value={this.state.lastBpm} status={this.state.bpmStatus} />
+                                <SingleValueDisplay name="Trigger" value={this.state.lastTrigger} status={this.state.triggerStatus} />
                             </div>
                         </div>
                     </div>
