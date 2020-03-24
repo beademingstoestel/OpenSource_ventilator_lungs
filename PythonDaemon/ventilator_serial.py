@@ -8,6 +8,8 @@ class SerialHandler():
 
     def __init__(self, db_queue, port='/dev/ttyACM0', baudrate=115200):
         self.ser = serial.Serial(port, baudrate)
+        self.ser.reset_input_buffer()
+        self.ser.reset_output_buffer()
         self.queue = db_queue
         self.errorcounter = 0
 
