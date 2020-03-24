@@ -14,10 +14,11 @@
 
 @mixin list-inline() {
     @include list-unstyled;
+    margin: -1rem;
 
     > li {
         display: inline-block;
-        padding: 0 5px 10px 0;
+        padding: 1rem;
     }
 }
 

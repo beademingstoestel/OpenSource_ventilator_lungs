@@ -5,6 +5,8 @@ import { Client } from '@hapi/nes/lib/client';
 import DataPlot from '../components/data-plot';
 import SingleValueDisplay from '../components/single-value-display';
 import React from 'react';
+import DataCard from '../components/data-card';
+import BellIcon from '../components/icons/bell';
 
 const refreshRate = 50;
 const defaultXRange = 10000;
@@ -133,6 +135,9 @@ export default class Index extends React.Component {
                 lastPressure: newLastPressure,
                 lastVolume: newLastVolume,
                 lastBpm: newLastBpm,
+                pressureStatus: 'normal',
+                bpmStatus: 'warning',
+                volumeStatus: 'alarm',
             });
         }, refreshRate);
     }
@@ -160,35 +165,44 @@ export default class Index extends React.Component {
             <MasterLayout>
                 <div className="page-dashboard">
                     <div className="page-dashboard__header">
-                        Patient info
-
-                        Normal intubated
-
-                        Free field
+                        <ul className="list--inline page-dashboard__patient-info">
+                            <li>Patient info</li>
+                            <li>Normal intubated</li>
+                            <li>Free field</li>
+                        </ul>
+                        <div className="page-dashboard__timing-info">
+                            <div>
+                                T 23:11:27
+                            </div>
+                            <div>
+                                R 27:25:15
+                            </div>
+                        </div>
+                        <div className="page-dashboard__machine-info">
+                            Machine #00001
+                        </div>
                     </div>
 
                     <div className="page-dashboard__body">
-                        <div className="page-dashboard__alert alert alert--danger">Trigger parameter has alert</div>
+                        <div className="page-dashboard__alert alert alert--danger" hidden>Trigger parameter has alert</div>
 
-                        <div className="row u-mt-2">
-                            <div className="col--lg-8">
-                                <div className="row">
-                                    <div className="col--lg-8">
-                                        <div>
-                                            <input type="range" min="5000" max="60000" step="5000" id="interval" defaultValue={defaultXRange} onChange={(ev) => this.setSliderValue(ev)} />
-                                            <label htmlFor="interval">Interval</label>
-                                        </div>
+                        <div className="row u-mt-1">
+                            <div className="col--md-8">
+                                <form className="form form--horizontal-xs">
+                                    <div className="form__group">
+                                        <label className="form__label" htmlFor="interval">Interval</label>
+                                        <input type="range" min="5000" max="60000" step="5000" id="interval" defaultValue={defaultXRange} onChange={(ev) => this.setSliderValue(ev)} className="form__control" />
                                     </div>
-
-                                    <div className="col--lg-4">
-                                        <div>
+                                    <div className="form__group form__group--shrink">
+                                        <div className="option-toggle option-toggle--danger">
                                             <input type="checkbox" id="alarm" />
-                                            <label htmlFor="alarm">Alarm</label>
+                                            <label htmlFor="alarm">
+                                                <BellIcon size="md" />
+                                            </label>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="box u-mt-2">
-                                    <div className="box__header">Graphs</div>
+                                </form>
+                                <div className="box u-mt-1">
                                     <div className="box__body">
                                         <DataPlot title='Pressure' data={this.state.pressureValues} timeScale={this.state.xLengthMs / 1000.0} minY={0} maxY={100} />
                                         <DataPlot title='BPM' data={this.state.bpmValues} timeScale={this.state.xLengthMs / 1000.0} minY={0} maxY={100} />
@@ -196,15 +210,16 @@ export default class Index extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col--lg-4">
+                            <div className="col--md-4">
                                 <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
-                                <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
                                 <SingleValueDisplay name="BPM" value={this.state.lastBpm} status={this.state.bpmStatus} />
+                                <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
                                 <SingleValueDisplay name="Trigger" value={this.state.lastTrigger} status={this.state.triggerStatus} />
                             </div>
                         </div>
                     </div>
                 </div>
-            </MasterLayout>);
+            </MasterLayout>
+        );
     }
 };

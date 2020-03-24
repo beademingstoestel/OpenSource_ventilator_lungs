@@ -1,0 +1,39 @@
+$b: 'option-toggle';
+
+.#{$b} {
+    position: relative;
+    max-width: 100%;
+
+    input[type='checkbox'] {
+        opacity: 0;
+        position: absolute;
+
+        + label {
+            display: block;
+            color: $form-label-color;
+            padding: 0.5rem;
+            line-height: 1;
+            border: 1px solid;
+            cursor: pointer;
+            border-radius: $border-radius-base;
+        }
+
+        &:checked {
+            + label {
+                background-color: get-status-color('info');
+                color: #fff;
+            }
+        }
+    }
+
+    &--danger {
+        input[type='checkbox'] {
+            &:checked {
+                + label {
+                    background-color: get-status-color('danger');
+                    color: #fff;
+                }
+            }
+        }
+    }
+}

@@ -11,13 +11,13 @@ export default class DataPlot extends React.Component {
         {
             datasets: [
                 {
-                    borderColor: 'rgba(68, 204, 153, 0.9)',
-                    borderWidth: 2,
+                    borderColor: '#ff6600',
+                    borderWidth: 1,
                     borderJoinStyle: 'round',
-                    pointRadius: 5,
-                    pointBorderColor: '#fff',
-                    pointBackgroundColor: 'rgba(68, 204, 153, 0.9)',
-                    pointBorderWidth: 3,
+                    pointRadius: 3,
+                    pointBorderColor: '#ffddaa',
+                    pointBackgroundColor: '#ff6600',
+                    pointBorderWidth: 1,
                     lineTension: 0,
                     data: this.props.data,
                     showLine: true,
@@ -55,7 +55,7 @@ export default class DataPlot extends React.Component {
             title: {
                 display: true,
                 text: title,
-                padding: 0,
+                padding: 10,
                 lineHeight: 1,
                 fontSize: 20,
                 fontColor: '#677',
@@ -63,8 +63,8 @@ export default class DataPlot extends React.Component {
         };
 
         return (
-            <div className="position-relative h-50 w-100 d-flex align-items-center border-bottom border-gray">
-                <Scatter data={chartData} width='100%' height='200' options={chartOptions} />
+            <div style={{ height: '200px' }}>
+                <Scatter data={chartData} options={chartOptions} />
             </div>
         );
     }

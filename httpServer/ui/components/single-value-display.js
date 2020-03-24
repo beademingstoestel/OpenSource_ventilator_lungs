@@ -1,20 +1,13 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
+import cx from 'classnames';
 
-export default class SingleValueDisplay extends React.Component {
+const SingleValueDisplay = ({ value, name, status = 'default', className, ...other }) => {
+    return (
+        <div className={ cx('single-value-display', `single-value-display--${ status }`, className) } { ...other }>
+            <div className="single-value-display__name">{ name }</div>
+            <div className="single-value-display__value">{ value.toFixed(2) }</div>
+        </div>
+    );
+};
 
-    render() {
-        const name = this.props.name;
-        const status = this.props.status;
-        const value = this.props.value;
-
-        // Still need to do something with the status
-
-        return (
-            <div>
-                <h1>{name}</h1>
-                <span class="">{value}</span>
-            </div>
-        );
-    }
-}
+export default SingleValueDisplay;
