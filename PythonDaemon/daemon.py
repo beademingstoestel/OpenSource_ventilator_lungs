@@ -16,6 +16,7 @@ from ventilator_websocket import WebsocketHandler
 from ventilator_alarm import AlarmHandler
 
 from ventilator_request import APIRequest
+from ventilator_request_handler import RequestHandler
 from datetime import datetime
 
 
@@ -30,11 +31,13 @@ def run():
     db_queue = queue.Queue() # Queue for values to write to db
     serial_output_queue = queue.Queue() # Queue for messages to send to controller
     alarm_input_queue = queue.Queue() # Queue for values for Alarm thread
+    request_queue = queue.Queue() # Queue with the requests to be sent to the API
 
-    ser_handler = SerialHandler(db_queue, serial_output_queue, alarm_input_queue)
+    ser_handler = SerialHandler(db_queue, request_queue, serial_output_queue, alarm_input_queue)
     db_handler = DbClient(db_queue)
     # websocket_handler = WebsocketHandler()
     alarm_handler = AlarmHandler(alarm_input_queue,serial_output_queue)
+    request_handler = RequestHandler(api_request, request_queue)
 
     # Thread that handles bidirectional communication
     ser_thread = threading.Thread(target=ser_handler.run,
@@ -56,11 +59,17 @@ def run():
                                     daemon=True,
                                     args=('alarm thread',))
 
+    # Thread that sends the received values to the API
+    request_thread = threading.Thread(target=request_handler.run,
+                                    daemon=True,
+                                    args=('request thread',))
+
 
     ser_thread.start()
     db_thread.start()
     # websocket_thread.start()
     alarm_thread.start()
+    request_thread.start()
 
 
     # Start waiting on Godot
@@ -68,6 +77,7 @@ def run():
     db_thread.join()
     # websocket_thread.join()
     alarm_thread.join()
+    request_thread.join()
 
 
 if __name__ == "__main__":
