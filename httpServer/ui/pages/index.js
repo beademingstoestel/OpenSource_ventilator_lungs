@@ -30,6 +30,9 @@ export default class Index extends React.Component {
             lastVolume: 0,
             lastBpm: 0,
             lastTrigger: 0,
+            patientName: '',
+            patientAdmittanceDate: '',
+            patientInfo: '',
         };
     }
 
@@ -57,6 +60,16 @@ export default class Index extends React.Component {
     }
 
     async componentDidMount() {
+        // Get patient information
+        const res = await fetch('http://localhost:3001/api/patient_info');
+        const resData = await res.json();
+
+        this.setState({
+            patientName: resData.lastName + ', ' + resData.firstName,
+            patientAdmittanceDate: resData.admittanceDate,
+            patientInfo: resData.info,
+        });
+
         // todo: no hardcoded values
         this.client = new Client('ws://localhost:3001');
         await this.client.connect();
@@ -166,9 +179,9 @@ export default class Index extends React.Component {
                 <div className="page-dashboard">
                     <div className="page-dashboard__header">
                         <ul className="list--inline page-dashboard__patient-info">
-                            <li>Patient info</li>
-                            <li>Normal intubated</li>
-                            <li>Free field</li>
+                            <li>{this.state.patientName}</li>
+                            <li>{this.state.patientAdmittanceDate}</li>
+                            <li>{this.state.patientInfo}</li>
                         </ul>
                         <div className="page-dashboard__timing-info">
                             <div>
