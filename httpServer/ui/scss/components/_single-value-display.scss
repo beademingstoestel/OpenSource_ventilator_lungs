@@ -1,0 +1,35 @@
+$b: 'single-value-display';
+
+.#{$b} {
+    padding: 1rem;
+    text-transform: uppercase;
+    font-size: $font-size-small;
+    border-radius: $border-radius-base;
+    border: 1px solid #fff;
+    overflow: hidden;
+
+    &__value {
+        font-size: 3.5rem;
+        font-family: monospace;
+    }
+
+    &--default {
+        background-color: get-status-color('info');
+        color: #fff;
+    }
+
+    &--normal {
+        background-color: get-status-color('success');
+        color: #fff;
+    }
+
+    &--warning {
+        background-color: get-status-color('warning');
+        color: #333;
+    }
+
+    &--alarm {
+        background-color: get-status-color('danger');
+        color: #fff;
+    }
+}

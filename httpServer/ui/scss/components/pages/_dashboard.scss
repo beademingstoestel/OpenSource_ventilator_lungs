@@ -1,0 +1,31 @@
+$b: 'page-dashboard';
+
+.#{$b} {
+    display: flex;
+    flex-direction: column;
+    margin: -2rem;
+
+    &__header {
+        box-shadow: 0 1px 5px rgba(#000, 0.25);
+        padding: 1rem;
+        color: get-gray-color('light');
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__timing-info {
+        margin-left: auto;
+        margin-right: 3rem;
+        font-weight: $font-weight-bold;
+        line-height: 1.1;
+    }
+
+    &__body {
+        padding: 1rem;
+        background-color: #f8f9fc;
+        flex: 1 0 auto;
+    }
+}

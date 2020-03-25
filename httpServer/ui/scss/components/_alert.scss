@@ -1,0 +1,11 @@
+$b: 'alert';
+
+.#{$b} {
+    padding: 1rem;
+    font-weight: $font-weight-bold;
+
+    &--danger {
+        color: get-status-color('danger');
+        background-color: get-status-color('danger', 'light');
+    }
+}
