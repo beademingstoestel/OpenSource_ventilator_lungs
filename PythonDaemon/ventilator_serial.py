@@ -7,10 +7,11 @@ import queue
 
 class SerialHandler():
 
-    def __init__(self, db_queue, out_queue, alarm_queue, port='/dev/ttyACM0', baudrate=115200):
+    def __init__(self, db_queue, request_queue, out_queue, alarm_queue, port='COM3', baudrate=115200):
         self.ser = serial.Serial(port, baudrate)
         self.ser.reset_input_buffer()
         self.ser.reset_output_buffer()
+        self.request_queue = request_queue
         self.db_queue = db_queue # Enqueue to
         self.out_queue = out_queue
         self.alarm_queue = alarm_queue
@@ -93,7 +94,8 @@ class SerialHandler():
             ]
 
             for type in settings_types:
-                # TODO: handle settings
-                pass
+                if line.startswith((type + '=')):
+                    self.request_queue.put({'type': 'setting', 'key': type, 'value': val}, False)
+
 
 
