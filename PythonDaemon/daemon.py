@@ -21,8 +21,9 @@ def run():
     Do setup and start threads
     """
     db_queue = queue.Queue()
+    serial_output_queue = queue.Queue()
 
-    ser_handler = SerialHandler(db_queue)
+    ser_handler = SerialHandler(db_queue, serial_output_queue)
     db_handler = DbClient(db_queue)
     websocket_handler = WebsocketHandler()
 

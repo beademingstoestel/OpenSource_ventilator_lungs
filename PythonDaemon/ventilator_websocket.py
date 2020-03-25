@@ -46,7 +46,8 @@ class WebsocketHandler():
 
     def __init__(self, addr='localhost', port=3001):
         url = "ws://" + addr + ":" + str(port) + "/"
-        self.ws = websocket.create_connection(url)
+        self.ws = websocket.WebSocket()
+        self.ws.connect(url)
         self.id = 1
 
 

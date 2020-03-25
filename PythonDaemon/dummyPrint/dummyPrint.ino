@@ -8,12 +8,17 @@
   http://www.arduino.cc/en/Tutorial/DigitalReadSerial
 */
 
-// digital pin 2 has a pushbutton attached to it. Give it a name:
-int pushButton = 2;
+// LED on pin 13
 
+int led = 13;
+
+int rcv;
+
+int flag = 0;
 // the setup routine runs once when you press reset:
 void setup() {
   // initialize serial communication at 9600 bits per second:
+  pinMode(led, OUTPUT);
   Serial.begin(115200);
 }
 
@@ -23,6 +28,22 @@ void loop() {
   Serial.println("Vol=2"); 
   Serial.println("Trig=3");
   Serial.println("Pres=4");
+
+  if (Serial.available() > 0) {
+    rcv = Serial.read();
+    if(rcv == 'T'){
+      flag=1;
+    }
+
+    rcv = Serial.read(); // handle newline
+  }
+
+  if (flag == 1){
+    Serial.println("OK");
+  } else {
+    Serial.println("NOK");
+  }
  
-  delay(10);
+ 
+  delay(1000);
 }
