@@ -3,6 +3,7 @@ $b: 'page-dashboard';
 .#{$b} {
     display: flex;
     flex-direction: column;
+    margin: -2rem;
 
     &__header {
         box-shadow: 0 1px 5px rgba(#000, 0.25);

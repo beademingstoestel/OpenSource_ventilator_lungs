@@ -69,25 +69,29 @@ export class PatientInformation extends React.Component {
     render() {
         return (
             <MasterLayout>
-                <form action="" className="form" onSubmit={(ev) => this.handleSubmit(ev)}>
-                    <div className="form__group">
-                        <label htmlFor="firstName" className="form__label">First name</label>
-                        <input type="text" className="form__control" id="firstName" name="firstName" value={this.state.firstName} onChange={this.handleInputChange} />
+                <div className="row">
+                    <div className="col--lg-6">
+                        <form action="" className="form" onSubmit={(ev) => this.handleSubmit(ev)}>
+                            <div className="form__group">
+                                <label htmlFor="firstName" className="form__label">First name</label>
+                                <input type="text" className="form__control" id="firstName" name="firstName" value={this.state.firstName} onChange={this.handleInputChange} />
+                            </div>
+                            <div className="form__group">
+                                <label htmlFor="lastName" className="form__label">Last name</label>
+                                <input type="text" className="form__control" id="lastName" name="lastName" value={this.state.lastName} onChange={this.handleInputChange} />
+                            </div>
+                            <div className="form__group">
+                                <label htmlFor="admittanceDate" className="form__label">Admittance Date</label>
+                                <input type="text" className="form__control" id="admittanceDate" name="admittanceDate" value={this.state.admittanceDate} onChange={this.handleInputChange} />
+                            </div>
+                            <div className="form__group">
+                                <label htmlFor="info" className="form__label">Info</label>
+                                <input type="text" className="form__control" id="info" name="info" value={this.state.info} onChange={this.handleInputChange} />
+                            </div>
+                            <input type="submit" className="btn btn--secondary" />
+                        </form>
                     </div>
-                    <div className="form__group">
-                        <label htmlFor="lastName" className="form__label">Last name</label>
-                        <input type="text" className="form__control" id="lastName" name="lastName" value={this.state.lastName} onChange={this.handleInputChange} />
-                    </div>
-                    <div className="form__group">
-                        <label htmlFor="admittanceDate" className="form__label">Admittance Date</label>
-                        <input type="text" className="form__control" id="admittanceDate" name="admittanceDate" value={this.state.admittanceDate} onChange={this.handleInputChange} />
-                    </div>
-                    <div className="form__group">
-                        <label htmlFor="info" className="form__label">Info</label>
-                        <input type="text" className="form__control" id="info" name="info" value={this.state.info} onChange={this.handleInputChange} />
-                    </div>
-                    <input type="submit" className="btn btn--secondary" />
-                </form>
+                </div>
             </MasterLayout >
         );
     };
