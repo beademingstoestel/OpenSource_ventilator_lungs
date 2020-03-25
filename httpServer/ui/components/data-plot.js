@@ -12,9 +12,9 @@ export default class DataPlot extends React.Component {
             datasets: [
                 {
                     borderColor: '#ff6600',
-                    borderWidth: 1,
+                    borderWidth: 2,
                     borderJoinStyle: 'round',
-                    pointRadius: 3,
+                    pointRadius: 0,
                     pointBorderColor: '#ffddaa',
                     pointBackgroundColor: '#ff6600',
                     pointBorderWidth: 1,
