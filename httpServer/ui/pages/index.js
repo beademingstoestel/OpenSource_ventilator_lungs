@@ -58,7 +58,7 @@ export default class Index extends React.Component {
 
     async componentDidMount() {
         // todo: no hardcoded values
-        this.client = new Client('ws://localhost:3001');
+        this.client = new Client(`ws://${ process.env.apiURL }`);
         await this.client.connect();
 
         this.client.subscribe('/api/pressure_values', (newPoints) => {

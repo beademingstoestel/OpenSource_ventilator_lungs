@@ -19,7 +19,7 @@ export class PatientInformation extends React.Component {
 
     async componentDidMount() {
         // Get the information about the patient
-        const res = await fetch('http://localhost:3001/api/patient_info');
+        const res = await fetch(`http://${ process.env.apiURL }/api/patient_info`);
         const resData = await res.json();
 
         console.log(resData);
@@ -35,7 +35,7 @@ export class PatientInformation extends React.Component {
     async handleSubmit(ev) {
         ev.preventDefault();
 
-        const res = await fetch('http://localhost:3001/api/patient_info', {
+        const res = await fetch(`http://${ process.env.apiURL }/api/patient_info`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
