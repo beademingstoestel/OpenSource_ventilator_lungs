@@ -61,11 +61,39 @@ class SerialHandler():
 
             tokens = line.split('=', 1)
             val = tokens[-1].rstrip('\r\n')
-            if line.startswith(('BPM=')):
-                self.queue_put('BPM', val)
-            elif line.startswith(('VOL=')):
-                self.queue_put('VOL', val)
-            elif line.startswith(('TRIG=')):
-                self.queue_put('TRIG', val)
-            elif line.startswith(('PRES=')):
-                self.queue_put('PRES', val)
+
+
+            if line.startswith('ALARM='):
+                # TODO: Handle alarm case
+                pass
+
+
+            # handle measurements
+            measurement_types = ['BPM',  # Breaths per minute
+                                 'VOL',  # Volume
+                                 'TRIG', # Trigger
+                                 'PRES'  # Pressure
+            ]
+
+            for type in measurement_types:
+                if line.startswith((type + '=')):
+                    self.queue_put(type, val)
+
+            # handle settings
+            settings_types = ['RR',   # Respiratory rate
+                              'VT',   # Tidal Volume
+                              'PK',   # Peak Pressure
+                              'BTS',  # Breath Trigger Threshold
+                              'IE',   # Inspiration/Expiration (N for 1/N)
+                              'PP',   # PEEP (positive end expiratory pressure)
+                              'ADPK', # Allowed deviation Peak Pressure
+                              'ADVT', # Allowed deviation Tidal Volume
+                              'ADPP', # Allowed deviation PEEP
+                              'MODE'  # Machine Mode (Volume Control / Pressure Control)
+            ]
+
+            for type in settings_types:
+                # TODO: handle settings
+                pass
+
+
