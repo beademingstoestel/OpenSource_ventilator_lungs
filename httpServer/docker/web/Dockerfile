@@ -16,4 +16,6 @@ WORKDIR /app
 
 EXPOSE 3001
 
+ENTRYPOINT ["./entrypoint.sh"]
+
 CMD [ "node", "./build/index.js" ]
