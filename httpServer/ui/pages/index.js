@@ -78,7 +78,7 @@ export default class Index extends React.Component {
     async componentDidMount() {
         // Get patient information
         try {
-            const patientInfoResponse = await fetch(`http://${process.env.apiURL}/api/patient_infos`);
+            const patientInfoResponse = await fetch(`http://${process.env.apiURL}/api/patient_info`);
             const patientInfoData = await patientInfoResponse.json();
 
             this.setState({
