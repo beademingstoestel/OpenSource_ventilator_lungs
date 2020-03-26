@@ -5,6 +5,11 @@ import { isArray } from 'util';
 
 export default class DataPlot extends React.Component {
 
+    colors = [
+        '#ff6600',
+        '#003399',
+    ];
+
     render() {
         const title = this.props.title;
 
@@ -14,10 +19,11 @@ export default class DataPlot extends React.Component {
 
         if (this.props.data.length > 0) {
             if (this.props.multipleDatasets) {
-                console.log("multiple: " + this.props.data.length);
-                for (let i = 0; i < this.props.data; i++) {
+
+                for (let i = 0; i < this.props.data.length; i++) {
                     chartData.datasets.push({
-                        borderColor: '#ff6600',
+                        label: 'dataset' + i,
+                        borderColor: this.colors[i],
                         borderWidth: 2,
                         borderJoinStyle: 'round',
                         pointRadius: 0,

@@ -207,7 +207,7 @@ export default class Index extends React.Component {
                                 T {new Date().toLocaleTimeString()}
                             </div>
                             <div>
-                                R 27:25:15
+                                Mode: {this.state.settings.MODE}
                             </div>
                         </div>
                         <div className="page-dashboard__machine-info">
