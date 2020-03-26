@@ -12,6 +12,7 @@ export class PatientInformation extends React.Component {
             firstName: '',
             lastName: '',
             admittanceDate: '',
+            admittanceTime: '',
             info: '',
         };
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -19,15 +20,19 @@ export class PatientInformation extends React.Component {
 
     async componentDidMount() {
         // Get the information about the patient
-        const res = await fetch(`http://${ process.env.apiURL }/api/patient_info`);
+        const res = await fetch(`http://${process.env.apiURL}/api/patient_info`);
         const resData = await res.json();
 
         console.log(resData);
 
+        const date = resData.admittanceDate.split('T')[0];
+        const time = resData.admittanceDate.split('T')[1];
+
         this.setState({
             firstName: resData.firstName,
             lastName: resData.lastName,
-            admittanceDate: resData.admittanceDate,
+            admittanceDate: date,
+            admittanceTime: time,
             info: resData.info,
         });
     }
@@ -35,7 +40,7 @@ export class PatientInformation extends React.Component {
     async handleSubmit(ev) {
         ev.preventDefault();
 
-        const res = await fetch(`http://${ process.env.apiURL }/api/patient_info`, {
+        const res = await fetch(`http://${process.env.apiURL}/api/patient_info`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,7 +48,7 @@ export class PatientInformation extends React.Component {
             body: JSON.stringify({
                 firstName: this.state.firstName,
                 lastName: this.state.lastName,
-                admittanceDate: this.state.admittanceDate,
+                admittanceDate: this.state.admittanceDate + 'T' + this.state.admittanceTime,
                 info: this.state.info,
             }),
         });
@@ -82,7 +87,11 @@ export class PatientInformation extends React.Component {
                             </div>
                             <div className="form__group">
                                 <label htmlFor="admittanceDate" className="form__label">Admittance Date</label>
-                                <input type="text" className="form__control" id="admittanceDate" name="admittanceDate" value={this.state.admittanceDate} onChange={this.handleInputChange} />
+                                <input type="date" className="form__control" id="admittanceDate" name="admittanceDate" value={this.state.admittanceDate} onChange={this.handleInputChange} />
+                            </div>
+                            <div className="form__group">
+                                <label htmlFor="admittanceTime" className="form__label">Admittance Time</label>
+                                <input type="time" className="form__control" id="admittanceTime" name="admittanceTime" value={this.state.admittanceTime} onChange={this.handleInputChange} />
                             </div>
                             <div className="form__group">
                                 <label htmlFor="info" className="form__label">Info</label>

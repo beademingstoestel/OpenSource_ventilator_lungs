@@ -211,7 +211,7 @@ export default class Index extends React.Component {
                     <div className="page-dashboard__header">
                         <ul className="list--inline page-dashboard__patient-info">
                             <li>{this.state.patientName}</li>
-                            <li>{this.state.patientAdmittanceDate.toLocaleDateString()}</li>
+                            <li>{this.state.patientAdmittanceDate.toLocaleString()}</li>
                             <li>{this.state.patientInfo}</li>
                         </ul>
                         <div className="page-dashboard__timing-info">
