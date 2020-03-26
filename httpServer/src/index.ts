@@ -152,6 +152,9 @@ const start = async function () {
         path: '/api/error',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
             server.publish('/api/error', request.payload);
+            return {
+                result: true,
+            };
         },
     });
 

@@ -7,13 +7,28 @@ import queue
 
 class SerialHandler():
 
-    def __init__(self,db_queue, out_queue, port='/dev/ttyACM0', baudrate=115200):
+    def __init__(self, db_queue, request_queue, out_queue, alarm_queue, port='COM3', baudrate=115200):
         self.ser = serial.Serial(port, baudrate)
         self.ser.reset_input_buffer()
         self.ser.reset_output_buffer()
+        self.request_queue = request_queue
         self.db_queue = db_queue # Enqueue to
         self.out_queue = out_queue
+        self.alarm_queue = alarm_queue
         self.errorcounter = 0
+
+    def queue_put(self, type, val):
+        """
+        Send values to all necessary queues
+
+        Args:
+            type (str): type to be sent
+            val (int): value to be sent
+        """
+        self.db_queue.put({'type': type, 'val': val})
+        self.alarm_queue.put({'type': type, 'val': val})
+
+
 
     def run(self, name):
         print("Starting {}".format(name))
@@ -47,11 +62,40 @@ class SerialHandler():
 
             tokens = line.split('=', 1)
             val = tokens[-1].rstrip('\r\n')
-            if line.startswith(('bpm=')):
-                self.db_queue.put({'type': 'BPM', 'val': val})
-            elif line.startswith(('Vol=')):
-                self.db_queue.put({'type': 'VOL', 'val': val})
-            elif line.startswith(('Trig=')):
-                self.db_queue.put({'type': 'TRIG', 'val': val})
-            elif line.startswith(('Pres=')):
-                self.db_queue.put({'type': 'PRES', 'val': val})
+
+
+            if line.startswith('ALARM='):
+                # TODO: Handle alarm case
+                pass
+
+
+            # handle measurements
+            measurement_types = ['BPM',  # Breaths per minute
+                                 'VOL',  # Volume
+                                 'TRIG', # Trigger
+                                 'PRES'  # Pressure
+            ]
+
+            for type in measurement_types:
+                if line.startswith((type + '=')):
+                    self.queue_put(type, val)
+
+            # handle settings
+            settings_types = ['RR',   # Respiratory rate
+                              'VT',   # Tidal Volume
+                              'PK',   # Peak Pressure
+                              'BTS',  # Breath Trigger Threshold
+                              'IE',   # Inspiration/Expiration (N for 1/N)
+                              'PP',   # PEEP (positive end expiratory pressure)
+                              'ADPK', # Allowed deviation Peak Pressure
+                              'ADVT', # Allowed deviation Tidal Volume
+                              'ADPP', # Allowed deviation PEEP
+                              'MODE'  # Machine Mode (Volume Control / Pressure Control)
+            ]
+
+            for type in settings_types:
+                if line.startswith((type + '=')):
+                    self.request_queue.put({'type': 'setting', 'key': type, 'value': val}, False)
+
+
+
