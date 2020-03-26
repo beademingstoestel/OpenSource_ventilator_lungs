@@ -10,7 +10,7 @@ import BellIcon from '../components/icons/bell';
 
 const refreshRate = 50;
 const defaultXRange = 10000;
-const integerPrecision = 10;
+const integerPrecision = 1;
 
 export default class Index extends React.Component {
     rawPressureValues = [];
@@ -147,7 +147,7 @@ export default class Index extends React.Component {
 
                 if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newTriggerValues.push({
-                        y: point.y / integerPrecision,
+                        y: point.y * 400,
                         x: newX / 1000.0,
                     });
                 }
@@ -246,7 +246,7 @@ export default class Index extends React.Component {
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
                                             minY={0}
-                                            maxY={600} />
+                                            maxY={800} />
                                     </div>
                                 </div>
                             </div>
