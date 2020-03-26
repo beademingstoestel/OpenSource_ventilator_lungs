@@ -30,20 +30,22 @@ export class MongoSettingsRepository implements ISettingsRepository {
         }
     }
 
-    async SaveSettings(type: string, settings: any): Promise<void> {
+    async SaveSettings(type: string, settings: any): Promise<any> {
         try {
             if (!this.mongoClient.isConnected()) {
                 await this.mongoClient.connect();
             }
 
-	    const oldSettings = await this.GetSettings(type);
-	    const newSettings = { ...oldSettings, ...settings };
+            const oldSettings = await this.GetSettings(type);
+            const newSettings = { ...oldSettings, ...settings };
 
-	    newSettings.type = type;
+            newSettings.type = type;
 
             const db: Db = this.mongoClient.db('beademing');
 
             await db.collection('settings').replaceOne({ type }, newSettings, { upsert: true });
+
+            return newSettings;
         } catch (exception) {
             // todo: log exception
             console.error(exception);

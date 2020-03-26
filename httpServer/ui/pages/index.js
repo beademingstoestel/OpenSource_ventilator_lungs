@@ -15,7 +15,8 @@ const integerPrecision = 10;
 export default class Index extends React.Component {
     rawPressureValues = [];
     rawVolumeValues = [];
-    rawBpmValues = [];
+    rawTriggerValues = [];
+    bpmValue = 0;
     animationInterval = 0;
     client = null;
 
@@ -25,15 +26,27 @@ export default class Index extends React.Component {
         this.state = {
             pressureValues: [],
             volumeValues: [],
-            bpmValues: [],
+            triggerValues: [],
             xLengthMs: defaultXRange,
             lastPressure: 0,
             lastVolume: 0,
             lastBpm: 0,
-            lastTrigger: 0,
             patientName: '',
-            patientAdmittanceDate: '',
+            patientAdmittanceDate: new Date(),
             patientInfo: '',
+            settings: {
+                RR: 0,
+                VT: 0,
+                PK: 0,
+                TS: 0,
+                IE: 0,
+                PP: 0,
+                ADPK: 0,
+                ADVT: 0,
+                ADPP: 0,
+                MODE: 'V',
+                ACTIVE: '',
+            },
         };
     }
 
@@ -62,17 +75,28 @@ export default class Index extends React.Component {
 
     async componentDidMount() {
         // Get patient information
-        const res = await fetch('http://localhost:3001/api/patient_info');
-        const resData = await res.json();
+        try {
+            const patientInfoResponse = await fetch('http://localhost:3001/api/patient_info');
+            const patientInfoData = await patientInfoResponse.json();
 
-        this.setState({
-            patientName: resData.lastName + ', ' + resData.firstName,
-            patientAdmittanceDate: resData.admittanceDate,
-            patientInfo: resData.info,
-        });
+            this.setState({
+                patientName: patientInfoData.lastName + ', ' + patientInfoData.firstName,
+                patientAdmittanceDate: new Date(patientInfoData.admittanceDate),
+                patientInfo: patientInfoData.info,
+            });
+
+            const settingsResponse = await fetch('http://localhost:3001/api/settings');
+            const settingsData = await settingsResponse.json();
+
+            this.setState({
+                settings: { ...this.state.settings, ...settingsData },
+            });
+        } catch (ex) {
+            console.log(ex);
+        }
 
         // todo: no hardcoded values
-        this.client = new Client(`ws://${ process.env.apiURL }`);
+        this.client = new Client(`ws://${process.env.apiURL}`);
         await this.client.connect();
 
         this.client.subscribe('/api/pressure_values', (newPoints) => {
@@ -83,8 +107,8 @@ export default class Index extends React.Component {
             this.processIncomingPoints(this.rawVolumeValues, newPoints);
         });
 
-        this.client.subscribe('/api/breathsperminute_values', (newPoints) => {
-            this.processIncomingPoints(this.rawBpmValues, newPoints);
+        this.client.subscribe('/api/trigger_values', (newPoints) => {
+            this.processIncomingPoints(this.rawTriggerValues, newPoints);
         });
 
         const self = this;
@@ -92,10 +116,9 @@ export default class Index extends React.Component {
             var now = new Date().getTime();
             const newPressureValues = [];
             const newVolumeValues = [];
-            const newBpmValues = [];
+            const newTriggerValues = [];
             let newLastPressure = 0;
             let newLastVolume = 0;
-            let newLastBpm = 0;
 
             this.rawPressureValues.forEach((point) => {
                 var newX = (point.x - now);
@@ -119,11 +142,11 @@ export default class Index extends React.Component {
                 }
             });
 
-            this.rawBpmValues.forEach((point) => {
+            this.rawTriggerValues.forEach((point) => {
                 var newX = (point.x - now);
 
                 if (newX <= 0 && newX >= -this.state.xLengthMs) {
-                    newBpmValues.push({
+                    newTriggerValues.push({
                         y: point.y / integerPrecision,
                         x: newX / 1000.0,
                     });
@@ -138,18 +161,13 @@ export default class Index extends React.Component {
                 newLastVolume = newVolumeValues[newVolumeValues.length - 1].y;
             }
 
-            if (newBpmValues.length > 0) {
-                newLastBpm = newBpmValues[newBpmValues.length - 1].y;
-            }
-
             self.setState({
                 pressureValues: newPressureValues,
                 volumeValues: newVolumeValues,
-                bpmValues: newBpmValues,
+                triggerValues: newTriggerValues,
                 pressureStatus: 'normal',
                 bpmStatus: 'warning',
                 volumeStatus: 'alarm',
-                lastBpm: newBpmValues.length > 0 ? newBpmValues[newBpmValues.length - 1].y : 0.0,
                 lastPressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
                 lastVolume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
             });
@@ -181,12 +199,12 @@ export default class Index extends React.Component {
                     <div className="page-dashboard__header">
                         <ul className="list--inline page-dashboard__patient-info">
                             <li>{this.state.patientName}</li>
-                            <li>{this.state.patientAdmittanceDate}</li>
+                            <li>{this.state.patientAdmittanceDate.toLocaleDateString() }</li>
                             <li>{this.state.patientInfo}</li>
                         </ul>
                         <div className="page-dashboard__timing-info">
                             <div>
-                                T 23:11:27
+                                T {new Date().toLocaleTimeString()}
                             </div>
                             <div>
                                 R 27:25:15
@@ -218,17 +236,27 @@ export default class Index extends React.Component {
                                 </form>
                                 <div className="box u-mt-1">
                                     <div className="box__body">
-                                        <DataPlot title='Pressure' data={this.state.pressureValues} timeScale={this.state.xLengthMs / 1000.0} minY={0} maxY={100} />
-                                        <DataPlot title='BPM' data={this.state.bpmValues} timeScale={this.state.xLengthMs / 1000.0} minY={0} maxY={100} />
-                                        <DataPlot title='Volume' data={this.state.volumeValues} timeScale={this.state.xLengthMs / 1000.0} minY={0} maxY={100} />
+                                        <DataPlot title='Pressure'
+                                            data={this.state.pressureValues}
+                                            timeScale={this.state.xLengthMs / 1000.0}
+                                            minY={0}
+                                            maxY={80} />
+                                        <DataPlot title='Volume'
+                                            data={[this.state.volumeValues, this.state.triggerValues]}
+                                            multipleDatasets={true}
+                                            timeScale={this.state.xLengthMs / 1000.0}
+                                            minY={0}
+                                            maxY={600} />
                                     </div>
                                 </div>
                             </div>
                             <div className="col--md-4">
                                 <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
-                                <SingleValueDisplay name="BPM" value={this.state.lastBpm} status={this.state.bpmStatus} />
+                                <div className={'single-value-display single-value-display--default'}>
+                                    <div className="single-value-display__name">Respatory rate</div>
+                                    <div className="single-value-display__value">{ this.state.lastBpm }</div>
+                                </div>
                                 <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
-                                <SingleValueDisplay name="Trigger" value={this.state.lastTrigger} status={this.state.triggerStatus} />
                             </div>
                         </div>
                     </div>
