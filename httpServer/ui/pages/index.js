@@ -8,6 +8,8 @@ import React from 'react';
 import DataCard from '../components/data-card';
 import BellIcon from '../components/icons/bell';
 
+import { toast } from 'react-toastify';
+
 const refreshRate = 50;
 const defaultXRange = 10000;
 const integerPrecision = 1;
@@ -52,7 +54,7 @@ export default class Index extends React.Component {
 
     processIncomingPoints(toArray, newPoints) {
         var cutoffTime = new Date().getTime() - this.state.xLengthMs;
-        
+
         // shift old values
         let i = 0;
         for (i = 0; i < toArray.length; i++) {
@@ -84,7 +86,14 @@ export default class Index extends React.Component {
                 patientAdmittanceDate: new Date(patientInfoData.admittanceDate),
                 patientInfo: patientInfoData.info,
             });
+        } catch (ex) {
+            console.log(ex);
+            toast.error('Error fetching patient information.', {
+                autoClose: false,
+            });
+        }
 
+        try {
             const settingsResponse = await fetch(`http://${process.env.apiURL}/api/settings`);
             const settingsData = await settingsResponse.json();
 
@@ -93,6 +102,9 @@ export default class Index extends React.Component {
             });
         } catch (ex) {
             console.log(ex);
+            toast.error('Error fetching settings information.', {
+                autoClose: false,
+            });
         }
 
         // todo: no hardcoded values
@@ -199,7 +211,7 @@ export default class Index extends React.Component {
                     <div className="page-dashboard__header">
                         <ul className="list--inline page-dashboard__patient-info">
                             <li>{this.state.patientName}</li>
-                            <li>{this.state.patientAdmittanceDate.toLocaleDateString() }</li>
+                            <li>{this.state.patientAdmittanceDate.toLocaleDateString()}</li>
                             <li>{this.state.patientInfo}</li>
                         </ul>
                         <div className="page-dashboard__timing-info">
@@ -254,7 +266,7 @@ export default class Index extends React.Component {
                                 <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
                                 <div className={'single-value-display single-value-display--default'}>
                                     <div className="single-value-display__name">Respatory rate</div>
-                                    <div className="single-value-display__value">{ this.state.lastBpm }</div>
+                                    <div className="single-value-display__value">{this.state.lastBpm}</div>
                                 </div>
                                 <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
                             </div>
