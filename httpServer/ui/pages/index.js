@@ -8,6 +8,8 @@ import React from 'react';
 import DataCard from '../components/data-card';
 import BellIcon from '../components/icons/bell';
 
+import { getApiUrl, getWsUrl } from './api-urls';
+
 import { toast } from 'react-toastify';
 
 const refreshRate = 50;
@@ -78,7 +80,7 @@ export default class Index extends React.Component {
     async componentDidMount() {
         // Get patient information
         try {
-            const patientInfoResponse = await fetch(`http://${process.env.apiURL}/api/patient_info`);
+            const patientInfoResponse = await fetch(`${getApiUrl()}/api/patient_info`);
             const patientInfoData = await patientInfoResponse.json();
 
             this.setState({
@@ -94,7 +96,7 @@ export default class Index extends React.Component {
         }
 
         try {
-            const settingsResponse = await fetch(`http://${process.env.apiURL}/api/settings`);
+            const settingsResponse = await fetch(`${getApiUrl()}/api/settings`);
             const settingsData = await settingsResponse.json();
 
             this.setState({
@@ -108,7 +110,7 @@ export default class Index extends React.Component {
         }
 
         // todo: no hardcoded values
-        this.client = new Client(`ws://${process.env.apiURL}`);
+        this.client = new Client(`${getWsUrl()}`);
         await this.client.connect();
 
         this.client.subscribe('/api/pressure_values', (newPoints) => {

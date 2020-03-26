@@ -2,6 +2,8 @@ import React from 'react';
 import cx from 'classnames';
 import MasterLayout from '../components/master-layout';
 
+import { getApiUrl } from './api-urls.js';
+
 import { toast } from 'react-toastify';
 
 export class PatientInformation extends React.Component {
@@ -20,7 +22,7 @@ export class PatientInformation extends React.Component {
 
     async componentDidMount() {
         // Get the information about the patient
-        const res = await fetch(`http://${process.env.apiURL}/api/patient_info`);
+        const res = await fetch(`${getApiUrl()}/api/patient_info`);
         const resData = await res.json();
 
         console.log(resData);
@@ -40,7 +42,7 @@ export class PatientInformation extends React.Component {
     async handleSubmit(ev) {
         ev.preventDefault();
 
-        const res = await fetch(`http://${process.env.apiURL}/api/patient_info`, {
+        const res = await fetch(`${getApiUrl()}/api/patient_info`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
