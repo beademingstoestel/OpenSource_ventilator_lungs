@@ -10,6 +10,7 @@ This daemon has a number of tasks
 """
 import threading
 import queue
+import multiprocessing as mp
 from ventilator_database import DbClient
 from ventilator_serial import SerialHandler
 from ventilator_websocket import WebsocketHandler
@@ -28,10 +29,10 @@ def run():
     api_request = APIRequest("http://localhost:3001")
     api_request.send_setting("startPythonDaemon", datetime.utcnow())
 
-    db_queue = queue.Queue() # Queue for values to write to db
-    serial_output_queue = queue.Queue() # Queue for messages to send to controller
-    alarm_input_queue = queue.Queue() # Queue for values for Alarm thread
-    request_queue = queue.Queue() # Queue with the requests to be sent to the API
+    db_queue = mp.Queue() # Queue for values to write to db
+    serial_output_queue = mp.Queue() # Queue for messages to send to controller
+    alarm_input_queue = mp.Queue() # Queue for values for Alarm thread
+    request_queue = mp.Queue() # Queue with the requests to be sent to the API
 
     ser_handler = SerialHandler(db_queue, request_queue, serial_output_queue, alarm_input_queue)
     db_handler = DbClient(db_queue)
@@ -40,27 +41,27 @@ def run():
     request_handler = RequestHandler(api_request, request_queue)
 
     # Thread that handles bidirectional communication
-    ser_thread = threading.Thread(target=ser_handler.run,
+    ser_thread = mp.Process(target=ser_handler.run,
                                   daemon=True,
                                   args=('serial thread',))
 
     # Thread that handles writing measurement values to the db
-    db_thread = threading.Thread(target=db_handler.run,
+    db_thread = mp.Process(target=db_handler.run,
                                  daemon=True,
                                  args=('db thread',))
 
     # Thread that handles bidirectional websocket communication
-    # websocket_thread = threading.Thread(target=websocket_handler.run,
+    # websocket_thread = mp.Process(target=websocket_handler.run,
     #                                    daemon=True,
     #                                    args=('websocket thread',))
 
     # Thread that checks if an alarm should be raised given current measurements
-    alarm_thread = threading.Thread(target=alarm_handler.run,
+    alarm_thread = mp.Process(target=alarm_handler.run,
                                     daemon=True,
                                     args=('alarm thread',))
 
     # Thread that sends the received values to the API
-    request_thread = threading.Thread(target=request_handler.run,
+    request_thread = mp.Process(target=request_handler.run,
                                     daemon=True,
                                     args=('request thread',))
 
