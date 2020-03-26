@@ -8,6 +8,8 @@ import React from 'react';
 import DataCard from '../components/data-card';
 import BellIcon from '../components/icons/bell';
 
+import { toast } from 'react-toastify';
+
 const refreshRate = 50;
 const defaultXRange = 10000;
 const integerPrecision = 1;
@@ -76,7 +78,7 @@ export default class Index extends React.Component {
     async componentDidMount() {
         // Get patient information
         try {
-            const patientInfoResponse = await fetch('http://localhost:3001/api/patient_info');
+            const patientInfoResponse = await fetch(`http://${process.env.apiURL}/api/patient_infos`);
             const patientInfoData = await patientInfoResponse.json();
 
             this.setState({
@@ -84,8 +86,15 @@ export default class Index extends React.Component {
                 patientAdmittanceDate: new Date(patientInfoData.admittanceDate),
                 patientInfo: patientInfoData.info,
             });
+        } catch (ex) {
+            console.log(ex);
+            toast.error('Error fetching patient information.', {
+                autoClose: false,
+            });
+        }
 
-            const settingsResponse = await fetch('http://localhost:3001/api/settings');
+        try {
+            const settingsResponse = await fetch(`http://${process.env.apiURL}/api/settings`);
             const settingsData = await settingsResponse.json();
 
             this.setState({
@@ -93,6 +102,9 @@ export default class Index extends React.Component {
             });
         } catch (ex) {
             console.log(ex);
+            toast.error('Error fetching settings information.', {
+                autoClose: false,
+            });
         }
 
         // todo: no hardcoded values
