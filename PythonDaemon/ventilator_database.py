@@ -1,6 +1,7 @@
 """
 Ventilator database connection
 """
+import queue
 from datetime import datetime
 from pymongo import MongoClient
 
@@ -8,8 +9,8 @@ from pymongo import MongoClient
 class DbClient():
 
     def __init__(self, db_queue, addr='mongodb://localhost:27017'):
-        client = MongoClient(addr)
-        self.db = client.beademing
+        self.addr = addr
+        self.db = None
         self.queue = db_queue
 
     def store_pressure(self, pressure_val):
@@ -34,14 +35,22 @@ class DbClient():
     def run(self, name):
         print("Starting {}".format(name))
 
+        # Only start MongoClient after fork()
+        client = MongoClient(self.addr)
+        self.db = client.beademing
         while True:
-            msg = self.queue.get()
+            try:
+                msg = self.queue.get()
+            except queue.Empty:
+                continue
 
-            if msg['type'] is 'BPM':
+
+            if msg['type'] == 'BPM':
                 self.store_bpm(msg['val'])
-            elif msg['type'] is 'VOL':
+            elif msg['type'] == 'VOL':
                 self.store_volume(msg['val'])
-            elif msg['type'] is 'TRIG':
+            elif msg['type'] == 'TRIG':
                 self.store_trigger(msg['val'])
-            elif msg['type'] is 'PRES':
+            elif msg['type'] == 'PRES':
                 self.store_pressure(msg['val'])
+
