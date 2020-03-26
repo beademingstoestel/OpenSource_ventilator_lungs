@@ -16,11 +16,12 @@ export class TestSettingsRepository implements ISettingsRepository {
         });
     }
 
-    async SaveSettings(type: string, settings: any): Promise<void> {
-        this.settings[type] = settings;
+    async SaveSettings(type: string, settings: any): Promise<any> {
+        const oldSettings = this.settings[type];
+        this.settings[type] = { ...oldSettings, ...settings };
 
         return new Promise((resolve, reject) => {
-            resolve();
+            resolve(this.settings[type]);
         });
     }
 };

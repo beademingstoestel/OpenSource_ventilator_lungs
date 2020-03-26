@@ -13,12 +13,13 @@ export class SettingsController {
     async HandlePut(request: Request, h: ResponseToolkit) {
         const settings = request.payload;
 
-        await this.settingsRepository.SaveSettings('setting', settings);
+        const completeSettings = await this.settingsRepository.SaveSettings('setting', settings);
 
-        this.broadCastSettings(settings);
+        this.broadCastSettings(completeSettings);
 
         return {
             result: true,
+            settings: completeSettings,
         };
     }
 };

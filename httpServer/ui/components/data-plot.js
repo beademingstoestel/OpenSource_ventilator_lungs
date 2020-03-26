@@ -1,30 +1,53 @@
 // eslint-disable-next-line no-unused-vars
 import { Scatter } from 'react-chartjs-2';
 import React from 'react';
+import { isArray } from 'util';
 
 export default class DataPlot extends React.Component {
+
+    colors = [
+        '#ff6600',
+        '#003399',
+    ];
 
     render() {
         const title = this.props.title;
 
-        const chartData =
-        {
-            datasets: [
-                {
+        const chartData = {
+            datasets: [],
+        };
+
+        if (this.props.data.length > 0) {
+            if (this.props.multipleDatasets) {
+
+                for (let i = 0; i < this.props.data.length; i++) {
+                    chartData.datasets.push({
+                        label: 'dataset' + i,
+                        borderColor: this.colors[i],
+                        borderWidth: 2,
+                        borderJoinStyle: 'round',
+                        pointRadius: 0,
+                        pointBorderWidth: 1,
+                        lineTension: 0,
+                        data: this.props.data[i],
+                        showLine: true,
+                        fill: false,
+                    });
+                }
+            } else {
+                chartData.datasets.push({
                     borderColor: '#ff6600',
                     borderWidth: 2,
                     borderJoinStyle: 'round',
                     pointRadius: 0,
-                    pointBorderColor: '#ffddaa',
-                    pointBackgroundColor: '#ff6600',
                     pointBorderWidth: 1,
                     lineTension: 0,
                     data: this.props.data,
                     showLine: true,
                     fill: false,
-                },
-            ],
-        };
+                });
+            }
+        }
 
         const chartOptions = {
             layout: { padding: { top: 0, bottom: 0, left: 0, right: 0 } },
@@ -63,7 +86,7 @@ export default class DataPlot extends React.Component {
         };
 
         return (
-            <div style={{ height: '200px' }}>
+            <div style={{ height: '300px' }}>
                 <Scatter data={chartData} options={chartOptions} />
             </div>
         );

@@ -6,19 +6,35 @@ import { TimeStampedValue } from '../Models/TimeStampedValue';
 export class TestRepository implements IValuesRepository {
     ReadValues(collection: string, since: Date): Promise<TimeStampedValue[]> {
         // return a random value for each 100 ms since since
+
         const now = new Date().getTime();
-
-        const randAmplitude = Math.random() * 800;
-
-        const steps = (now - since.getTime()) / 100;
-
         const ret = [];
+        if (collection !== 'trigger_values') {
+            let randAmplitude = 1;
 
-        for (let i = 0; i < steps; i++) {
-            const time = now + i * 100;
+            if (collection === 'volume_values') {
+                randAmplitude = 600;
+            } else if (collection === 'pressure_values') {
+                randAmplitude = 70;
+            } else {
+                randAmplitude = 40;
+            }
+
+            const steps = (now - since.getTime()) / 50;
+
+            for (let i = 0; i < steps; i++) {
+                const time = since.getTime() + i * 50;
+                ret.push({
+                    value: Math.abs(Math.sin(time) * randAmplitude),
+                    loggedAt: new Date(time),
+                });
+            }
+        } else {
+            const seconds = Math.floor(new Date().getSeconds() / 2);
+
             ret.push({
-                value: Math.abs(Math.sin(time) * randAmplitude),
-                loggedAt: new Date(time),
+                value: seconds % 2 ? 1 : 0,
+                loggedAt: new Date(now),
             });
         }
 
