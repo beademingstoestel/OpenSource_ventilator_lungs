@@ -78,7 +78,7 @@ export default class Index extends React.Component {
     async componentDidMount() {
         // Get patient information
         try {
-            const patientInfoResponse = await fetch(`http://${process.env.apiURL}/api/patient_infos`);
+            const patientInfoResponse = await fetch(`http://${process.env.apiURL}/api/patient_info`);
             const patientInfoData = await patientInfoResponse.json();
 
             this.setState({
@@ -265,7 +265,7 @@ export default class Index extends React.Component {
                             <div className="col--md-4">
                                 <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
                                 <div className={'single-value-display single-value-display--default'}>
-                                    <div className="single-value-display__name">Respatory rate</div>
+                                    <div className="single-value-display__name">Respiratory rate</div>
                                     <div className="single-value-display__value">{this.state.lastBpm}</div>
                                 </div>
                                 <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
