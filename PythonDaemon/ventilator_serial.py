@@ -3,11 +3,12 @@ Ventilator Serial Handler
 """
 import serial
 import queue
+import time
 
 
 class SerialHandler():
 
-    def __init__(self, db_queue, request_queue, out_queue, alarm_queue, port='COM3', baudrate=115200):
+    def __init__(self, db_queue, request_queue, out_queue, alarm_queue, port='/dev/ttyACM0', baudrate=115200):
         self.ser = serial.Serial(port, baudrate)
         self.ser.reset_input_buffer()
         self.ser.reset_output_buffer()
@@ -39,8 +40,8 @@ class SerialHandler():
                 msg = None
 
             if msg != None:
-                print(bytes(msg['val'], 'utf-8'))
-                self.ser.write(msg['val'].encode())
+                msg_out = msg['type'] + "=" + str(msg['val']) + "\r\n"
+                self.ser.write(bytes(msg_out, 'ascii'))
 
 
             line = self.ser.readline()
@@ -54,7 +55,6 @@ class SerialHandler():
                     continue
                 else:
                     print("Repeatedly unable to decode serial messages, aborting!")
-                    raise SystemExit(-1)
                 # TODO: At the start it can happen that we get an incorrect message
                 # due to incomplete data. I do a hard abort here to ensure that this only
                 # happens once. We need to determine what a tolerable level of failure is here.
@@ -63,10 +63,8 @@ class SerialHandler():
             tokens = line.split('=', 1)
             val = tokens[-1].rstrip('\r\n')
 
-
             if line.startswith('ALARM='):
-                # TODO: Handle alarm case
-                pass
+                self.alarm_queue.put({'type': 'ALARM', 'val': val})
 
 
             # handle measurements
@@ -84,7 +82,7 @@ class SerialHandler():
             settings_types = ['RR',   # Respiratory rate
                               'VT',   # Tidal Volume
                               'PK',   # Peak Pressure
-                              'BTS',  # Breath Trigger Threshold
+                              'TS',  # Breath Trigger Threshold
                               'IE',   # Inspiration/Expiration (N for 1/N)
                               'PP',   # PEEP (positive end expiratory pressure)
                               'ADPK', # Allowed deviation Peak Pressure
@@ -95,7 +93,6 @@ class SerialHandler():
 
             for type in settings_types:
                 if line.startswith((type + '=')):
-                    self.request_queue.put({'type': 'setting', 'key': type, 'value': val}, False)
-
+                    self.request_queue.put({'type': 'setting', 'key': type, 'val': val}, False)
 
 
