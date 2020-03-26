@@ -52,7 +52,7 @@ export default class Index extends React.Component {
 
     processIncomingPoints(toArray, newPoints) {
         var cutoffTime = new Date().getTime() - this.state.xLengthMs;
-        
+
         // shift old values
         let i = 0;
         for (i = 0; i < toArray.length; i++) {
@@ -199,7 +199,7 @@ export default class Index extends React.Component {
                     <div className="page-dashboard__header">
                         <ul className="list--inline page-dashboard__patient-info">
                             <li>{this.state.patientName}</li>
-                            <li>{this.state.patientAdmittanceDate.toLocaleDateString() }</li>
+                            <li>{this.state.patientAdmittanceDate.toLocaleString()}</li>
                             <li>{this.state.patientInfo}</li>
                         </ul>
                         <div className="page-dashboard__timing-info">
@@ -254,7 +254,7 @@ export default class Index extends React.Component {
                                 <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
                                 <div className={'single-value-display single-value-display--default'}>
                                     <div className="single-value-display__name">Respatory rate</div>
-                                    <div className="single-value-display__value">{ this.state.lastBpm }</div>
+                                    <div className="single-value-display__value">{this.state.lastBpm}</div>
                                 </div>
                                 <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
                             </div>
