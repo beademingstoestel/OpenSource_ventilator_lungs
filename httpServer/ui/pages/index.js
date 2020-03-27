@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 const refreshRate = 50;
 const defaultXRange = 10000;
 const integerPrecision = 1;
+let serverTimeCorrection = 0;
 
 export default class Index extends React.Component {
     rawPressureValues = [];
@@ -109,6 +110,32 @@ export default class Index extends React.Component {
             });
         }
 
+        // ask the server for the time
+        if (!(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+            try {
+                // kind of naive, but good enough for what we need
+                const loop = 10;
+                let summedTimeValues = 0;
+
+                for (let j = 0; j < loop; j++) {
+                    const now = new Date().getTime();
+                    const serverTimeResponse = await fetch(`${getApiUrl()}/api/servertime`);
+                    const serverTimeJson = await serverTimeResponse.json();
+
+                    summedTimeValues += serverTimeJson.time - now;
+                }
+
+                serverTimeCorrection = Math.floor(summedTimeValues / loop);
+
+                console.log(`Time has to be corrected with ${serverTimeCorrection} ms`);
+            } catch (ex) {
+                console.log(ex);
+                toast.error('Error fetching time information.', {
+                    autoClose: false,
+                });
+            }
+        }
+
         // todo: no hardcoded values
         this.client = new Client(`${getWsUrl()}`);
         await this.client.connect();
@@ -135,7 +162,7 @@ export default class Index extends React.Component {
             let newLastVolume = 0;
 
             this.rawPressureValues.forEach((point) => {
-                var newX = (point.x - now);
+                var newX = (point.x - now - serverTimeCorrection);
 
                 if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newPressureValues.push({
@@ -146,7 +173,7 @@ export default class Index extends React.Component {
             });
 
             this.rawVolumeValues.forEach((point) => {
-                var newX = (point.x - now);
+                var newX = (point.x - now - serverTimeCorrection);
 
                 if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newVolumeValues.push({
@@ -157,7 +184,7 @@ export default class Index extends React.Component {
             });
 
             this.rawTriggerValues.forEach((point) => {
-                var newX = (point.x - now);
+                var newX = (point.x - now - serverTimeCorrection);
 
                 if (newX <= 0 && newX >= -this.state.xLengthMs) {
                     newTriggerValues.push({

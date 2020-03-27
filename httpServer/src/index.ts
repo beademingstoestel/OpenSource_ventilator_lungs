@@ -158,12 +158,22 @@ const start = async function () {
         },
     });
 
+    server.route({
+        method: 'GET',
+        path: '/api/servertime',
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+            return { time: new Date().getTime() };
+        },
+    });
+
     server.subscription('/api/volume_values');
     server.subscription('/api/pressure_values');
     server.subscription('/api/breathsperminute_values');
     server.subscription('/api/trigger_values');
     server.subscription('/api/settings');
     server.subscription('/api/error');
+
+    server.subscription('/api/servertime');
 
     await server.start();
 
