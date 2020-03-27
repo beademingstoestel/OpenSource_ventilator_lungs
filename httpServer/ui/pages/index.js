@@ -35,6 +35,9 @@ export default class Index extends React.Component {
             xLengthMs: defaultXRange,
             lastPressure: 0,
             lastVolume: 0,
+            pressureStatus: 'normal',
+            volumeStatus: 'normal',
+            bpmStatus: 'normal',
             bpmValue: 0,
             patientName: '',
             patientAdmittanceDate: new Date(),
@@ -300,10 +303,7 @@ export default class Index extends React.Component {
                             </div>
                             <div className="col--md-4">
                                 <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
-                                <div className={'single-value-display single-value-display--default'}>
-                                    <div className="single-value-display__name">Respiratory rate</div>
-                                    <div className="single-value-display__value">{this.state.bpmValue.toFixed(2)}</div>
-                                </div>
+                                <SingleValueDisplay name="Respiratory rate" value={this.state.bpmValue} status={this.state.bpmStatus} />
                                 <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
                             </div>
                         </div>
