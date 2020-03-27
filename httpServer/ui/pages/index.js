@@ -8,7 +8,7 @@ import React from 'react';
 import DataCard from '../components/data-card';
 import BellIcon from '../components/icons/bell';
 
-import { getApiUrl, getWsUrl } from './api-urls';
+import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
 import { toast } from 'react-toastify';
 

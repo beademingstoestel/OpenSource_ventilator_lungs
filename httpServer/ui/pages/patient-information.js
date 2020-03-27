@@ -2,7 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import MasterLayout from '../components/master-layout';
 
-import { getApiUrl } from './api-urls.js';
+import { getApiUrl } from '../helpers/api-urls.js';
 
 import { toast } from 'react-toastify';
 
