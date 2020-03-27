@@ -194,14 +194,6 @@ export default class Index extends React.Component {
                 }
             });
 
-            if (newPressureValues.length > 0) {
-                newLastPressure = newPressureValues[newPressureValues.length - 1].y;
-            }
-
-            if (newVolumeValues.length > 0) {
-                newLastVolume = newVolumeValues[newVolumeValues.length - 1].y;
-            }
-
             self.setState({
                 pressureValues: newPressureValues,
                 volumeValues: newVolumeValues,
