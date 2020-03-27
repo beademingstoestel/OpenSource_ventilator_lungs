@@ -21,7 +21,7 @@ export default class Index extends React.Component {
     rawPressureValues = [];
     rawVolumeValues = [];
     rawTriggerValues = [];
-    bpmValue = 0;
+    rawBpmValue = 0;
     animationInterval = 0;
     client = null;
 
@@ -35,7 +35,7 @@ export default class Index extends React.Component {
             xLengthMs: defaultXRange,
             lastPressure: 0,
             lastVolume: 0,
-            lastBpm: 0,
+            bpmValue: 0,
             patientName: '',
             patientAdmittanceDate: new Date(),
             patientInfo: '',
@@ -153,6 +153,12 @@ export default class Index extends React.Component {
         });
 
         const self = this;
+        this.client.subscribe('/api/breathsperminute_values', (newPoints) => {
+            const lastpoint = newPoints[newPoints.length - 1];
+
+            self.rawBpmValue = lastpoint.value;
+        });
+
         this.animationInterval = setInterval(() => {
             var now = new Date().getTime();
             const newPressureValues = [];
@@ -209,6 +215,7 @@ export default class Index extends React.Component {
                 pressureStatus: 'normal',
                 bpmStatus: 'warning',
                 volumeStatus: 'alarm',
+                bpmValue: self.rawBpmValue,
                 lastPressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
                 lastVolume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
             });
@@ -277,12 +284,12 @@ export default class Index extends React.Component {
                                 </form>
                                 <div className="box u-mt-1">
                                     <div className="box__body">
-                                        <DataPlot title='Pressure'
+                                        <DataPlot title='Pressure (cmh2o)'
                                             data={this.state.pressureValues}
                                             timeScale={this.state.xLengthMs / 1000.0}
                                             minY={-20}
                                             maxY={80} />
-                                        <DataPlot title='Volume'
+                                        <DataPlot title='Volume (mL)'
                                             data={[this.state.volumeValues, this.state.triggerValues]}
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
@@ -295,7 +302,7 @@ export default class Index extends React.Component {
                                 <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
                                 <div className={'single-value-display single-value-display--default'}>
                                     <div className="single-value-display__name">Respiratory rate</div>
-                                    <div className="single-value-display__value">{this.state.lastBpm}</div>
+                                    <div className="single-value-display__value">{this.state.bpmValue.toFixed(2)}</div>
                                 </div>
                                 <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
                             </div>
