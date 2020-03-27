@@ -259,7 +259,7 @@ export default class Index extends React.Component {
                                             data={[this.state.volumeValues, this.state.triggerValues]}
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
-                                            minY={-200}
+                                            minY={-300}
                                             maxY={800} />
                                     </div>
                                 </div>
