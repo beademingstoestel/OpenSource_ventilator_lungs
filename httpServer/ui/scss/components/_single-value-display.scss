@@ -7,9 +7,20 @@ $b: 'single-value-display';
     border-radius: $border-radius-base;
     border: 1px solid #fff;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+
+    &-big-column {
+        width: 70%;
+    }
 
     &__value {
         font-size: 3.5rem;
+        font-family: monospace;
+    }
+
+    &__value-small {
+        font-size: 2rem;
         font-family: monospace;
     }
 
