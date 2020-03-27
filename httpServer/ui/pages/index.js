@@ -253,13 +253,13 @@ export default class Index extends React.Component {
                                         <DataPlot title='Pressure'
                                             data={this.state.pressureValues}
                                             timeScale={this.state.xLengthMs / 1000.0}
-                                            minY={0}
+                                            minY={-20}
                                             maxY={80} />
                                         <DataPlot title='Volume'
                                             data={[this.state.volumeValues, this.state.triggerValues]}
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
-                                            minY={0}
+                                            minY={-200}
                                             maxY={800} />
                                     </div>
                                 </div>
