@@ -158,8 +158,6 @@ export default class Index extends React.Component {
             const newPressureValues = [];
             const newVolumeValues = [];
             const newTriggerValues = [];
-            let newLastPressure = 0;
-            let newLastVolume = 0;
 
             this.rawPressureValues.forEach((point) => {
                 var newX = (point.x - now - serverTimeCorrection);
