@@ -293,10 +293,7 @@ export default class Index extends React.Component {
                             </div>
                             <div className="col--md-4">
                                 <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
-                                <div className={'single-value-display single-value-display--default'}>
-                                    <div className="single-value-display__name">Respiratory rate</div>
-                                    <div className="single-value-display__value">{this.state.lastBpm}</div>
-                                </div>
+                                <SingleValueDisplay name="BPM" value={this.state.lastBpm} status={this.state.bpmStatus} />
                                 <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
                             </div>
                         </div>
