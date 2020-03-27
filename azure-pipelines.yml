@@ -21,12 +21,24 @@ stages:
       vmImage: 'ubuntu-latest'
     steps:
     - task: Docker@2
-      displayName: Build an image
+      displayName: Build interface image
       inputs:
         containerRegistry: 'DockerHubConnection'
-        repository: 'interface'
+        repository: 'beademingstoestel/interface'
         command: buildAndPush
         dockerfile: '$(Build.SourcesDirectory)/httpServer/docker/web/Dockerfile'
         buildContext: '$(Build.SourcesDirectory)/httpServer'
         tags: |
           $(tag)
+          latest
+    - task: Docker@2
+      displayName: Build mongo image
+      inputs:
+        containerRegistry: 'DockerHubConnection'
+        repository: 'beademingstoestel/mongo'
+        command: buildAndPush
+        dockerfile: '$(Build.SourcesDirectory)/httpServer/docker/db/Dockerfile'
+        buildContext: '$(Build.SourcesDirectory)/httpServer/docker/db'
+        tags: |
+          $(tag)
+          latest
