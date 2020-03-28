@@ -17,11 +17,19 @@ $b: 'single-value-display';
     &__value {
         font-size: 3.5rem;
         font-family: monospace;
+        cursor: pointer;
     }
 
     &__value-small {
         font-size: 2rem;
         font-family: monospace;
+        cursor: pointer;
+
+        &__unit-field {
+            font-size: 0.75rem;
+            padding-left: 0.2rem;
+            text-transform: none;
+        }
     }
 
     &--default {
