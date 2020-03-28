@@ -10,6 +10,12 @@ $b: 'single-value-display';
     display: flex;
     align-items: center;
 
+    &-static {
+        > * {
+            padding: 1rem;
+        }
+    }
+
     &-big-column {
         width: 70%;
     }
