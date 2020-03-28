@@ -3,7 +3,14 @@ import MasterLayout from '../components/master-layout';
 import { Client } from '@hapi/nes/lib/client';
 // eslint-disable-next-line no-unused-vars
 import DataPlot from '../components/data-plot';
-import { SingleValueDisplay, SmallSingleValueDisplay } from '../components/single-value-display';
+import dynamic from 'next/dynamic';
+
+// eslint-disable-next-line no-unused-vars
+const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
+
+// eslint-disable-next-line no-unused-vars
+const SmallSingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SmallSingleValueDisplay), { ssr: false });
+
 import React from 'react';
 import DataCard from '../components/data-card';
 import BellIcon from '../components/icons/bell';
@@ -54,6 +61,14 @@ export default class Index extends React.Component {
                 ADPP: 0,
                 MODE: 'V',
                 ACTIVE: '',
+            },
+            updateSetting: (key, setting) => {
+                const settings = { ...this.state.settings };
+
+                settings[key] = setting;
+                this.setState({
+                    settings,
+                });
             },
         };
     }
@@ -206,8 +221,8 @@ export default class Index extends React.Component {
                 volumeValues: newVolumeValues,
                 triggerValues: newTriggerValues,
                 pressureStatus: 'normal',
-                bpmStatus: 'warning',
-                volumeStatus: 'alarm',
+                bpmStatus: 'normal',
+                volumeStatus: 'normal',
                 bpmValue: self.rawBpmValue,
                 lastPressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
                 lastVolume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
@@ -277,11 +292,13 @@ export default class Index extends React.Component {
                                 </form>
                                 <div className="box u-mt-1">
                                     <div className="box__body">
-                                        <DataPlot title='Pressure (cmh2o)'
+                                        <DataPlot title='Pressure (cmH2O)'
                                             data={this.state.pressureValues}
                                             timeScale={this.state.xLengthMs / 1000.0}
                                             minY={-20}
-                                            maxY={80} />
+                                            maxY={80}
+                                            peak={ this.state.settings.PK }
+                                            threshold={ this.state.settings.ADPK } />
                                         <DataPlot title='Volume (mL)'
                                             data={[this.state.volumeValues, this.state.triggerValues]}
                                             multipleDatasets={true}
@@ -295,17 +312,44 @@ export default class Index extends React.Component {
                                 <SingleValueDisplay name="Pressure"
                                     value={this.state.lastPressure}
                                     status={this.state.pressureStatus}>
-                                    <SmallSingleValueDisplay name="Set Value" value={60.0} />
-                                    <SmallSingleValueDisplay name="Threshold" value={70} />
+                                    <SmallSingleValueDisplay name="Set peak pressure"
+                                        value={this.state.settings.PK}
+                                        unit="cmH2O"
+                                        settingKey={'PK'}
+                                        decimal={false}
+                                        updateValue={this.state.updateSetting} />
+                                    <SmallSingleValueDisplay name="Threshold"
+                                        value={this.state.settings.ADPK}
+                                        unit="cmH2O"
+                                        settingKey={'ADPK'}
+                                        decimal={false}
+                                        updateValue={this.state.updateSetting} />
                                 </SingleValueDisplay>
                                 <SingleValueDisplay name="Respiratory rate"
                                     value={this.state.bpmValue}
-                                    status={this.state.bpmStatus} />
+                                    status={this.state.bpmStatus}>
+                                    <SmallSingleValueDisplay name="Set RR value"
+                                        value={this.state.settings.RR}
+                                        settingKey={'RR'}
+                                        unit="bpm"
+                                        decimal={false}
+                                        updateValue={this.state.updateSetting} />
+                                </SingleValueDisplay>
                                 <SingleValueDisplay name="Volume"
                                     value={this.state.lastVolume}
                                     status={this.state.volumeStatus}>
-                                    <SmallSingleValueDisplay name="Set Value" value={600} />
-                                    <SmallSingleValueDisplay name="Threshold" value={700} />
+                                    <SmallSingleValueDisplay name="Set Value"
+                                        value={this.state.settings.VT}
+                                        settingKey={'VT'}
+                                        unit="mL"
+                                        decimal={false}
+                                        updateValue={this.state.updateSetting} />
+                                    <SmallSingleValueDisplay name="Threshold"
+                                        value={this.state.settings.ADVT}
+                                        settingKey={'ADVT'}
+                                        unit="mL"
+                                        decimal={false}
+                                        updateValue={this.state.updateSetting} />
                                 </SingleValueDisplay>
                             </div>
                         </div>
