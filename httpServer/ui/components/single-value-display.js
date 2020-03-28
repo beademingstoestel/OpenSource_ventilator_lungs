@@ -1,6 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 import NumPad from 'react-numpad';
+import Icon from './icons/icon-base';
 
 const toFixedSafe = (value, precision) => {
     if (value.toFixed) {
@@ -14,12 +15,16 @@ const SmallSingleValueDisplay = ({ name, settingKey, value, unit, decimal = 2, u
     return (<div>
         <div className="single-value-display__name">{name}</div>
         <div className="single-value-display__value-small">
+            <span class="iconify" data-icon="ant-design:up-square-filled" data-inline="false"></span>
             <NumPad.Number onChange={(newValue) => updateValue(settingKey, newValue)}
                 decimal={decimal}
-                negative={false}>
+                negative={false}
+                position={'center'}
+                value={value}>
                 <span className="single-value-display__value-small__value-field">{toFixedSafe(value, decimal)}</span>
                 <span className="single-value-display__value-small__unit-field">{unit}</span>
             </NumPad.Number>
+            <span class="iconify" data-icon="ant-design:down-square-filled" data-inline="false"></span>
         </div>
     </div>);
 };
