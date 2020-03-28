@@ -343,7 +343,9 @@ export default class Index extends React.Component {
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
                                             minY={-300}
-                                            maxY={800} />
+                                            maxY={800}
+                                            peak={this.state.settings.VT}
+                                            threshold={this.state.settings.ADVT} />
                                     </div>
                                 </div>
                             </div>
@@ -410,16 +412,29 @@ export default class Index extends React.Component {
                                         settingKey={'ADPK'}
                                         decimal={false}
                                         updateValue={this.state.updateSetting} />
-                                </SingleValueDisplay>
+                                </SingleValueDisplay> */}
                                 <StaticSingleValueDisplay>
                                     <SmallSingleValueDisplay name="I/E"
-                                        value={'1:3'}
-                                        decimal={false} />
+                                        value={this.state.settings.IE}
+                                        settingKey={'IE'}
+                                        decimal={2}
+                                        step={0.1}
+                                        updateValue={this.state.updateSetting} />
                                     <SmallSingleValueDisplay name="Trigger Peak value"
-                                        value={0}
+                                        value={this.state.settings.TS}
+                                        settingKey={'TS'}
+                                        decimal={2}
+                                        unit='cmH2O'
+                                        step={0.1}
+                                        updateValue={this.state.updateSetting} />
+                                    <SmallSingleValueDisplay name="Set PEEP"
+                                        value={this.state.settings.PP}
+                                        settingKey={'PP'}
+                                        unit="cmH2O"
                                         decimal={false}
-                                        unit='ml' />
-                                </StaticSingleValueDisplay> */}
+                                        step={1}
+                                        updateValue={this.state.updateSetting} />
+                                </StaticSingleValueDisplay>
 
                                 {this.state.hasDirtySettings &&
                                     <button className="btn btn--primary" onClick={(ev) => this.saveSettings(ev) }>

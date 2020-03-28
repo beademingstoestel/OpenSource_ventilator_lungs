@@ -15,10 +15,10 @@ const SmallSingleValueDisplay = ({ name, settingKey, value, unit, decimal = 2, s
     return (<div>
         <div className="single-value-display__name" >{name}</div>
         <div className="single-value-display__value-small">
-            <div onClick={(ev) => { updateValue(settingKey, value - step); ev.preventDefault(); } }>
+            <div onClick={(ev) => { updateValue(settingKey, (decimal === false ? parseInt(value) : parseFloat(value)) - step); ev.preventDefault(); } }>
                 <span class="iconify left" data-icon="ant-design:down-square-filled" data-inline="false"></span>
             </div>
-            <div onClick={(ev) => updateValue(settingKey, value + step)}>
+            <div onClick={(ev) => updateValue(settingKey, (decimal === false ? parseInt(value) : parseFloat(value)) + step)}>
                 <span class="iconify right" data-icon="ant-design:up-square-filled" data-inline="false"></span>
             </div>
             <NumPad.Number onChange={(newValue) => updateValue(settingKey, newValue)}
