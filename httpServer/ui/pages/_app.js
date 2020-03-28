@@ -4,7 +4,6 @@ import '../scss/index.scss';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'react-simple-keyboard/build/css/index.css';
 
 toast.configure();
 
