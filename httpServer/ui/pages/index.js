@@ -334,7 +334,7 @@ export default class Index extends React.Component {
                                         <DataPlot title='Pressure (cmH2O)'
                                             data={this.state.pressureValues}
                                             timeScale={this.state.xLengthMs / 1000.0}
-                                            minY={-20}
+                                            minY={-5}
                                             maxY={80}
                                             peak={this.state.settings.PK}
                                             threshold={this.state.settings.ADPK} />
@@ -342,7 +342,7 @@ export default class Index extends React.Component {
                                             data={[this.state.volumeValues, this.state.triggerValues]}
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
-                                            minY={-300}
+                                            minY={-50}
                                             maxY={800}
                                             peak={this.state.settings.VT}
                                             threshold={this.state.settings.ADVT} />
