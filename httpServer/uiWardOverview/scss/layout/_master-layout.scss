@@ -1,0 +1,19 @@
+$b: 'master-layout';
+
+.#{$b} {
+    min-height: 100vh;
+    display: flex;
+
+    // @include media-breakpoint-up('sm') {
+    //     display: flex;
+    // }
+
+    &__content {
+        flex: 1 1 auto;
+        padding: 2rem;
+
+        > * {
+            height: 100%;
+        }
+    }
+}

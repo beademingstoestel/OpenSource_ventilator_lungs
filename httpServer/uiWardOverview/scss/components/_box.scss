@@ -1,0 +1,17 @@
+$b: 'box';
+
+.#{$b} {
+    border: 1px solid get-gray-color('light');
+    border-radius: $border-radius-base;
+    overflow: hidden;
+
+    &__header {
+        color: get-brand-color();
+        background-color: get-gray-color('lighter');
+        padding: 1rem;
+    }
+
+    &__body {
+        padding: 1rem;
+    }
+}

@@ -1,0 +1,50 @@
+$b: 'main-sidebar';
+
+.#{$b} {
+    background-color: get-brand-color();
+    color: #fff;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        bottom: -50%;
+        left: 0;
+        background: linear-gradient(69.25deg, get-brand-color('secondary'), get-brand-color('secondary') 50%, transparent 50.25%, transparent 100%);
+    }
+
+    &__menu {
+        display: flex;
+        flex-direction: column;
+        list-style-type: none;
+        padding: 0;
+    }
+
+    &__menu-item {
+        padding: 0.5rem 0;
+        opacity: 0.75;
+
+        &.is-active {
+            font-weight: $font-weight-bold;
+            opacity: 1;
+        }
+    }
+
+    &__link {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover, &:focus {
+            color: inherit;
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+        }
+    }
+}

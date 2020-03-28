@@ -1,0 +1,68 @@
+/* stylelint-disable scss/no-duplicate-dollar-variables */
+
+$colors-brand: () !default;
+$colors-brand: map-merge(
+    (
+        primary: (
+            base: #003399,
+            dark: darken(#003399, 10%)
+        ),
+        secondary: (
+            base: #ff6600,
+            dark: darken(#ff6600, 10%)
+        )
+    ),
+    $colors-brand
+);
+
+$colors-gray: () !default;
+$colors-gray: map-merge(
+    (
+        primary: (
+            lighter: #eee,
+            light: #999,
+            base: #666,
+            dark: #333
+        )
+    ),
+    $colors-gray
+);
+
+$colors-status: () !default;
+$colors-status: map-merge(
+    (
+        success: (
+            light: #dff0d8,
+            base: #1cc88a,
+        ),
+        info: (
+            light: #d9edf7,
+            base: #31708f,
+        ),
+        warning: (
+            light: #fcf8e3,
+            base: #f6c23e,
+        ),
+        danger: (
+            light: #f2dede,
+            base: #e74a3b,
+        )
+    ),
+    $colors-status
+);
+
+$colors-social: () !default;
+$colors-social: map-merge(
+    (
+        twitter: (
+            base: #32b9f0
+        ),
+        facebook: (
+            base: #4267b2
+        ),
+        linkedin: (
+            base: #0077b5
+        )
+    ),
+    $colors-social
+);
