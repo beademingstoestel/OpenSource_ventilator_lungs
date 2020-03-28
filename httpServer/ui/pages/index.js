@@ -104,7 +104,7 @@ export default class Index extends React.Component {
         });
     }
 
-    async saveSettings() {
+    async saveSettings(ev) {
         try {
             // returncomplete also makes sure the python code and controller only receive the changed values
             await fetch(`${getApiUrl()}/api/settings?returncomplete=false`, {
@@ -117,10 +117,16 @@ export default class Index extends React.Component {
 
             this.dirtySettings = {};
             this.previousSettings = this.state.settings;
+
+            this.setState({
+                hasDirtySettings: false,
+            });
         } catch (e) {
             // todo: show error to the user
             console.log(e);
         }
+
+        ev.preventDefault();
     }
 
     revertSettings() {
@@ -350,12 +356,14 @@ export default class Index extends React.Component {
                                         unit="cmH2O"
                                         settingKey={'PK'}
                                         decimal={false}
+                                        step={1}
                                         updateValue={this.state.updateSetting} />
                                     <SmallSingleValueDisplay name="Threshold"
                                         value={this.state.settings.ADPK}
                                         unit="cmH2O"
                                         settingKey={'ADPK'}
                                         decimal={false}
+                                        step={1}
                                         updateValue={this.state.updateSetting} />
                                 </SingleValueDisplay>
                                 <SingleValueDisplay name="Respiratory rate"
@@ -365,6 +373,7 @@ export default class Index extends React.Component {
                                         value={this.state.settings.RR}
                                         settingKey={'RR'}
                                         unit="bpm"
+                                        step={1}
                                         decimal={false}
                                         updateValue={this.state.updateSetting} />
                                 </SingleValueDisplay>
@@ -375,16 +384,18 @@ export default class Index extends React.Component {
                                         value={this.state.settings.VT}
                                         settingKey={'VT'}
                                         unit="mL"
+                                        step={10}
                                         decimal={false}
                                         updateValue={this.state.updateSetting} />
                                     <SmallSingleValueDisplay name="Threshold"
                                         value={this.state.settings.ADVT}
                                         settingKey={'ADVT'}
                                         unit="mL"
+                                        step={10}
                                         decimal={false}
                                         updateValue={this.state.updateSetting} />
                                 </SingleValueDisplay>
-                                <SingleValueDisplay name="PEEP"
+                                {/* <SingleValueDisplay name="PEEP"
                                     value={this.state.lastPressure}
                                     status={this.state.pressureStatus}>
                                     <SmallSingleValueDisplay name="Set PEEP"
@@ -408,7 +419,13 @@ export default class Index extends React.Component {
                                         value={0}
                                         decimal={false}
                                         unit='ml' />
-                                </StaticSingleValueDisplay>
+                                </StaticSingleValueDisplay> */}
+
+                                {this.state.hasDirtySettings &&
+                                    <button className="btn btn--primary" onClick={(ev) => this.saveSettings(ev) }>
+                                        Save settings
+                                    </button>
+                                }
                             </div>
                         </div>
                     </div>

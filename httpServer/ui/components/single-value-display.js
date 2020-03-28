@@ -11,11 +11,16 @@ const toFixedSafe = (value, precision) => {
     }
 };
 
-const SmallSingleValueDisplay = ({ name, settingKey, value, unit, decimal = 2, updateValue }) => {
+const SmallSingleValueDisplay = ({ name, settingKey, value, unit, decimal = 2, step = 1, updateValue }) => {
     return (<div>
-        <div className="single-value-display__name">{name}</div>
+        <div className="single-value-display__name" >{name}</div>
         <div className="single-value-display__value-small">
-            <span class="iconify" data-icon="ant-design:up-square-filled" data-inline="false"></span>
+            <div onClick={(ev) => { updateValue(settingKey, value - step); ev.preventDefault(); } }>
+                <span class="iconify left" data-icon="ant-design:down-square-filled" data-inline="false"></span>
+            </div>
+            <div onClick={(ev) => updateValue(settingKey, value + step)}>
+                <span class="iconify right" data-icon="ant-design:up-square-filled" data-inline="false"></span>
+            </div>
             <NumPad.Number onChange={(newValue) => updateValue(settingKey, newValue)}
                 decimal={decimal}
                 negative={false}
@@ -24,7 +29,6 @@ const SmallSingleValueDisplay = ({ name, settingKey, value, unit, decimal = 2, u
                 <span className="single-value-display__value-small__value-field">{toFixedSafe(value, decimal)}</span>
                 <span className="single-value-display__value-small__unit-field">{unit}</span>
             </NumPad.Number>
-            <span class="iconify" data-icon="ant-design:down-square-filled" data-inline="false"></span>
         </div>
     </div>);
 };
