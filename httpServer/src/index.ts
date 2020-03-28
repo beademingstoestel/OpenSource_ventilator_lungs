@@ -78,7 +78,7 @@ const server: Hapi.Server = new Hapi.Server({
     },
 });
 
-const start = async function () {
+const startSlave = async function () {
     /* add plugins to server */
     await server.register([require('@hapi/inert'), require('@hapi/nes')]);
 
@@ -231,4 +231,26 @@ const start = async function () {
     }
 };
 
-start();
+const startMaster = async function () {
+    /* add plugins to server */
+    await server.register([require('@hapi/inert')]);
+
+    /* define routes */
+    server.route({
+        method: 'GET',
+        path: '/{param*}',
+        handler: {
+            directory: {
+                path: './uiWardOverview/out',
+                index: ['index.html', 'default.html'],
+                listing: false,
+            },
+        },
+    });
+};
+
+if (environment.ServerMode === 'slave') {
+    startSlave();
+} else {
+    startMaster();
+}
