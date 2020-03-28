@@ -52,3 +52,15 @@ $b: 'single-value-display';
         color: #fff;
     }
 }
+
+.MuiButton-label {
+    font-size: 2em;
+}
+
+.MuiPaper-root input {
+    font-size: 2em;
+}
+
+.MuiPaper-root > div:first-child {
+    min-height: 3em;
+}

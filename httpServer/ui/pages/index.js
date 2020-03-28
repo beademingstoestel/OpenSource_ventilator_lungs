@@ -31,6 +31,8 @@ export default class Index extends React.Component {
     rawBpmValue = 0;
     animationInterval = 0;
     client = null;
+    dirtySettings = {};
+    previousSettings = {};
 
     constructor(props) {
         super(props);
@@ -62,12 +64,15 @@ export default class Index extends React.Component {
                 MODE: 'V',
                 ACTIVE: '',
             },
+            hasDirtySettings: false,
             updateSetting: (key, setting) => {
                 const settings = { ...this.state.settings };
 
                 settings[key] = setting;
+                this.dirtySettings[key] = setting;
                 this.setState({
                     settings,
+                    hasDirtySettings: true,
                 });
             },
         };
@@ -93,6 +98,31 @@ export default class Index extends React.Component {
                 x: new Date(newPoint.loggedAt).getTime(),
                 y: newPoint.value,
             });
+        });
+    }
+
+    async saveSettings() {
+        try {
+            // returncomplete also makes sure the python code and controller only receive the changed values
+            await fetch(`${getApiUrl()}/api/settings?returncomplete=false`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.dirtySettings),
+            });
+
+            this.dirtySettings = {};
+            this.previousSettings = this.state.settings;
+        } catch (e) {
+            // todo: show error to the user
+            console.log(e);
+        }
+    }
+
+    revertSettings() {
+        this.setState({
+            settings: { ...this.previousSettings },
         });
     }
 
