@@ -30,11 +30,29 @@ $b: 'single-value-display';
         font-size: 2rem;
         font-family: monospace;
         cursor: pointer;
+        width: 200px;
+        user-select: none;
 
         &__unit-field {
             font-size: 0.75rem;
             padding-left: 0.2rem;
             text-transform: none;
+        }
+
+        > span {
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        > div {
+            display: inline-block;
+        }
+
+        .iconify {
+            vertical-align: middle;
+            margin-right: 5px;
+            font-size: 2em;
+            width: 1em;
         }
     }
 
