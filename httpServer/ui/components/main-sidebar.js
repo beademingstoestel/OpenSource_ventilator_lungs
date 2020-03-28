@@ -6,6 +6,7 @@ import TerminalIcon from './icons/terminal';
 import GearIcon from './icons/gear';
 import PersonIcon from './icons/person';
 import { useRouter } from 'next/router';
+import NetworkIcon from './icons/network';
 
 const MainSidebar = ({ className, ...other }) => {
     const { pathname: currentPath } = useRouter();
@@ -13,8 +14,7 @@ const MainSidebar = ({ className, ...other }) => {
     const menuItems = [
         { path: '/', label: 'Dashboard', icon: <GaugeIcon /> },
         { path: '/patient-information', label: 'Patient information', icon: <PersonIcon /> },
-        { path: '/thresholds', label: 'Thresholds', icon: <GearIcon /> },
-        { path: '/login', label: 'Log in', icon: <PersonIcon /> },
+        { path: '/network-settings', label: 'Network settings', icon: <NetworkIcon /> },
         { path: '/logs', label: 'System logs', icon: <TerminalIcon /> },
     ];
 

@@ -12,10 +12,15 @@ export class SettingsController {
 
     async HandlePut(request: Request, h: ResponseToolkit) {
         const settings = request.payload;
+        const resendComplete = (typeof request.query.returncomplete === 'undefined') ? true : request.query.returncomplete === 'true';
 
         const completeSettings = await this.settingsRepository.SaveSettings('setting', settings);
 
-        this.broadCastSettings(completeSettings);
+        if (resendComplete) {
+            this.broadCastSettings(completeSettings);
+        } else {
+            this.broadCastSettings(settings);
+        }
 
         return {
             result: true,
