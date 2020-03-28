@@ -11,6 +11,9 @@ const SingleValueDisplay = dynamic(() => import('../components/single-value-disp
 // eslint-disable-next-line no-unused-vars
 const SmallSingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SmallSingleValueDisplay), { ssr: false });
 
+// eslint-disable-next-line no-unused-vars
+const StaticSingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.StaticSingleValueDisplay), { ssr: false });
+
 import React from 'react';
 import DataCard from '../components/data-card';
 import BellIcon from '../components/icons/bell';
@@ -327,8 +330,8 @@ export default class Index extends React.Component {
                                             timeScale={this.state.xLengthMs / 1000.0}
                                             minY={-20}
                                             maxY={80}
-                                            peak={ this.state.settings.PK }
-                                            threshold={ this.state.settings.ADPK } />
+                                            peak={this.state.settings.PK}
+                                            threshold={this.state.settings.ADPK} />
                                         <DataPlot title='Volume (mL)'
                                             data={[this.state.volumeValues, this.state.triggerValues]}
                                             multipleDatasets={true}
@@ -381,6 +384,31 @@ export default class Index extends React.Component {
                                         decimal={false}
                                         updateValue={this.state.updateSetting} />
                                 </SingleValueDisplay>
+                                <SingleValueDisplay name="PEEP"
+                                    value={this.state.lastPressure}
+                                    status={this.state.pressureStatus}>
+                                    <SmallSingleValueDisplay name="Set PEEP"
+                                        value={this.state.settings.PK}
+                                        unit="cmH2O"
+                                        settingKey={'PK'}
+                                        decimal={false}
+                                        updateValue={this.state.updateSetting} />
+                                    <SmallSingleValueDisplay name="Threshold"
+                                        value={this.state.settings.ADPK}
+                                        unit="cmH2O"
+                                        settingKey={'ADPK'}
+                                        decimal={false}
+                                        updateValue={this.state.updateSetting} />
+                                </SingleValueDisplay>
+                                <StaticSingleValueDisplay>
+                                    <SmallSingleValueDisplay name="I/E"
+                                        value={'1:3'}
+                                        decimal={false} />
+                                    <SmallSingleValueDisplay name="Trigger Peak value"
+                                        value={0}
+                                        decimal={false}
+                                        unit='ml' />
+                                </StaticSingleValueDisplay>
                             </div>
                         </div>
                     </div>

@@ -29,6 +29,18 @@ const SmallSingleValueDisplay = ({ name, settingKey, value, unit, decimal = 2, u
     </div>);
 };
 
+const StaticSingleValueDisplay = ({
+    children,
+    className,
+    ...other
+}) => {
+    return (
+        <div className={cx('single-value-display', 'single-value-display-static', 'single-value-display--default', className)} {...other}>
+            {children}
+        </div>
+    );
+};
+
 const SingleValueDisplay = ({
     value,
     name,
@@ -52,4 +64,4 @@ const SingleValueDisplay = ({
     );
 };
 
-export { SingleValueDisplay, SmallSingleValueDisplay };
+export { SingleValueDisplay, StaticSingleValueDisplay, SmallSingleValueDisplay };
