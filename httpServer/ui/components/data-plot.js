@@ -32,6 +32,7 @@ export default class DataPlot extends React.Component {
                         data: this.props.data[i],
                         showLine: true,
                         fill: false,
+                        hiddenLegend: true,
                     });
                 }
             } else {
@@ -46,6 +47,7 @@ export default class DataPlot extends React.Component {
                     data: this.props.data,
                     showLine: true,
                     fill: false,
+                    hiddenLegend: true,
                 });
             }
         }
@@ -55,7 +57,7 @@ export default class DataPlot extends React.Component {
                 label: 'set value',
                 borderColor: '#1cc88a',
                 borderDash: [10, 5],
-                borderWidth: 1,
+                borderWidth: 2,
                 borderJoinStyle: 'round',
                 pointRadius: 0,
                 pointBorderWidth: 1,
@@ -74,7 +76,7 @@ export default class DataPlot extends React.Component {
                 label: 'upper threshold',
                 borderColor: '#f6c23e',
                 borderDash: [5, 5],
-                borderWidth: 1,
+                borderWidth: 2,
                 borderJoinStyle: 'round',
                 pointRadius: 0,
                 pointBorderWidth: 1,
@@ -88,7 +90,7 @@ export default class DataPlot extends React.Component {
                 label: 'lower threshold',
                 borderColor: '#f6c23e',
                 borderDash: [5, 5],
-                borderWidth: 1,
+                borderWidth: 2,
                 borderJoinStyle: 'round',
                 pointRadius: 0,
                 pointBorderWidth: 1,
@@ -121,7 +123,16 @@ export default class DataPlot extends React.Component {
                     },
                 }],
             },
-            legend: { display: false },
+            legend: {
+                display: this.props.peak | this.props.threshold,
+                position: 'bottom',
+                onClick: () => { }, // Disable hiding of the data when clicking on it.
+                labels: {
+                    filter: (legendItem, chartData) => {
+                        return !legendItem.text.includes('dataset');
+                    },
+                },
+            },
             tooltips: {
                 enabled: false,
             },
