@@ -3,7 +3,7 @@ import MasterLayout from '../components/master-layout';
 import { Client } from '@hapi/nes/lib/client';
 // eslint-disable-next-line no-unused-vars
 import DataPlot from '../components/data-plot';
-import SingleValueDisplay from '../components/single-value-display';
+import { SingleValueDisplay, SmallSingleValueDisplay } from '../components/single-value-display';
 import React from 'react';
 import DataCard from '../components/data-card';
 import BellIcon from '../components/icons/bell';
@@ -292,9 +292,21 @@ export default class Index extends React.Component {
                                 </div>
                             </div>
                             <div className="col--md-4">
-                                <SingleValueDisplay name="Pressure" value={this.state.lastPressure} status={this.state.pressureStatus} />
-                                <SingleValueDisplay name="Respiratory rate" value={this.state.bpmValue} status={this.state.bpmStatus} />
-                                <SingleValueDisplay name="Volume" value={this.state.lastVolume} status={this.state.volumeStatus} />
+                                <SingleValueDisplay name="Pressure"
+                                    value={this.state.lastPressure}
+                                    status={this.state.pressureStatus}>
+                                    <SmallSingleValueDisplay name="Set Value" value={60.0} />
+                                    <SmallSingleValueDisplay name="Threshold" value={70} />
+                                </SingleValueDisplay>
+                                <SingleValueDisplay name="Respiratory rate"
+                                    value={this.state.bpmValue}
+                                    status={this.state.bpmStatus} />
+                                <SingleValueDisplay name="Volume"
+                                    value={this.state.lastVolume}
+                                    status={this.state.volumeStatus}>
+                                    <SmallSingleValueDisplay name="Set Value" value={600} />
+                                    <SmallSingleValueDisplay name="Threshold" value={700} />
+                                </SingleValueDisplay>
                             </div>
                         </div>
                     </div>
