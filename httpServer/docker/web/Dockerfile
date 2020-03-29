@@ -12,6 +12,11 @@ RUN npm install
 RUN npm run build
 RUN npm run export
 
+WORKDIR /app/uiWardOverview
+RUN npm install
+RUN npm run build
+RUN npm run export
+
 WORKDIR /app
 
 EXPOSE 3001
