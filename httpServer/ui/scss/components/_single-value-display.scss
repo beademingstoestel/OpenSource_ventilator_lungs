@@ -8,51 +8,23 @@ $b: 'single-value-display';
     border: 1px solid #fff;
     overflow: hidden;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    user-select: none;
 
-    &-static {
-        > * {
-            padding: 1rem;
-        }
+    &__data {
+        flex: 1 1 16rem;
     }
 
-    &-big-column {
-        width: 70%;
+    &__settings {
+        flex-basis: 18rem;
+        margin: -1rem;
     }
 
     &__value {
         font-size: 3.5rem;
         font-family: monospace;
         cursor: pointer;
-    }
-
-    &__value-small {
-        font-size: 2rem;
-        font-family: monospace;
-        cursor: pointer;
-        user-select: none;
-
-        &__unit-field {
-            font-size: 0.75rem;
-            padding-left: 0.2rem;
-            text-transform: none;
-        }
-
-        > span {
-            vertical-align: middle;
-            display: inline-block;
-        }
-
-        > div {
-            display: inline-block;
-        }
-
-        .iconify {
-            vertical-align: middle;
-            margin-right: 5px;
-            font-size: 2em;
-            width: 1em;
-        }
     }
 
     &--default {
@@ -74,16 +46,41 @@ $b: 'single-value-display';
         background-color: get-status-color('danger');
         color: #fff;
     }
+
+    &--settings-only {
+        padding: 0;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
-.MuiButton-label {
-    font-size: 2em;
-}
+.#{$b}-settings {
+    margin: 1rem;
 
-.MuiPaper-root input {
-    font-size: 2em;
-}
+    &__name {
+        margin-bottom: 0.5rem;
+    }
 
-.MuiPaper-root > div:first-child {
-    min-height: 3em;
+    &__controls {
+        font-family: monospace;
+        display: flex;
+        align-items: center;
+        margin: -0.25rem;
+        text-transform: none;
+        cursor: pointer;
+    }
+
+    &__control {
+        background-color: #fff;
+        width: 3rem;
+        height: 3rem;
+        line-height: 3rem;
+        margin: 0.25rem;
+    }
+
+    &__value {
+        font-size: 2rem;
+        margin-left: 0.5rem;
+        margin-right: 0.2rem;
+    }
 }

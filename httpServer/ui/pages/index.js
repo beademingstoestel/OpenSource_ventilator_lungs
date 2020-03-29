@@ -9,13 +9,12 @@ import dynamic from 'next/dynamic';
 const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
 
 // eslint-disable-next-line no-unused-vars
-const SmallSingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SmallSingleValueDisplay), { ssr: false });
+const SingleValueDisplaySettings = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplaySettings), { ssr: false });
 
 // eslint-disable-next-line no-unused-vars
-const StaticSingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.StaticSingleValueDisplay), { ssr: false });
+const SingleValueDisplaySettingsOnly = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplaySettingsOnly), { ssr: false });
 
 import React from 'react';
-import DataCard from '../components/data-card';
 import BellIcon from '../components/icons/bell';
 
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
@@ -314,7 +313,7 @@ export default class Index extends React.Component {
                         <div className="page-dashboard__alert alert alert--danger" hidden>Trigger parameter has alert</div>
 
                         <div className="row u-mt-1">
-                            <div className="col--md-8">
+                            <div className="col--md col--xxl-7">
                                 <form className="form form--horizontal-xs">
                                     <div className="form__group">
                                         <label className="form__label" htmlFor="interval">Interval</label>
@@ -349,97 +348,120 @@ export default class Index extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col--md-4">
-                                <SingleValueDisplay name="Pressure"
+                            <div className="col--md col--xxl-5">
+                                <SingleValueDisplay
+                                    name="Pressure"
                                     value={this.state.lastPressure}
-                                    status={this.state.pressureStatus}>
-                                    <SmallSingleValueDisplay name="Set peak pressure"
+                                    status={this.state.pressureStatus}
+                                >
+                                    <SingleValueDisplaySettings
+                                        name="Set peak pressure"
                                         value={this.state.settings.PK}
                                         unit="cmH2O"
                                         settingKey={'PK'}
                                         decimal={false}
                                         step={1}
-                                        updateValue={this.state.updateSetting} />
-                                    <SmallSingleValueDisplay name="Threshold"
+                                        updateValue={this.state.updateSetting}
+                                    />
+                                    <SingleValueDisplaySettings
+                                        name="Threshold"
                                         value={this.state.settings.ADPK}
                                         unit="cmH2O"
                                         settingKey={'ADPK'}
                                         decimal={false}
                                         step={1}
-                                        updateValue={this.state.updateSetting} />
+                                        updateValue={this.state.updateSetting}
+                                    />
                                 </SingleValueDisplay>
-                                <SingleValueDisplay name="Respiratory rate"
+                                <SingleValueDisplay
+                                    name="Respiratory rate"
                                     value={this.state.bpmValue}
-                                    status={this.state.bpmStatus}>
-                                    <SmallSingleValueDisplay name="Set RR value"
+                                    status={this.state.bpmStatus}
+                                >
+                                    <SingleValueDisplaySettings
+                                        name="Set RR value"
                                         value={this.state.settings.RR}
                                         settingKey={'RR'}
                                         unit="bpm"
                                         step={1}
                                         decimal={false}
-                                        updateValue={this.state.updateSetting} />
+                                        updateValue={this.state.updateSetting}
+                                    />
                                 </SingleValueDisplay>
-                                <SingleValueDisplay name="Volume"
+                                <SingleValueDisplay
+                                    name="Volume"
                                     value={this.state.lastVolume}
                                     status={this.state.volumeStatus}>
-                                    <SmallSingleValueDisplay name="Set Value"
+                                    <SingleValueDisplaySettings
+                                        name="Set Value"
                                         value={this.state.settings.VT}
                                         settingKey={'VT'}
                                         unit="mL"
                                         step={10}
                                         decimal={false}
-                                        updateValue={this.state.updateSetting} />
-                                    <SmallSingleValueDisplay name="Threshold"
+                                        updateValue={this.state.updateSetting}
+                                    />
+                                    <SingleValueDisplaySettings
+                                        name="Threshold"
                                         value={this.state.settings.ADVT}
                                         settingKey={'ADVT'}
                                         unit="mL"
                                         step={10}
                                         decimal={false}
-                                        updateValue={this.state.updateSetting} />
+                                        updateValue={this.state.updateSetting}
+                                    />
                                 </SingleValueDisplay>
                                 {/* <SingleValueDisplay name="PEEP"
                                     value={this.state.lastPressure}
                                     status={this.state.pressureStatus}>
-                                    <SmallSingleValueDisplay name="Set PEEP"
+                                    <SingleValueDisplaySettings name="Set PEEP"
                                         value={this.state.settings.PK}
                                         unit="cmH2O"
                                         settingKey={'PK'}
                                         decimal={false}
                                         updateValue={this.state.updateSetting} />
-                                    <SmallSingleValueDisplay name="Threshold"
+                                    <SingleValueDisplaySettings name="Threshold"
                                         value={this.state.settings.ADPK}
                                         unit="cmH2O"
                                         settingKey={'ADPK'}
                                         decimal={false}
                                         updateValue={this.state.updateSetting} />
                                 </SingleValueDisplay> */}
-                                <StaticSingleValueDisplay>
-                                    <SmallSingleValueDisplay name="I/E"
+                                <SingleValueDisplaySettingsOnly>
+                                    <SingleValueDisplaySettings
+                                        name="I/E"
                                         value={this.state.settings.IE}
                                         settingKey={'IE'}
                                         decimal={2}
                                         step={0.1}
-                                        updateValue={this.state.updateSetting} />
-                                    <SmallSingleValueDisplay name="Trigger Peak value"
+                                        updateValue={this.state.updateSetting}
+                                    />
+                                    <SingleValueDisplaySettings
+                                        name="Trigger Peak value"
                                         value={this.state.settings.TS}
                                         settingKey={'TS'}
                                         decimal={2}
                                         unit='cmH2O'
                                         step={0.1}
-                                        updateValue={this.state.updateSetting} />
-                                    <SmallSingleValueDisplay name="Set PEEP"
+                                        updateValue={this.state.updateSetting}
+                                    />
+                                    <SingleValueDisplaySettings
+                                        name="Set PEEP"
                                         value={this.state.settings.PP}
                                         settingKey={'PP'}
                                         unit="cmH2O"
                                         decimal={false}
                                         step={1}
-                                        updateValue={this.state.updateSetting} />
-                                </StaticSingleValueDisplay>
+                                        updateValue={this.state.updateSetting}
+                                    />
+                                </SingleValueDisplaySettingsOnly>
 
-                                {this.state.hasDirtySettings &&
-                                    <button className="btn btn--primary" onClick={(ev) => this.saveSettings(ev) }>
-                                        Save settings
-                                    </button>
+                                {
+                                    this.state.hasDirtySettings && (
+                                        <button className="btn btn--primary" onClick={(ev) => this.saveSettings(ev) }>
+                                            Save settings
+                                        </button>
+                                    )
                                 }
                             </div>
                         </div>

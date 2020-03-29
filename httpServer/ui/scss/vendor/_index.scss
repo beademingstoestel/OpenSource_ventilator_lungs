@@ -1,2 +1,29 @@
 // Vendor contains all vendor related imports
 @import 'normalize.css/normalize';
+
+// No way to scope styles for react-numpad 🙃
+.MuiPaper-root {
+    width: 400px;
+    height: 450px;
+
+    input {
+        font-size: 3rem;
+    }
+
+    > div:first-child {
+        min-height: 3em;
+    }
+
+    > div:nth-child(2) {
+        padding: 2rem;
+    }
+
+    .MuiSvgIcon-root {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .MuiButton-label {
+        font-size: 2rem;
+    }
+}
