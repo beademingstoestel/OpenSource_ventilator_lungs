@@ -20,8 +20,6 @@ const MainSidebar = ({ className, ...other }) => {
 
     return (
         <nav className={cx('main-sidebar', className)} {...other}>
-            Logo
-
             <ul className="main-sidebar__menu">
                 {
                     menuItems.map(({ path, label, icon }, index) => {
@@ -29,7 +27,7 @@ const MainSidebar = ({ className, ...other }) => {
                             <li className={ cx('main-sidebar__menu-item', { 'is-active': currentPath === path }) } key={ index }>
                                 <Link href={ path }>
                                     <a className="main-sidebar__link">
-                                        { icon } <span className="u-d-none-xs u-d-inline-lg">{ label }</span>
+                                        { icon } <span className="u-d-none-xs u-d-inline-xxl">{ label }</span>
                                     </a>
                                 </Link>
                             </li>
