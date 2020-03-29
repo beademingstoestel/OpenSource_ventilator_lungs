@@ -1,0 +1,20 @@
+/* roboto-regular - latin */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: $font-weight-regular;
+    font-display: swap;
+    src: font-url('roboto-v20-latin-regular.woff2') format('woff2'),
+       font-url('roboto-v20-latin-regular.woff') format('woff');
+}
+
+/* roboto-700 - latin */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: $font-weight-bold;
+    font-display: swap;
+    src: font-url('roboto-v20-latin-700.woff2') format('woff2'),
+       font-url('roboto-v20-latin-700.woff') format('woff');
+}
+
