@@ -28,6 +28,19 @@ if (fs.existsSync('env-local.json')) {
     environment = { ...environment, ...environmentLocal };
 }
 
+// get the environment variables from eg Docker
+environment = {
+    DatabaseName: process.env.DatabaseName ?? environment.DatabaseName,
+    DatabaseHost: process.env.DatabaseHost ?? environment.DatabaseHost,
+    DatabasePort: parseInt(process.env.DatabasePort) || environment.DatabasePort,
+    RepositoryMode: process.env.RepositoryMode ?? environment.RepositoryMode,
+    WatchMode: process.env.WatchMode ?? environment.WatchMode,
+    Port: parseInt(process.env.Port) || environment.Port,
+    ListenInterface: process.env.ListenInterface ?? environment.ListenInterface,
+    UpdateRate: parseInt(process.env.UpdateRate) || environment.UpdateRate,
+    ServerMode: process.env.ServerMode ?? environment.ServerMode,
+};
+
 console.log(environment);
 
 const host = environment.ListenInterface;

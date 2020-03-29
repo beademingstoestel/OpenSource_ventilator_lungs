@@ -26,7 +26,7 @@ const defaultXRange = 10000;
 const integerPrecision = 1;
 let serverTimeCorrection = 0;
 
-export default class Index extends React.Component {
+export default class Dashboard extends React.Component {
     rawPressureValues = [];
     rawVolumeValues = [];
     rawTriggerValues = [];
