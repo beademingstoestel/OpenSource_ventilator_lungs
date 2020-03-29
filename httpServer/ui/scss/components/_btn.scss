@@ -24,6 +24,7 @@ $b: 'btn';
     text-transform: uppercase;
     cursor: pointer;
     position: relative;
+    text-decoration: none;
 
     &::before {
         content: '‹';

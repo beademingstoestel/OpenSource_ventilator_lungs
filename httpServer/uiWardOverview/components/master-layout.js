@@ -1,8 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
 
+import Page from 'ventilator-lungs-ui/components/page';
 import MainSidebar from './main-sidebar';
-import Page from './page';
 
 const MasterLayout = ({ children, className, ...other }) => (
     <>
