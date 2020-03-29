@@ -1,0 +1,24 @@
+$b: 'table';
+
+.#{$b} {
+    width: 100%;
+
+    td {
+        padding: 1rem;
+
+        &.is-shrunk {
+            width:0.1%;
+            white-space: nowrap;
+        }
+    }
+
+    tbody {
+        tr {
+            background-color: #fff;
+
+            &:nth-child(odd) {
+                background-color: get-gray-color('lighter');
+            }
+        }
+    }
+}

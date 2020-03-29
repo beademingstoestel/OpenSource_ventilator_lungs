@@ -49,8 +49,12 @@ $b: 'single-value-display';
 
     &--settings-only {
         padding: 0;
-        flex-direction: column;
         align-items: flex-start;
+        flex-wrap: wrap;
+
+        > * {
+            flex: 1 1 calc(50% - 2rem);
+        }
     }
 }
 
