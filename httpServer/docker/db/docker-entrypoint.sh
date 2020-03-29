@@ -22,7 +22,7 @@ cat /docker-entrypoint-initdb.d/mongo-init.js
 echo "--------"
 echo
 
-$mongo --eval "printjson(rs.initiate())"
+$mongo --eval "printjson(rs.initiate({_id: 'rs0',version: 1,members: [{ _id: 0, host : '127.0.0.1:27017' }]}))"
 sleep 5
 $mongo /docker-entrypoint-initdb.d/mongo-init.js
 

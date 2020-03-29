@@ -38,7 +38,7 @@ const SingleValueDisplaySettings = ({ name, settingKey, value, unit, decimal = 2
                     decimal={ decimal }
                     negative={ false }
                     position="center"
-                    value={ value }
+                    value={ toFixedSafe(value, decimal) }
                     theme="hello"
                 >
                     <span className="single-value-display-settings__value">{toFixedSafe(value, decimal)}</span>

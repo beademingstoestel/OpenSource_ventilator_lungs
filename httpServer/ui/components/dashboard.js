@@ -60,6 +60,9 @@ export default class Index extends React.Component {
                 TS: 0,
                 IE: 0,
                 PP: 0,
+                TI: 0,
+                PS: 0,
+                RP: 0,
                 ADPK: 0,
                 ADVT: 0,
                 ADPP: 0,
@@ -448,6 +451,33 @@ export default class Index extends React.Component {
                                     name="Set PEEP"
                                     value={this.state.settings.PP}
                                     settingKey={'PP'}
+                                    unit="cmH2O"
+                                    decimal={false}
+                                    step={1}
+                                    updateValue={this.state.updateSetting}
+                                />
+                                <SingleValueDisplaySettings
+                                    name="Set T/inhale"
+                                    value={this.state.settings.TI}
+                                    settingKey={'TI'}
+                                    unit="sec"
+                                    decimal={1}
+                                    step={0.1}
+                                    updateValue={this.state.updateSetting}
+                                />
+                                <SingleValueDisplaySettings
+                                    name="Ramp"
+                                    value={this.state.settings.RP}
+                                    settingKey={'RP'}
+                                    unit="sec"
+                                    decimal={1}
+                                    step={0.1}
+                                    updateValue={this.state.updateSetting}
+                                />
+                                <SingleValueDisplaySettings
+                                    name="Psupport"
+                                    value={this.state.settings.PS}
+                                    settingKey={'PS'}
                                     unit="cmH2O"
                                     decimal={false}
                                     step={1}
