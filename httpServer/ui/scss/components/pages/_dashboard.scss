@@ -21,6 +21,30 @@ $b: 'page-dashboard';
         margin-right: 3rem;
         font-weight: $font-weight-bold;
         line-height: 1.1;
+        cursor: pointer;
+    }
+
+    &__machine-info {
+        button {
+            color: #FFF;
+            width: 3rem;
+            height: 3rem;
+            line-height: 3rem;
+            margin: 0rem;
+            padding: 0;
+
+            &.running {
+                background-color: rgb(180, 3, 3);
+            }
+
+            &.inactive {
+                background-color: rgb(3, 131, 41);
+            }
+        }
+
+        button:last-child {
+            margin-left: 1rem;
+        }
     }
 
     &__body {

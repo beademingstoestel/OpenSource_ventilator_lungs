@@ -260,6 +260,8 @@ const startMaster = async function () {
             },
         },
     });
+
+    await server.start();
 };
 
 if (environment.ServerMode === 'slave') {

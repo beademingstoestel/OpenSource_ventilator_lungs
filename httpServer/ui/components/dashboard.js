@@ -16,10 +16,13 @@ const SingleValueDisplaySettingsOnly = dynamic(() => import('../components/singl
 
 import React from 'react';
 import BellIcon from '../components/icons/bell';
+import SaveIcon from '../components/icons/save';
+import CaretIcon from '../components/icons/caret';
 
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
 import { toast } from 'react-toastify';
+import OnOffIcon from './icons/onoff';
 
 const refreshRate = 50;
 const defaultXRange = 10000;
@@ -35,6 +38,8 @@ export default class Dashboard extends React.Component {
     client = null;
     dirtySettings = {};
     previousSettings = {};
+
+    saving = false;
 
     constructor(props) {
         super(props);
@@ -58,6 +63,7 @@ export default class Dashboard extends React.Component {
                 VT: 0,
                 PK: 0,
                 TS: 0,
+                TP: 0,
                 IE: 0,
                 PP: 0,
                 TI: 0,
@@ -67,7 +73,7 @@ export default class Dashboard extends React.Component {
                 ADVT: 0,
                 ADPP: 0,
                 MODE: 'V',
-                ACTIVE: '',
+                ACTIVE: 0,
             },
             hasDirtySettings: false,
             updateSetting: (key, setting) => {
@@ -81,6 +87,14 @@ export default class Dashboard extends React.Component {
                 });
             },
         };
+    }
+
+    toggleMode() {
+        if (this.state.settings.MODE === 'V') {
+            this.state.updateSetting('MODE', 'P');
+        } else {
+            this.state.updateSetting('MODE', 'V');
+        }
     }
 
     processIncomingPoints(toArray, newPoints) {
@@ -104,6 +118,37 @@ export default class Dashboard extends React.Component {
                 y: newPoint.value,
             });
         });
+    }
+
+    async saveSetting(key, setting) {
+        if (!this.saving) {
+            this.saving = true;
+
+            try {
+                const tosend = {};
+                tosend[key] = setting;
+
+                // returncomplete also makes sure the python code and controller only receive the changed values
+                await fetch(`${getApiUrl()}/api/settings?returncomplete=false`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(tosend),
+                });
+
+                this.previousSettings[key] = setting;
+
+                this.setState({
+                    settings: { ...this.state.settings, ...tosend },
+                });
+            } catch (e) {
+                // todo: show error to the user
+                console.log(e);
+            }
+
+            this.saving = false;
+        }
     }
 
     async saveSettings(ev) {
@@ -298,16 +343,22 @@ export default class Dashboard extends React.Component {
                         <li>{this.state.patientAdmittanceDate.toLocaleString()}</li>
                         <li>{this.state.patientInfo}</li>
                     </ul>
-                    <div className="page-dashboard__timing-info">
+                    <div className="page-dashboard__timing-info" onClick={() => this.toggleMode()}>
                         <div>
                             T {new Date().toLocaleTimeString()}
                         </div>
                         <div>
-                            Mode: {this.state.settings.MODE}
+                            Mode: {this.state.settings.MODE === 'V' ? 'Volume' : 'Pressure'}
                         </div>
                     </div>
                     <div className="page-dashboard__machine-info">
-                        Machine #00001
+                        <button className="btn btn--primary" onClick={(ev) => this.saveSettings(ev) } disabled={!this.state.hasDirtySettings}>
+                            <SaveIcon size="md" />
+                        </button>
+                        <button className={'btn ' + (this.state.settings.ACTIVE === 0 ? 'inactive' : 'running')}
+                            onClick={() => this.saveSetting('ACTIVE', this.state.settings.ACTIVE === 0 ? 1 : 0)}>
+                            <OnOffIcon size="md" />
+                        </button>
                     </div>
                 </div>
 
@@ -438,19 +489,45 @@ export default class Dashboard extends React.Component {
                                     step={0.1}
                                     updateValue={this.state.updateSetting}
                                 />
-                                <SingleValueDisplaySettings
-                                    name="Trigger Peak value"
-                                    value={this.state.settings.TS}
-                                    settingKey={'TS'}
-                                    decimal={2}
-                                    unit='cmH2O'
-                                    step={0.1}
-                                    updateValue={this.state.updateSetting}
-                                />
+                                {
+                                    this.state.settings.MODE === 'V' && (
+                                        <SingleValueDisplaySettings
+                                            name="Trigger sensitivity (V)"
+                                            value={this.state.settings.TS}
+                                            settingKey={'TS'}
+                                            decimal={2}
+                                            unit='L/min'
+                                            step={0.1}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                    )
+                                }
+                                {
+                                    this.state.settings.MODE === 'P' && (
+                                        <SingleValueDisplaySettings
+                                            name="Trigger sensitivity (P)"
+                                            value={this.state.settings.TP}
+                                            settingKey={'TP'}
+                                            decimal={2}
+                                            unit='cmH2O'
+                                            step={0.1}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                    )
+                                }
                                 <SingleValueDisplaySettings
                                     name="Set PEEP"
                                     value={this.state.settings.PP}
                                     settingKey={'PP'}
+                                    unit="cmH2O"
+                                    decimal={false}
+                                    step={1}
+                                    updateValue={this.state.updateSetting}
+                                />
+                                <SingleValueDisplaySettings
+                                    name="Set PEEP threshold"
+                                    value={this.state.settings.ADPP}
+                                    settingKey={'ADPP'}
                                     unit="cmH2O"
                                     decimal={false}
                                     step={1}
@@ -484,14 +561,6 @@ export default class Dashboard extends React.Component {
                                     updateValue={this.state.updateSetting}
                                 />
                             </SingleValueDisplaySettingsOnly>
-
-                            {
-                                this.state.hasDirtySettings && (
-                                    <button className="btn btn--primary" onClick={(ev) => this.saveSettings(ev) }>
-                                        Save settings
-                                    </button>
-                                )
-                            }
                         </div>
                     </div>
                 </div>
