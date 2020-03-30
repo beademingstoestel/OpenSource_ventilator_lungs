@@ -11,11 +11,13 @@ WORKDIR /app/ui
 RUN npm install
 RUN npm run build
 RUN npm run export
+RUN rm -rf node_modules
 
 WORKDIR /app/uiWardOverview
 RUN npm install
 RUN npm run build
 RUN npm run export
+RUN rm -rf node_modules
 
 WORKDIR /app
 
