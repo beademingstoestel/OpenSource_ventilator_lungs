@@ -257,6 +257,12 @@ export default class Dashboard extends React.Component {
         });
 
         const self = this;
+        this.client.subscribe('/api/settings', (newSettings) => {
+            self.setState({
+                settings: { ...self.state.settings, ...newSettings },
+            });
+        });
+
         this.client.subscribe('/api/breathsperminute_values', (newPoints) => {
             const lastpoint = newPoints[newPoints.length - 1];
 
