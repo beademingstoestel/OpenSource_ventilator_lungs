@@ -72,7 +72,7 @@ export default class Dashboard extends React.Component {
                 ADPK: 0,
                 ADVT: 0,
                 ADPP: 0,
-                MODE: 'V',
+                MODE:  0,
                 ACTIVE: 0,
             },
             hasDirtySettings: false,
@@ -90,10 +90,10 @@ export default class Dashboard extends React.Component {
     }
 
     toggleMode() {
-        if (this.state.settings.MODE === 'V') {
-            this.state.updateSetting('MODE', 'P');
+        if (this.state.settings.MODE === 0) {
+            this.state.updateSetting('MODE', 1);
         } else {
-            this.state.updateSetting('MODE', 'V');
+            this.state.updateSetting('MODE', 0);
         }
     }
 
@@ -354,7 +354,7 @@ export default class Dashboard extends React.Component {
                             T {new Date().toLocaleTimeString()}
                         </div>
                         <div>
-                            Mode: {this.state.settings.MODE === 'V' ? 'Volume' : 'Pressure'}
+                            Mode: {this.state.settings.MODE === 0 ? 'Flow' : 'Pressure'}
                         </div>
                     </div>
                     <div className="page-dashboard__machine-info">
@@ -496,7 +496,7 @@ export default class Dashboard extends React.Component {
                                     updateValue={this.state.updateSetting}
                                 />
                                 {
-                                    this.state.settings.MODE === 'V' && (
+                                    this.state.settings.MODE === 0 && (
                                         <SingleValueDisplaySettings
                                             name="Trigger sensitivity (V)"
                                             value={this.state.settings.TS}
@@ -509,7 +509,7 @@ export default class Dashboard extends React.Component {
                                     )
                                 }
                                 {
-                                    this.state.settings.MODE === 'P' && (
+                                    this.state.settings.MODE === 1 && (
                                         <SingleValueDisplaySettings
                                             name="Trigger sensitivity (P)"
                                             value={this.state.settings.TP}

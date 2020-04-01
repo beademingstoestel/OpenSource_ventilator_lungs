@@ -9,10 +9,7 @@ export class NetworkSettingsController {
     async HandleGet(request: Request, h: ResponseToolkit) {
         const networkSettings = await this.settingsRepository.GetSettings('network-settings');
         const retValue = {
-            firstName: '',
-            lastName: '',
-            admittanceDate: new Date(),
-            info: '',
+            serverAddress: '',
         };
 
         return { ...retValue, ...networkSettings };
