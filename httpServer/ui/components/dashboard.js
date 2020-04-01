@@ -18,6 +18,12 @@ import React from 'react';
 import BellIcon from '../components/icons/bell';
 import SaveIcon from '../components/icons/save';
 import CaretIcon from '../components/icons/caret';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
@@ -80,7 +86,6 @@ export default class Dashboard extends React.Component {
             hasDirtySettings: false,
             updateSetting: (key, setting) => {
                 const settings = { ...this.state.settings };
-
                 settings[key] = setting;
                 this.dirtySettings[key] = setting;
                 this.setState({
@@ -359,6 +364,30 @@ export default class Dashboard extends React.Component {
         });
     }
 
+    toggleActiveState() {
+        this.saveSetting('ACTIVE', this.state.settings.ACTIVE === 0 ? 1 : 0);
+    }
+
+    closeButton_OnClick() {
+        // if we are in active mode, show the dialog box to confirm deactivation
+        if (this.state.settings.ACTIVE === 1) {
+            this.setState({ showCloseDialog: true });
+        }
+        else {
+            this.toggleActiveState();
+        }
+    }
+
+    // Handle the closing of the dialog box
+    handleClose(ev, validateClose) {
+        this.setState({ showCloseDialog: false });
+
+        // If the user validates the close (clicked on YES), then actually do the change of state
+        if (validateClose) {
+            this.toggleActiveState();
+        }
+    }
+
     render() {
         return (
             <div className={ cx('page-dashboard', this.props.className) }>
@@ -381,9 +410,31 @@ export default class Dashboard extends React.Component {
                             <SaveIcon size="md" />
                         </button>
                         <button className={'btn ' + (this.state.settings.ACTIVE === 0 ? 'inactive' : 'running')}
-                            onClick={() => this.saveSetting('ACTIVE', this.state.settings.ACTIVE === 0 ? 1 : 0)}>
+                            onClick={() => this.closeButton_OnClick()}>
                             <OnOffIcon size="md" />
                         </button>
+                        <Dialog
+                            open={this.state.showCloseDialog}
+                            onClose={(ev) => this.handleClose(ev, false)}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">{"Stop the ventilator ?"}</DialogTitle>
+                            <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                                Are you sure you want to stop the ventilator ?
+                            </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                            <Button onClick={(ev) => this.handleClose(ev, false)} color="primary">
+                                No
+                            </Button>
+                            <Button onClick={(ev) => this.handleClose(ev, true)} color="primary" autoFocus>
+                                Yes
+                            </Button>
+                            </DialogActions>
+                        </Dialog>
+
                     </div>
                 </div>
 
