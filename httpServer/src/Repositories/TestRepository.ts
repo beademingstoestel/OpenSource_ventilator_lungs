@@ -16,6 +16,8 @@ export class TestRepository implements IValuesRepository {
                 randAmplitude = 600;
             } else if (collection === 'pressure_values') {
                 randAmplitude = 70;
+            } else if (collection === 'flow_values') {
+                randAmplitude = 30;
             } else {
                 randAmplitude = 40;
             }
@@ -25,7 +27,7 @@ export class TestRepository implements IValuesRepository {
             for (let i = 0; i < steps; i++) {
                 const time = since.getTime() + i * 50;
                 ret.push({
-                    value: Math.abs(Math.sin(time) * randAmplitude),
+                    value: collection !== 'flow_values' ? Math.abs(Math.sin(time) * randAmplitude) : Math.sin(time) * randAmplitude,
                     loggedAt: new Date(time),
                 });
             }

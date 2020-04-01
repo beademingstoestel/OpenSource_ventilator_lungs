@@ -147,7 +147,7 @@ export default class DataPlot extends React.Component {
         };
 
         return (
-            <div style={{ height: '300px' }}>
+            <div style={{ height: '280px' }}>
                 <Scatter data={chartData} options={chartOptions} />
             </div>
         );

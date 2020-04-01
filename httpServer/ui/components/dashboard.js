@@ -32,6 +32,7 @@ let serverTimeCorrection = 0;
 export default class Dashboard extends React.Component {
     rawPressureValues = [];
     rawVolumeValues = [];
+    rawFlowValues = [];
     rawTriggerValues = [];
     rawBpmValue = 0;
     animationInterval = 0;
@@ -48,6 +49,7 @@ export default class Dashboard extends React.Component {
             pressureValues: [],
             volumeValues: [],
             triggerValues: [],
+            flowValues: [],
             xLengthMs: defaultXRange,
             lastPressure: 0,
             lastVolume: 0,
@@ -72,7 +74,7 @@ export default class Dashboard extends React.Component {
                 ADPK: 0,
                 ADVT: 0,
                 ADPP: 0,
-                MODE:  0,
+                MODE: 0,
                 ACTIVE: 0,
             },
             hasDirtySettings: false,
@@ -252,6 +254,10 @@ export default class Dashboard extends React.Component {
             this.processIncomingPoints(this.rawVolumeValues, newPoints);
         });
 
+        this.client.subscribe('/api/flow_values', (newPoints) => {
+            this.processIncomingPoints(this.rawFlowValues, newPoints);
+        });
+
         this.client.subscribe('/api/trigger_values', (newPoints) => {
             this.processIncomingPoints(this.rawTriggerValues, newPoints);
         });
@@ -274,6 +280,7 @@ export default class Dashboard extends React.Component {
             const newPressureValues = [];
             const newVolumeValues = [];
             const newTriggerValues = [];
+            const newFlowValues = [];
 
             this.rawPressureValues.forEach((point) => {
                 var newX = (point.x - now - serverTimeCorrection);
@@ -308,10 +315,22 @@ export default class Dashboard extends React.Component {
                 }
             });
 
+            this.rawFlowValues.forEach((point) => {
+                var newX = (point.x - now - serverTimeCorrection);
+
+                if (newX <= 0 && newX >= -this.state.xLengthMs) {
+                    newFlowValues.push({
+                        y: point.y,
+                        x: newX / 1000.0,
+                    });
+                }
+            });
+
             self.setState({
                 pressureValues: newPressureValues,
                 volumeValues: newVolumeValues,
                 triggerValues: newTriggerValues,
+                flowValues: newFlowValues,
                 pressureStatus: 'normal',
                 bpmStatus: 'normal',
                 volumeStatus: 'normal',
@@ -396,6 +415,11 @@ export default class Dashboard extends React.Component {
                                         maxY={80}
                                         peak={this.state.settings.PK}
                                         threshold={this.state.settings.ADPK} />
+                                    <DataPlot title='Flow (L/min)'
+                                        data={this.state.flowValues}
+                                        timeScale={this.state.xLengthMs / 1000.0}
+                                        minY={-100}
+                                        maxY={100} />
                                     <DataPlot title='Volume (mL)'
                                         data={[this.state.volumeValues, this.state.triggerValues]}
                                         multipleDatasets={true}

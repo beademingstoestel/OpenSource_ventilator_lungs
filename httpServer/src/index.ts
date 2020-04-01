@@ -16,6 +16,8 @@ import { SettingsController } from './Controllers/SettingsController';
 // eslint-disable-next-line no-unused-vars
 import { MongoClient, Db } from 'mongodb';
 import { PatientInfoController } from './Controllers/PatientInfoController';
+import { FlowValuesController } from './Controllers/FlowValuesController';
+import { CpuValuesController } from './Controllers/CpuValuesController';
 
 /* define configuration */
 
@@ -122,6 +124,18 @@ const startSlave = async function () {
 
     server.route({
         method: 'GET',
+        path: '/api/flow_values',
+        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new FlowValuesController(valuesRepositoryFactory()).HandleGet(request, h),
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/api/cpu_values',
+        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new CpuValuesController(valuesRepositoryFactory()).HandleGet(request, h),
+    });
+
+    server.route({
+        method: 'GET',
         path: '/api/breathsperminute_values',
         handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new BreathsPerMinuteValuesController(valuesRepositoryFactory()).HandleGet(request, h),
     });
@@ -183,6 +197,8 @@ const startSlave = async function () {
     server.subscription('/api/pressure_values');
     server.subscription('/api/breathsperminute_values');
     server.subscription('/api/trigger_values');
+    server.subscription('/api/flow_values');
+    server.subscription('/api/cpu_values');
     server.subscription('/api/settings');
     server.subscription('/api/error');
 
@@ -198,6 +214,8 @@ const startSlave = async function () {
             pressure_values: now,
             breathsperminute_values: now,
             trigger_values: now,
+            flow_values: now,
+            cpu_values: now,
         };
         const valuesRepository = valuesRepositoryFactory();
 
@@ -239,6 +257,18 @@ const startSlave = async function () {
         db.collection('breathsperminute_values').watch().on('change', data => {
             if (data.operationType === 'insert') {
                 server.publish('/api/breathsperminute_values', [data.fullDocument]);
+            }
+        });
+
+        db.collection('flow_values').watch().on('change', data => {
+            if (data.operationType === 'insert') {
+                server.publish('/api/flow_values', [data.fullDocument]);
+            }
+        });
+
+        db.collection('cpu_values').watch().on('change', data => {
+            if (data.operationType === 'insert') {
+                server.publish('/api/cpu_values', [data.fullDocument]);
             }
         });
     }
