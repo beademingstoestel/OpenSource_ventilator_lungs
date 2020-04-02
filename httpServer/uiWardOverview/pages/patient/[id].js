@@ -1,4 +1,5 @@
 import React from 'react';
+import dynamic from 'next/dynamic';
 import MasterLayout from '../../components/master-layout';
 import Dashboard from 'ventilator-lungs-ui/components/dashboard';
 import { useRouter } from 'next/router';
@@ -20,4 +21,6 @@ const PatientDetail = () => {
     );
 };
 
-export default PatientDetail;
+export default dynamic(() => Promise.resolve(PatientDetail), {
+    ssr: false
+  });
