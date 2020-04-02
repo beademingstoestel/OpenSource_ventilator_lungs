@@ -66,6 +66,8 @@ export default class Dashboard extends React.Component {
             patientName: '',
             patientAdmittanceDate: new Date(),
             patientInfo: '',
+            showShutdownConfirmationDialog: false,
+            showBeepConfirmationDialog: false,
             settings: {
                 RR: 0,
                 VT: 0,
@@ -370,20 +372,34 @@ export default class Dashboard extends React.Component {
 
     askActiveStateChange() {
         // if we are in active mode, show the dialog box to confirm deactivation
-        if (this.state.settings.ACTIVE === 1) {
-            this.setState({ showCloseDialog: true });
+        if (this.state.settings.ACTIVE === 2) {
+            this.setState({ showShutdownConfirmationDialog: true });
         } else {
-            this.toggleActiveState();
+            // go to active state 1 -> sounds beep
+            this.saveSetting('ACTIVE', 1);
+            this.setState({ showBeepConfirmationDialog: true });
         }
     }
 
-    // Handle the closing of the dialog box
-    handleClose(ev, validateClose) {
-        this.setState({ showCloseDialog: false });
+    // Handle the closing of the shutdown dialog box
+    handleShutDownDialogClose(ev, validateClose) {
+        this.setState({ showShutdownConfirmationDialog: false });
 
         // If the user validates the close (clicked on YES), then actually do the change of state
         if (validateClose) {
-            this.toggleActiveState();
+            this.saveSetting('ACTIVE', 0);
+        }
+    }
+
+    // Handle the closing of the beep heard dialog box
+    handleBeepHeardClose(ev, validateClose) {
+        this.setState({ showBeepConfirmationDialog: false });
+
+        // If the user validates the close (clicked on YES), then actually do the change of state
+        if (validateClose) {
+            this.saveSetting('ACTIVE', 2);
+        } else {
+            this.saveSetting('ACTIVE', 0);
         }
     }
 
@@ -408,25 +424,45 @@ export default class Dashboard extends React.Component {
                         <button className="btn btn--primary" onClick={(ev) => this.saveSettings(ev) } disabled={!this.state.hasDirtySettings}>
                             <SaveIcon size="md" />
                         </button>
-                        <button className={'btn ' + (this.state.settings.ACTIVE === 0 ? 'inactive' : 'running')}
+                        <button className={'btn ' + (this.state.settings.ACTIVE === 2 ? 'running' : 'inactive')}
                             onClick={() => this.askActiveStateChange()}>
                             <OnOffIcon size="md" />
                         </button>
-                        <Dialog open={this.state.showCloseDialog}
-                            onClose={(ev) => this.handleClose(ev, false)}
+                        <Dialog open={this.state.showShutdownConfirmationDialog}
+                            onClose={(ev) => this.handleShutDownDialogClose(ev, false)}
                             aria-labelledby="alert-dialog-title"
                             aria-describedby="alert-dialog-description">
-                            <DialogTitle id="alert-dialog-title">{ 'Stop the ventilator ?' }</DialogTitle>
+                            <DialogTitle id="alert-dialog-title">{ 'Stop the ventilator?' }</DialogTitle>
                             <DialogContent>
                                 <DialogContentText id="alert-dialog-description">
-                                    Are you sure you want to stop the ventilator ?
+                                    Are you sure you want to stop the ventilator?
                                 </DialogContentText>
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={(ev) => this.handleClose(ev, false)} color="primary">
+                                <Button onClick={(ev) => this.handleShutDownDialogClose(ev, false)} color="secondary">
                                     No
                                 </Button>
-                                <Button onClick={(ev) => this.handleClose(ev, true)} color="primary" autoFocus>
+                                <Button onClick={(ev) => this.handleShutDownDialogClose(ev, true)} color="primary" autoFocus>
+                                    Yes
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+
+                        <Dialog open={this.state.showBeepConfirmationDialog}
+                            onClose={(ev) => this.handleBeepHeardClose(ev, false)}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description">
+                            <DialogTitle id="alert-dialog-title">{ 'Confirm startup?' }</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    Did you hear the two beeps?
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={(ev) => this.handleBeepHeardClose(ev, false)} color="secondary">
+                                    No
+                                </Button>
+                                <Button onClick={(ev) => this.handleBeepHeardClose(ev, true)} color="primary" autoFocus>
                                     Yes
                                 </Button>
                             </DialogActions>
