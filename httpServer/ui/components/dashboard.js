@@ -368,12 +368,11 @@ export default class Dashboard extends React.Component {
         this.saveSetting('ACTIVE', this.state.settings.ACTIVE === 0 ? 1 : 0);
     }
 
-    closeButton_OnClick() {
+    askActiveStateChange() {
         // if we are in active mode, show the dialog box to confirm deactivation
         if (this.state.settings.ACTIVE === 1) {
             this.setState({ showCloseDialog: true });
-        }
-        else {
+        } else {
             this.toggleActiveState();
         }
     }
@@ -410,28 +409,26 @@ export default class Dashboard extends React.Component {
                             <SaveIcon size="md" />
                         </button>
                         <button className={'btn ' + (this.state.settings.ACTIVE === 0 ? 'inactive' : 'running')}
-                            onClick={() => this.closeButton_OnClick()}>
+                            onClick={() => this.askActiveStateChange()}>
                             <OnOffIcon size="md" />
                         </button>
-                        <Dialog
-                            open={this.state.showCloseDialog}
+                        <Dialog open={this.state.showCloseDialog}
                             onClose={(ev) => this.handleClose(ev, false)}
                             aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                        >
-                            <DialogTitle id="alert-dialog-title">{"Stop the ventilator ?"}</DialogTitle>
+                            aria-describedby="alert-dialog-description">
+                            <DialogTitle id="alert-dialog-title">{ 'Stop the ventilator ?' }</DialogTitle>
                             <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                                Are you sure you want to stop the ventilator ?
-                            </DialogContentText>
+                                <DialogContentText id="alert-dialog-description">
+                                    Are you sure you want to stop the ventilator ?
+                                </DialogContentText>
                             </DialogContent>
                             <DialogActions>
-                            <Button onClick={(ev) => this.handleClose(ev, false)} color="primary">
-                                No
-                            </Button>
-                            <Button onClick={(ev) => this.handleClose(ev, true)} color="primary" autoFocus>
-                                Yes
-                            </Button>
+                                <Button onClick={(ev) => this.handleClose(ev, false)} color="primary">
+                                    No
+                                </Button>
+                                <Button onClick={(ev) => this.handleClose(ev, true)} color="primary" autoFocus>
+                                    Yes
+                                </Button>
                             </DialogActions>
                         </Dialog>
 
