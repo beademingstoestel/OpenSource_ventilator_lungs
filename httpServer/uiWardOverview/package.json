@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "classnames": "^2.2.6",
-    "next": "9.3.1",
+    "next": "9.3.2",
     "next-transpile-modules": "^3.1.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
