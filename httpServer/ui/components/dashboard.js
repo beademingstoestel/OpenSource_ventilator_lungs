@@ -534,6 +534,8 @@ export default class Dashboard extends React.Component {
                                     settingKey={'PK'}
                                     decimal={false}
                                     step={1}
+                                    minValue={0}
+                                    maxValue={100}
                                     updateValue={this.state.updateSetting}
                                 />
                                 <SingleValueDisplaySettings
@@ -543,6 +545,8 @@ export default class Dashboard extends React.Component {
                                     settingKey={'ADPK'}
                                     decimal={false}
                                     step={1}
+                                    minValue={0}
+                                    maxValue={100}
                                     updateValue={this.state.updateSetting}
                                 />
                             </SingleValueDisplay>
@@ -557,6 +561,8 @@ export default class Dashboard extends React.Component {
                                     settingKey={'RR'}
                                     unit="bpm"
                                     step={1}
+                                    minValue={0}
+                                    maxValue={100}
                                     decimal={false}
                                     updateValue={this.state.updateSetting}
                                 />
@@ -571,6 +577,8 @@ export default class Dashboard extends React.Component {
                                     settingKey={'VT'}
                                     unit="mL"
                                     step={10}
+                                    minValue={0}
+                                    maxValue={100}
                                     decimal={false}
                                     updateValue={this.state.updateSetting}
                                 />
@@ -580,6 +588,8 @@ export default class Dashboard extends React.Component {
                                     settingKey={'ADVT'}
                                     unit="mL"
                                     step={10}
+                                    minValue={0}
+                                    maxValue={100}
                                     decimal={false}
                                     updateValue={this.state.updateSetting}
                                 />
@@ -607,6 +617,8 @@ export default class Dashboard extends React.Component {
                                     settingKey={'IE'}
                                     decimal={2}
                                     step={0.1}
+                                    minValue={0}
+                                    maxValue={10}
                                     updateValue={this.state.updateSetting}
                                 />
                                 {
@@ -618,6 +630,8 @@ export default class Dashboard extends React.Component {
                                             decimal={2}
                                             unit='L/min'
                                             step={0.1}
+                                            minValue={0}
+                                            maxValue={10}
                                             updateValue={this.state.updateSetting}
                                         />
                                     )
@@ -631,6 +645,8 @@ export default class Dashboard extends React.Component {
                                             decimal={2}
                                             unit='cmH2O'
                                             step={0.1}
+                                            minValue={0}
+                                            maxValue={10}
                                             updateValue={this.state.updateSetting}
                                         />
                                     )
@@ -642,6 +658,8 @@ export default class Dashboard extends React.Component {
                                     unit="cmH2O"
                                     decimal={false}
                                     step={1}
+                                    minValue={0}
+                                    maxValue={100}
                                     updateValue={this.state.updateSetting}
                                 />
                                 <SingleValueDisplaySettings
@@ -651,6 +669,8 @@ export default class Dashboard extends React.Component {
                                     unit="cmH2O"
                                     decimal={false}
                                     step={1}
+                                    minValue={0}
+                                    maxValue={100}
                                     updateValue={this.state.updateSetting}
                                 />
                                 <SingleValueDisplaySettings
@@ -660,6 +680,8 @@ export default class Dashboard extends React.Component {
                                     unit="sec"
                                     decimal={1}
                                     step={0.1}
+                                    minValue={0}
+                                    maxValue={10}
                                     updateValue={this.state.updateSetting}
                                 />
                                 <SingleValueDisplaySettings
@@ -669,6 +691,8 @@ export default class Dashboard extends React.Component {
                                     unit="sec"
                                     decimal={1}
                                     step={0.1}
+                                    minValue={0}
+                                    maxValue={10}
                                     updateValue={this.state.updateSetting}
                                 />
                                 <SingleValueDisplaySettings
@@ -678,6 +702,8 @@ export default class Dashboard extends React.Component {
                                     unit="cmH2O"
                                     decimal={false}
                                     step={1}
+                                    minValue={0}
+                                    maxValue={100}
                                     updateValue={this.state.updateSetting}
                                 />
                             </SingleValueDisplaySettingsOnly>

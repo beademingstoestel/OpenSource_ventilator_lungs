@@ -3,6 +3,8 @@ import cx from 'classnames';
 import NumPad from 'react-numpad';
 import CaretIcon from './icons/caret';
 
+import { toast } from 'react-toastify';
+
 const toFixedSafe = (value, precision) => {
     if (value.toFixed) {
         return value.toFixed(precision);
@@ -11,7 +13,12 @@ const toFixedSafe = (value, precision) => {
     }
 };
 
-const SingleValueDisplaySettings = ({ name, settingKey, value, unit, decimal = 2, step = 1, updateValue }) => {
+const isInputInRange = (minValue, maxValue, actualValue) => {
+    // return true if the actual value is within range, false otherwise
+    return ((actualValue >= minValue) && (actualValue <= maxValue));
+}
+
+const SingleValueDisplaySettings = ({ name, settingKey, value, unit, decimal = 2, step = 1, updateValue, minValue, maxValue }) => {
     return (
         <div className="single-value-display-settings">
             <div className="single-value-display-settings__name" >{name}</div>
@@ -19,7 +26,11 @@ const SingleValueDisplaySettings = ({ name, settingKey, value, unit, decimal = 2
                 <button
                     className="single-value-display-settings__control"
                     onClick={ (ev) => {
-                        updateValue(settingKey, (decimal === false ? parseInt(value) : parseFloat(value)) - step);
+                        var newValue = (decimal === false ? parseInt(value) : parseFloat(value)) - step;
+
+                        if (isInputInRange(minValue, maxValue, newValue)) {
+                            updateValue(settingKey, newValue);
+                        }
                         ev.preventDefault();
                     }}
                 >
@@ -28,13 +39,26 @@ const SingleValueDisplaySettings = ({ name, settingKey, value, unit, decimal = 2
                 <button
                     className="single-value-display-settings__control"
                     onClick={ (ev) => {
-                        updateValue(settingKey, (decimal === false ? parseInt(value) : parseFloat(value)) + step)
+                        var newValue = (decimal === false ? parseInt(value) : parseFloat(value)) + step;
+
+                        if (isInputInRange(minValue, maxValue, newValue)) {
+                            updateValue(settingKey, newValue);
+                        }
                     }}
                 >
                     <CaretIcon direction="up" size="md" />
                 </button>
                 <NumPad.Number
-                    onChange={(newValue) => updateValue(settingKey, newValue)}
+                    onChange={(newValue) => { 
+                        if (isInputInRange(minValue, maxValue, newValue)) {
+                            // only update the value if input is in range
+                            updateValue(settingKey, newValue);
+                            toast.success(name + " updated to: " + newValue);
+                        } 
+                        else {
+                            toast.error("Value " + newValue + " is out of range. Min: " + minValue + " Max: " + maxValue);
+                        }
+                    }}
                     decimal={ decimal }
                     negative={ false }
                     position="center"
