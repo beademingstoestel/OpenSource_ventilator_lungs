@@ -161,27 +161,33 @@ export default class Dashboard extends React.Component {
     }
 
     async saveSettings(ev) {
-        try {
-            // returncomplete also makes sure the python code and controller only receive the changed values
-            await fetch(`${getApiUrl()}/api/settings?returncomplete=false`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(this.dirtySettings),
-            });
+        if (!this.saving) {
+            this.saving = true;
 
-            this.dirtySettings = {};
-            this.previousSettings = this.state.settings;
+            try {
+                // returncomplete also makes sure the python code and controller only receive the changed values
+                await fetch(`${getApiUrl()}/api/settings?returncomplete=false`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(this.dirtySettings),
+                });
 
-            this.setState({
-                hasDirtySettings: false,
-            });
-        } catch (e) {
-            // todo: show error to the user
-            console.log(e);
+                this.dirtySettings = {};
+                this.previousSettings = this.state.settings;
+
+                this.setState({
+                    hasDirtySettings: false,
+                });
+            } catch (e) {
+                // todo: show error to the user
+                console.log(e);
+            }
+
+
+            this.saving = false;
         }
-
         ev.preventDefault();
     }
 
