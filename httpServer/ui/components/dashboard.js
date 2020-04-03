@@ -4,16 +4,6 @@ import { Client } from '@hapi/nes/lib/client';
 import DataPlot from '../components/data-plot';
 import dynamic from 'next/dynamic';
 import cx from 'classnames';
-
-// eslint-disable-next-line no-unused-vars
-const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
-
-// eslint-disable-next-line no-unused-vars
-const SingleValueDisplaySettings = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplaySettings), { ssr: false });
-
-// eslint-disable-next-line no-unused-vars
-const SingleValueDisplaySettingsOnly = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplaySettingsOnly), { ssr: false });
-
 import React from 'react';
 import BellIcon from '../components/icons/bell';
 import SaveIcon from '../components/icons/save';
@@ -29,6 +19,15 @@ import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
 import { toast } from 'react-toastify';
 import OnOffIcon from './icons/onoff';
+
+// eslint-disable-next-line no-unused-vars
+const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
+
+// eslint-disable-next-line no-unused-vars
+const SingleValueDisplaySettings = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplaySettings), { ssr: false });
+
+// eslint-disable-next-line no-unused-vars
+const SingleValueDisplaySettingsOnly = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplaySettingsOnly), { ssr: false });
 
 const refreshRate = 50;
 const defaultXRange = 10000;
@@ -81,7 +80,7 @@ export default class Dashboard extends React.Component {
                 TP: 0,
                 IE: 0.5,
                 PP: 10,
-                TI: 6,      // 6 because IE = 0.5 and RR = 20
+                TI: 6, // 6 because IE = 0.5 and RR = 20
                 PS: 35,
                 RP: 0.5,
                 ADPK: 10,
@@ -97,65 +96,58 @@ export default class Dashboard extends React.Component {
                 this.dirtySettings[key] = setting;
 
                 // Special treatment for some of the items
-                if (key == "PK") {
+                if (key === 'PK') {
                     // Peak pressure changed : adjust the psupport value if needed (must be <= to peak pressure)
-                    if (settings["PS"] > settings["PK"]) {
-                        settings["PS"] = settings["PK"];
-                        this.dirtySettings["PS"] = settings["PS"];
+                    if (settings.PS > settings.PK) {
+                        settings.PS = settings.PK;
+                        this.dirtySettings.PS = settings.PS;
                     }
-                    
-                    this.setState({ maxPSupport: settings["PK"] });     // adjust the maximum allowed in any case
 
-                }
-                else if (key == "RR") {
+                    this.setState({ maxPSupport: settings.PK }); // adjust the maximum allowed in any case
+                } else if (key === 'RR') {
                     // Respiratory rate changed : keep I/E, but change T/Inhale
-                    settings["TI"] = this.computeTInhale(settings["RR"], settings["IE"]);
-                    this.dirtySettings["TI"] = settings["TI"];
+                    settings.TI = this.computeTInhale(settings.RR, settings.IE);
+                    this.dirtySettings.TI = settings.TI;
 
                     this.setState({
-                        minTInhale: this.computeTInhale(settings["RR"], maximumIE),
-                        maxTInhale: this.computeTInhale(settings["RR"], minimumIE)
+                        minTInhale: this.computeTInhale(settings.RR, maximumIE),
+                        maxTInhale: this.computeTInhale(settings.RR, minimumIE),
                     });
 
-                    //console.log("RR Changed to " + settings["RR"] + ", TI adjusted to " + settings["TI"]);
-                } 
-                else if (key == "IE") {
+                    // console.log("RR Changed to " + settings["RR"] + ", TI adjusted to " + settings["TI"]);
+                } else if (key === 'IE') {
                     // I/E changed : keep Respiratory Rate, but change T/Inhale
-                    settings["TI"] = this.computeTInhale(settings["RR"], settings["IE"]);
-                    this.dirtySettings["TI"] = settings["TI"];
+                    settings.TI = this.computeTInhale(settings.RR, settings.IE);
+                    this.dirtySettings.TI = settings.TI;
 
                     this.setState({
-                        minTInhale: this.computeTInhale(settings["RR"], maximumIE),
-                        maxTInhale: this.computeTInhale(settings["RR"], minimumIE)
+                        minTInhale: this.computeTInhale(settings.RR, maximumIE),
+                        maxTInhale: this.computeTInhale(settings.RR, minimumIE),
                     });
 
-                    //console.log("IE Changed to " + settings["IE"] + ", TI adjusted to " + settings["TI"]);
-                }
-                else if (key == "TI") {
+                    // console.log("IE Changed to " + settings["IE"] + ", TI adjusted to " + settings["TI"]);
+                } else if (key === 'TI') {
                     // T/Inhale changed : keep Respiratory Rate, but change I/E
-                    var newIE = this.computeIE(settings["RR"], settings["TI"]);
-                    console.log("new IE: " + newIE);
+                    var newIE = this.computeIE(settings.RR, settings.TI);
+                    console.log('new IE: ' + newIE);
 
                     // If the user tries to lower the IE below the minimum allowed (0.25) ..
-                    if ((newIE < settings["IE"]) && (newIE < minimumIE)) {   
-                        
+                    if ((newIE < settings.IE) && (newIE < minimumIE)) {
                         // .. then keep the TI to the acceptable value at 0.25
-                        settings["TI"] = this.computeTInhale(settings["RR"], minimumIE);
-                        this.dirtySettings["TI"] = settings["TI"];
-                    }
-                    // .. or tries to increase it above the maximum allowed (0.5) ..
-                    else if ((newIE < settings["IE"]) && (newIE > maximumIE)) {  
-                       
+                        settings.TI = this.computeTInhale(settings.RR, minimumIE);
+                        this.dirtySettings.TI = settings.TI;
+                    } else if ((newIE < settings.IE) && (newIE > maximumIE)) {
+                        // .. or tries to increase it above the maximum allowed (0.5) ..
                         // .. then keep the TI to the acceptable value at 0.5
-                       settings["TI"] = this.computeTInhale(settings["RR"], maximumIE);
-                       this.dirtySettings["TI"] = settings["TI"];
+                        settings.TI = this.computeTInhale(settings.RR, maximumIE);
+                        this.dirtySettings.TI = settings.TI;
                     }
 
                     // recalculte the IE in any case, know that we know that the TI is kept with range, this also clears rounding errors
-                    settings["IE"] = this.computeIE(settings["RR"], settings["TI"]);
-                    this.dirtySettings["IE"] = settings["IE"];
+                    settings.IE = this.computeIE(settings.RR, settings.TI);
+                    this.dirtySettings.IE = settings.IE;
 
-                    //console.log("TI Changed to " + settings["TI"] + ", IE adjusted to " + settings["IE"]);
+                    // console.log("TI Changed to " + settings["TI"] + ", IE adjusted to " + settings["IE"]);
                 }
 
                 this.setState({
@@ -170,7 +162,7 @@ export default class Dashboard extends React.Component {
         return (60 / (respiratoryRate * IE)).toFixed(1);
     }
 
-    computeIE(respiratoryRate, TInhale) { 
+    computeIE(respiratoryRate, TInhale) {
         return ((60 / respiratoryRate) / TInhale).toFixed(2);
     }
 
@@ -260,8 +252,6 @@ export default class Dashboard extends React.Component {
                 // todo: show error to the user
                 console.log(e);
             }
-
-
             this.saving = false;
         }
         ev.preventDefault();
