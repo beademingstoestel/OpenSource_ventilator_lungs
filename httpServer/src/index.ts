@@ -14,6 +14,11 @@ import { TestSettingsRepository } from './Repositories/TestSettingsRepository';
 import { MongoSettingsRepository } from './Repositories/MongoSettingsRepository';
 import { SettingsController } from './Controllers/SettingsController';
 // eslint-disable-next-line no-unused-vars
+import { ILogEntriesRepository } from './Repositories/ILogEntriesRepository';
+import { TestLogEntriesRepository } from './Repositories/TestLogEntriesRepository';
+import { MongoLogEntriesRepository } from './Repositories/MongoLogEntriesRepository';
+import { LogEntriesController } from './Controllers/LogEntriesController';
+// eslint-disable-next-line no-unused-vars
 import { MongoClient, Db } from 'mongodb';
 import { PatientInfoController } from './Controllers/PatientInfoController';
 import { FlowValuesController } from './Controllers/FlowValuesController';
@@ -84,6 +89,23 @@ const settingsRepositoryFactory = function (): ISettingsRepository {
 
     return repository;
 };
+
+const testLogEntriesRepository = new TestLogEntriesRepository();
+const logsRepositoryFactory = function (): ILogEntriesRepository {
+    let repository: ILogEntriesRepository = null;
+    console.log(environment.RepositoryMode );
+    if (environment.RepositoryMode === 'test') {
+        repository = testLogEntriesRepository;
+    } else {
+        repository = new MongoLogEntriesRepository(mongoClient);
+    }
+
+    return repository;
+
+    // This is probably enough ..
+    //return new MongoLogEntriesRepository(mongoClient);
+};
+
 
 const server: Hapi.Server = new Hapi.Server({
     host,
@@ -172,6 +194,18 @@ const startSlave = async function () {
         method: 'PUT',
         path: '/api/patient_info',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new PatientInfoController(settingsRepositoryFactory()).HandlePut(request, h),
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/api/logs/read',
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new PatientInfoController(settingsRepositoryFactory()).HandleGet(request, h),
+    });
+
+    server.route({
+        method: 'PUT',
+        path: '/api/logs/write',
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new LogEntriesController(logsRepositoryFactory()).HandlePut(request, h),
     });
 
     server.route({
