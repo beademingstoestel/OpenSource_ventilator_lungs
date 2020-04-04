@@ -23,7 +23,7 @@ export class MongoLogEntriesRepository implements ILogEntriesRepository {
         }
     }
 
-    async WriteEntry(text: string, source: string): Promise<any> {
+    async WriteEntry(entry: LogEntryValue): Promise<void> {
         try {
             if (!this.mongoClient.isConnected()) {
                 await this.mongoClient.connect();
@@ -31,9 +31,7 @@ export class MongoLogEntriesRepository implements ILogEntriesRepository {
 
             const db: Db = this.mongoClient.db('beademing');
 
-            await db.collection('logs').insertOne({ text, source, loggedAt: Date.now});
-
-            return text;
+            await db.collection('logs').insertOne(entry);
         } catch (exception) {
             // todo: log exception
             console.error(exception);

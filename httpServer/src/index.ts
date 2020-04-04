@@ -48,8 +48,6 @@ environment = {
     ServerMode: process.env.ServerMode ?? environment.ServerMode,
 };
 
-console.log(environment);
-
 const host = environment.ListenInterface;
 const port = environment.Port;
 
@@ -93,7 +91,6 @@ const settingsRepositoryFactory = function (): ISettingsRepository {
 const testLogEntriesRepository = new TestLogEntriesRepository();
 const logsRepositoryFactory = function (): ILogEntriesRepository {
     let repository: ILogEntriesRepository = null;
-    console.log(environment.RepositoryMode );
     if (environment.RepositoryMode === 'test') {
         repository = testLogEntriesRepository;
     } else {
@@ -101,23 +98,37 @@ const logsRepositoryFactory = function (): ILogEntriesRepository {
     }
 
     return repository;
-
-    // This is probably enough ..
-    //return new MongoLogEntriesRepository(mongoClient);
 };
 
+const getServer = async function () {
+    const server: Hapi.Server = new Hapi.Server({
+        host,
+        port,
+        routes: {
+            cors: true,
+        },
+    });
 
-const server: Hapi.Server = new Hapi.Server({
-    host,
-    port,
-    routes: {
-        cors: true,
-    },
-});
+    await server.register([require('@hapi/inert'),
+        require('@hapi/nes'),
+        require('hapijs-status-monitor'),
+        {
+            plugin: require('./plugins/LoginPlugin'),
+            options: {
+                logsRepository: logsRepositoryFactory(),
+            },
+        }]);
+    server.log(['info'], {
+        text: 'Server startup with environment variables set to: ' + JSON.stringify(environment),
+        source: 'Node.js',
+        severity: 'info',
+    });
+
+    return server;
+};
 
 const startSlave = async function () {
-    /* add plugins to server */
-    await server.register([require('@hapi/inert'), require('@hapi/nes')]);
+    const server = await getServer();
 
     /* define routes */
     server.route({
@@ -309,8 +320,7 @@ const startSlave = async function () {
 };
 
 const startMaster = async function () {
-    /* add plugins to server */
-    await server.register([require('@hapi/inert')]);
+    const server = await getServer();
 
     /* define routes */
     server.route({
