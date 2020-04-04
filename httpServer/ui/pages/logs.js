@@ -10,20 +10,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-import { getApiUrl, getWsUrl } from '../helpers/api-urls';
-
-const useStyles = makeStyles({
-    table: {
-        minWidth: 650,
-    },
-});
-
-function createData(loggedAt, source, text) {
-    return { loggedAt, source, text };
-}
+import { getApiUrl } from '../helpers/api-urls';
 
 const LogsPage = ({ className, ...other }) => {
-    const classes = useStyles();
 
     const [rows, setRows] = useState([]);
 
@@ -38,26 +27,58 @@ const LogsPage = ({ className, ...other }) => {
 
     return (
         <MasterLayout>
-            <TableContainer component={Paper}>
-                <Table className={classes.table} size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell size="small">Time</TableCell>
-                            <TableCell size="small">Source</TableCell>
-                            <TableCell align="left">Description</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.map((row) => (
-                            <TableRow key={row.loggedAt}>
-                                <TableCell size="small">{row.loggedAt}</TableCell>
-                                <TableCell size="small">{row.source}</TableCell>
-                                <TableCell align="left">{row.text}</TableCell>
+            <div className={'page-logs'}>
+                <div className={'page-logs__system-info'}>
+                    <div className={'page-logs__system-info__row'}>
+                        <div className={'page-logs__system-info__row__label'}>
+                            GUI version:
+                        </div>
+                        <div className={'page-logs__system-info__row__value'}>
+                            1.2
+                        </div>
+                    </div>
+                    <div className={'page-logs__system-info__row'}>
+                        <div className={'page-logs__system-info__row__label'}>
+                            Python daemon version:
+                        </div>
+                        <div className={'page-logs__system-info__row__value'}>
+                            1.2
+                        </div>
+                    </div>
+                    <div className={'page-logs__system-info__row'}>
+                        <div className={'page-logs__system-info__row__label'}>
+                            Server status:
+                        </div>
+                        <div className={'page-logs__system-info__row__value'}>
+                            <a href="/status">View status</a>
+                        </div>
+                    </div>
+                </div>
+                <TableContainer className={'logs-table'} component={Paper}>
+                    <Table size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell size="small">Time</TableCell>
+                                <TableCell size="small">Source</TableCell>
+                                <TableCell size="small">Severity</TableCell>
+                                <TableCell align="left">Description</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {rows.map((row) => (
+                                <TableRow key={row.loggedAt}>
+                                    <TableCell size="small">{row.loggedAt}</TableCell>
+                                    <TableCell size="small">{row.source}</TableCell>
+                                    <TableCell size="small">
+                                        <div className={'severity_column severity_column__severity__' + row.severity}>{row.severity}</div>
+                                    </TableCell>
+                                    <TableCell align="left">{row.text}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </div>
         </MasterLayout>
     );
 };

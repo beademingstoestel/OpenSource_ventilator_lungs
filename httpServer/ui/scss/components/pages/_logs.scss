@@ -1,0 +1,26 @@
+$b: 'page-logs';
+
+$b: 'page-logs';
+
+.#{$b} {
+    &__system-info {
+        margin-bottom: 2em;
+
+        &__row {
+            display: flex;
+            flex-flow: row nowrap;
+
+            &__label {
+                font-weight: bold;
+                flex-grow: 0;
+                margin-right: 2em;
+                min-width: 13em;
+            }
+
+            &__value {
+                font-weight: normal;
+                flex-grow: 1;
+            }
+        }
+    }
+}

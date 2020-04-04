@@ -31,7 +31,7 @@ export class LogEntriesController {
     async HandlePut(request: Request, h: ResponseToolkit) {
         const entry = <LogEntryValue>request.payload;
 
-        await this.repository.WriteEntry(entry.text, entry.source);
+        await this.repository.WriteEntry(entry);
 
         return {
             result: true,
