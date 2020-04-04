@@ -19,17 +19,16 @@ export default class DataPlot extends React.Component {
 
         if (this.props.data.length > 0) {
             if (this.props.multipleDatasets) {
-
                 for (let i = 0; i < this.props.data.length; i++) {
                     chartData.datasets.push({
                         label: 'dataset' + i,
-                        borderColor: this.colors[i],
+                        borderColor: this.props.data[i].color,
                         borderWidth: 2,
                         borderJoinStyle: 'round',
                         pointRadius: 0,
                         pointBorderWidth: 1,
                         lineTension: 0,
-                        data: this.props.data[i],
+                        data: this.props.data[i].data,
                         showLine: true,
                         fill: false,
                         hiddenLegend: true,
@@ -38,13 +37,13 @@ export default class DataPlot extends React.Component {
             } else {
                 chartData.datasets.push({
                     label: 'dataset',
-                    borderColor: '#ff6600',
+                    borderColor: this.props.data.color,
                     borderWidth: 2,
                     borderJoinStyle: 'round',
                     pointRadius: 0,
                     pointBorderWidth: 1,
                     lineTension: 0,
-                    data: this.props.data,
+                    data: this.props.data.data,
                     showLine: true,
                     fill: false,
                     hiddenLegend: true,

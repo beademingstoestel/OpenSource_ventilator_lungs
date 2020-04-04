@@ -178,20 +178,22 @@ export default class Dashboard extends React.Component {
         var cutoffTime = new Date().getTime() - this.state.xLengthMs;
 
         // shift old values
-        let i = 0;
-        for (i = 0; i < toArray.length; i++) {
-            if (toArray[i].x > cutoffTime) {
+        let removeSplicePoint = 0;
+        for (let i = 0; i < toArray.length; i++) {
+            if (toArray[i].loggedAt > cutoffTime) {
+                removeSplicePoint = i;
                 break;
             }
         }
 
-        if (i > 0) {
-            toArray.splice(0, i);
+        if (removeSplicePoint > 0) {
+            toArray.splice(0, removeSplicePoint);
         }
 
         newPoints.forEach((newPoint) => {
             toArray.push({
-                x: new Date(newPoint.loggedAt).getTime(),
+                loggedAt: new Date(newPoint.loggedAt).getTime(),
+                x: new Date(newPoint.loggedAt).getTime() - this.currentGraphTime,
                 y: newPoint.value,
             });
         });
@@ -362,68 +364,145 @@ export default class Dashboard extends React.Component {
             }
 
             const newPressureValues = [];
+            const oldPressureValues = [];
             const newVolumeValues = [];
+            const oldVolumeValues = [];
             const newTriggerValues = [];
+            const oldTriggerValues = [];
             const newFlowValues = [];
+            const oldFlowValues = [];
 
             this.rawPressureValues.forEach((point) => {
-                var newX = (point.x - this.currentGraphTime - serverTimeCorrection);
-
-                if (newX >= 0) {
-                    newPressureValues.push({
-                        y: point.y / integerPrecision,
-                        x: newX / 1000.0,
-                    });
+                if (point.loggedAt >= this.currentGraphTime) {
+                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                        newPressureValues.push({
+                            y: point.y / integerPrecision,
+                            x: point.x / 1000,
+                        });
+                    }
+                } else {
+                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                        oldPressureValues.push({
+                            y: point.y / integerPrecision,
+                            x: point.x / 1000,
+                        });
+                    }
                 }
             });
 
             this.rawVolumeValues.forEach((point) => {
-                var newX = (point.x - this.currentGraphTime - serverTimeCorrection);
-
-                if (newX >= 0) {
-                    newVolumeValues.push({
-                        y: point.y / integerPrecision,
-                        x: newX / 1000.0,
-                    });
+                if (point.loggedAt >= this.currentGraphTime) {
+                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                        newVolumeValues.push({
+                            y: point.y / integerPrecision,
+                            x: point.x / 1000.0,
+                        });
+                    }
+                } else {
+                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                        oldVolumeValues.push({
+                            y: point.y / integerPrecision,
+                            x: point.x / 1000,
+                        });
+                    }
                 }
             });
 
             this.rawTriggerValues.forEach((point) => {
-                var newX = (point.x - this.currentGraphTime - serverTimeCorrection);
-
-                if (newX >= 0) {
-                    newTriggerValues.push({
-                        y: point.y * 40,
-                        x: newX / 1000.0,
-                    });
+                if (point.loggedAt >= this.currentGraphTime) {
+                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                        newTriggerValues.push({
+                            y: point.y * 40,
+                            x: point.x / 1000.0,
+                        });
+                    }
+                } else {
+                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                        oldTriggerValues.push({
+                            y: point.y * 40,
+                            x: point.x / 1000,
+                        });
+                    }
                 }
             });
 
             this.rawFlowValues.forEach((point) => {
-                var newX = (point.x - this.currentGraphTime - serverTimeCorrection);
-
-                if (newX >= 0) {
-                    newFlowValues.push({
-                        y: point.y,
-                        x: newX / 1000.0,
-                    });
+                if (point.loggedAt >= this.currentGraphTime) {
+                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                        newFlowValues.push({
+                            y: point.y,
+                            x: point.x / 1000.0,
+                        });
+                    }
+                } else {
+                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                        oldFlowValues.push({
+                            y: point.y / integerPrecision,
+                            x: point.x / 1000,
+                        });
+                    }
                 }
             });
 
-            const newPressureDataPlots = [newPressureValues];
-            const newFlowDataPlots = [newFlowValues];
+            const newPressureDataPlots = [
+                {
+                    data: newPressureValues,
+                    color: '#ff6600',
+                },
+                {
+                    data: oldPressureValues,
+                    color: '#ff6600',
+                },
+            ];
+            const newFlowDataPlots = [
+                {
+                    data: newFlowValues,
+                    color: '#ff6600',
+                },
+                {
+                    data: oldFlowValues,
+                    color: '#ff6600',
+                },
+            ];
 
             // show the trigger in the right graph depending on the mode
             if (this.state.settings.MODE === 1) {
-                newPressureDataPlots.push(newTriggerValues);
+                newPressureDataPlots.push(
+                    {
+                        data: newTriggerValues,
+                        color: '#003399',
+                    },
+                    {
+                        data: oldTriggerValues,
+                        color: '#003399',
+                    },
+                );
             } else {
-                newFlowDataPlots.push(newTriggerValues);
+                newFlowDataPlots.push(
+                    {
+                        data: newTriggerValues,
+                        color: '#003399',
+                    },
+                    {
+                        data: oldTriggerValues,
+                        color: '#003399',
+                    },
+                );
             }
 
             self.setState({
                 pressureDataPlots: newPressureDataPlots,
                 flowDataPlots: newFlowDataPlots,
-                volumeValues: newVolumeValues,
+                volumeValues: [
+                    {
+                        data: newVolumeValues,
+                        color: '#ff6600',
+                    },
+                    {
+                        data: oldVolumeValues,
+                        color: '#ff6600',
+                    },
+                ],
                 pressureStatus: 'normal',
                 bpmStatus: 'normal',
                 volumeStatus: 'normal',
@@ -595,7 +674,7 @@ export default class Dashboard extends React.Component {
                                         maxY={100} />
                                     <DataPlot title='Volume (mL)'
                                         data={this.state.volumeValues}
-                                        multipleDatasets={false}
+                                        multipleDatasets={true}
                                         timeScale={this.state.xLengthMs / 1000.0}
                                         minY={-50}
                                         maxY={800}
