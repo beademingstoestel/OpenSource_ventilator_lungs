@@ -5,16 +5,16 @@ import { LogEntryValue } from '../Models/LogEntryValue';
 
 export class TestLogEntriesRepository implements ILogEntriesRepository {
 
-    createData(loggedAt, source, text) {
-        return { loggedAt, source, text };
+    createData(loggedAt, severity, source, text) {
+        return { loggedAt, severity, source, text };
     }
 
-    async ReadEntries(since: Date): Promise<LogEntryValue[]> {
+    async ReadEntries(start: number, size: number, severity: string): Promise<LogEntryValue[]> {
         return new Promise((resolve, reject) => {
-            let retValue = [
-                this.createData(123, "source 1", "problem with ABC"),
-                this.createData(124, "source 2", "problem with DEF"),
-                this.createData(125, "source 3", "problem with GHI"),
+            const retValue = [
+                this.createData(123, severity, 'source 1', 'problem with ABC'),
+                this.createData(124, severity, 'source 2', 'problem with DEF'),
+                this.createData(125, severity, 'source 3', 'problem with GHI'),
             ];
 
             resolve(retValue);

@@ -2,6 +2,6 @@
 import { LogEntryValue } from '../Models/LogEntryValue';
 
 export interface ILogEntriesRepository {
-    ReadEntries(since: Date): Promise<Array<LogEntryValue>>;
+    ReadEntries(start: number, size: number, severity: string): Promise<Array<LogEntryValue>>;
     WriteEntry(text: string, source: string): Promise<any>;
 }

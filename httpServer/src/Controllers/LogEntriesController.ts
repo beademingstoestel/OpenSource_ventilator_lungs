@@ -2,34 +2,34 @@
 import { Request, ResponseToolkit, HandlerDecorations, Lifecycle } from '@hapi/hapi';
 // eslint-disable-next-line no-unused-vars
 import { ILogEntriesRepository } from '../Repositories/ILogEntriesRepository';
+// eslint-disable-next-line no-unused-vars
 import { LogEntryValue } from '../Models/LogEntryValue';
 
 export class LogEntriesController {
     constructor(private repository: ILogEntriesRepository) {}
 
-    DateFromRequest(request: Request): Date {
-        let since: Date;
+    async HandleGet(request: Request, h: ResponseToolkit) {
+        let start: number = parseInt(request.params.start);
+        let size: number = parseInt(request.params.size);
+        let severity: string = request.params.severity;
 
-        if (request.query.since) {
-            const sinceString: string = <string>request.query.since;
-            since = new Date(sinceString);
-        } else {
-            // default last hour
-            since = new Date();
-            since.setTime(since.getTime() - (3600 * 1000));
+        if (!start) {
+            start = 0;
         }
 
-        return since;
-    }
+        if (!size) {
+            size = 50;
+        }
 
-    async HandleGet(request: Request, h: ResponseToolkit) {
-        const since: Date = this.DateFromRequest(request);
+        if (!severity) {
+            severity = 'info';
+        }
 
-        return this.repository.ReadEntries(since);
+        return this.repository.ReadEntries(start, size, severity);
     }
 
     async HandlePut(request: Request, h: ResponseToolkit) {
-        const entry = <LogEntryValue> request.payload;
+        const entry = <LogEntryValue>request.payload;
 
         await this.repository.WriteEntry(entry.text, entry.source);
 
