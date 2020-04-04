@@ -62,7 +62,7 @@ export default class DataPlot extends React.Component {
                 pointRadius: 0,
                 pointBorderWidth: 1,
                 lineTension: 0,
-                data: [{ x: -1 * this.props.timeScale, y: this.props.peak }, { x: 0, y: this.props.peak }],
+                data: [{ x: 0, y: this.props.peak }, { x: this.props.timeScale, y: this.props.peak }],
                 showLine: true,
                 fill: false,
             });
@@ -81,7 +81,7 @@ export default class DataPlot extends React.Component {
                 pointRadius: 0,
                 pointBorderWidth: 1,
                 lineTension: 0,
-                data: [{ x: -1 * this.props.timeScale, y: upperThreshold }, { x: 0, y: upperThreshold }],
+                data: [{ x: 0, y: upperThreshold }, { x: this.props.timeScale, y: upperThreshold }],
                 showLine: true,
                 fill: false,
             });
@@ -95,7 +95,7 @@ export default class DataPlot extends React.Component {
                 pointRadius: 0,
                 pointBorderWidth: 1,
                 lineTension: 0,
-                data: [{ x: -1 * this.props.timeScale, y: lowerThreshold }, { x: 0, y: lowerThreshold }],
+                data: [{ x: 0, y: lowerThreshold }, { x: this.props.timeScale, y: lowerThreshold }],
                 showLine: true,
                 fill: false,
             });
@@ -118,8 +118,8 @@ export default class DataPlot extends React.Component {
                     ticks: {
                         beginAtZero: false,
                         display: true,
-                        suggestedMin: -1 * this.props.timeScale,
-                        suggestedMax: 0,
+                        suggestedMin: 0,
+                        suggestedMax: this.props.timeScale,
                     },
                 }],
             },
@@ -138,6 +138,7 @@ export default class DataPlot extends React.Component {
             },
             title: {
                 display: true,
+                position: 'left',
                 text: title,
                 padding: 10,
                 lineHeight: 1,

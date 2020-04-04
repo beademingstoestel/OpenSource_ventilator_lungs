@@ -29,7 +29,7 @@ const SingleValueDisplaySettings = dynamic(() => import('../components/single-va
 // eslint-disable-next-line no-unused-vars
 const SingleValueDisplaySettingsOnly = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplaySettingsOnly), { ssr: false });
 
-const refreshRate = 50;
+const refreshRate = 200;
 const defaultXRange = 10000;
 const integerPrecision = 1;
 const minimumIE = 0.25;
@@ -37,6 +37,7 @@ const maximumIE = 0.50;
 let serverTimeCorrection = 0;
 
 export default class Dashboard extends React.Component {
+    currentGraphTime = new Date().getTime();
     rawPressureValues = [];
     rawVolumeValues = [];
     rawFlowValues = [];
@@ -53,10 +54,9 @@ export default class Dashboard extends React.Component {
         super(props);
 
         this.state = {
-            pressureValues: [],
+            pressureDataPlots: [],
+            flowDataPlots: [],
             volumeValues: [],
-            triggerValues: [],
-            flowValues: [],
             xLengthMs: defaultXRange,
             lastPressure: 0,
             lastVolume: 0,
@@ -356,15 +356,20 @@ export default class Dashboard extends React.Component {
 
         this.animationInterval = setInterval(() => {
             var now = new Date().getTime();
+
+            if (this.currentGraphTime + this.state.xLengthMs < now) {
+                this.currentGraphTime = now;
+            }
+
             const newPressureValues = [];
             const newVolumeValues = [];
             const newTriggerValues = [];
             const newFlowValues = [];
 
             this.rawPressureValues.forEach((point) => {
-                var newX = (point.x - now - serverTimeCorrection);
+                var newX = (point.x - this.currentGraphTime - serverTimeCorrection);
 
-                if (newX <= 0 && newX >= -this.state.xLengthMs) {
+                if (newX >= 0) {
                     newPressureValues.push({
                         y: point.y / integerPrecision,
                         x: newX / 1000.0,
@@ -373,9 +378,9 @@ export default class Dashboard extends React.Component {
             });
 
             this.rawVolumeValues.forEach((point) => {
-                var newX = (point.x - now - serverTimeCorrection);
+                var newX = (point.x - this.currentGraphTime - serverTimeCorrection);
 
-                if (newX <= 0 && newX >= -this.state.xLengthMs) {
+                if (newX >= 0) {
                     newVolumeValues.push({
                         y: point.y / integerPrecision,
                         x: newX / 1000.0,
@@ -384,20 +389,20 @@ export default class Dashboard extends React.Component {
             });
 
             this.rawTriggerValues.forEach((point) => {
-                var newX = (point.x - now - serverTimeCorrection);
+                var newX = (point.x - this.currentGraphTime - serverTimeCorrection);
 
-                if (newX <= 0 && newX >= -this.state.xLengthMs) {
+                if (newX >= 0) {
                     newTriggerValues.push({
-                        y: point.y * 400,
+                        y: point.y * 40,
                         x: newX / 1000.0,
                     });
                 }
             });
 
             this.rawFlowValues.forEach((point) => {
-                var newX = (point.x - now - serverTimeCorrection);
+                var newX = (point.x - this.currentGraphTime - serverTimeCorrection);
 
-                if (newX <= 0 && newX >= -this.state.xLengthMs) {
+                if (newX >= 0) {
                     newFlowValues.push({
                         y: point.y,
                         x: newX / 1000.0,
@@ -405,11 +410,20 @@ export default class Dashboard extends React.Component {
                 }
             });
 
+            const newPressureDataPlots = [newPressureValues];
+            const newFlowDataPlots = [newFlowValues];
+
+            // show the trigger in the right graph depending on the mode
+            if (this.state.settings.MODE === 1) {
+                newPressureDataPlots.push(newTriggerValues);
+            } else {
+                newFlowDataPlots.push(newTriggerValues);
+            }
+
             self.setState({
-                pressureValues: newPressureValues,
+                pressureDataPlots: newPressureDataPlots,
+                flowDataPlots: newFlowDataPlots,
                 volumeValues: newVolumeValues,
-                triggerValues: newTriggerValues,
-                flowValues: newFlowValues,
                 pressureStatus: 'normal',
                 bpmStatus: 'normal',
                 volumeStatus: 'normal',
@@ -566,20 +580,22 @@ export default class Dashboard extends React.Component {
                             <div className="box u-mt-1">
                                 <div className="box__body">
                                     <DataPlot title='Pressure (cmH2O)'
-                                        data={this.state.pressureValues}
+                                        data={this.state.pressureDataPlots}
+                                        multipleDatasets={true}
                                         timeScale={this.state.xLengthMs / 1000.0}
                                         minY={-5}
                                         maxY={80}
                                         peak={this.state.settings.PK}
                                         threshold={this.state.settings.ADPK} />
                                     <DataPlot title='Flow (L/min)'
-                                        data={this.state.flowValues}
+                                        data={this.state.flowDataPlots}
+                                        multipleDatasets={true}
                                         timeScale={this.state.xLengthMs / 1000.0}
                                         minY={-100}
                                         maxY={100} />
                                     <DataPlot title='Volume (mL)'
-                                        data={[this.state.volumeValues, this.state.triggerValues]}
-                                        multipleDatasets={true}
+                                        data={this.state.volumeValues}
+                                        multipleDatasets={false}
                                         timeScale={this.state.xLengthMs / 1000.0}
                                         minY={-50}
                                         maxY={800}
