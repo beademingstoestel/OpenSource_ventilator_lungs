@@ -96,10 +96,24 @@ Create a file called env-local.json in the root of the project. It is advisable 
 - /api/patient_info:
   - GET: retrieve the patient info
   - PUT: change the patient info
+- /api/logs:
+  - GET: retrieve the logs
+    - query parameters:
+      - start: number
+      - size: number 
+  - PUT: add a new log entry
+    - body json object:
+      - severity: string (info, debug, warning, error)
+      - source: string (python, nodejs)
+      - text: string
+      - loggedAt: datetime
 - /api/pressure_values
+- /api/cpu_values
+- /api/flow_values
 - /api/volume_values
 - /api/trigger_values
 - /api/breathsperminute_values
   - GET: retrieve an array with values
-    - query parameter: since Date object, default 5 seconds ago
+    - query parameters: 
+      - since: Date object, default 5 seconds ago
   - @hapi/nes: listen for new values coming in

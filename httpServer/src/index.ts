@@ -198,13 +198,13 @@ const startSlave = async function () {
 
     server.route({
         method: 'GET',
-        path: '/api/logs/read',
-        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new PatientInfoController(settingsRepositoryFactory()).HandleGet(request, h),
+        path: '/api/logs',
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new LogEntriesController(logsRepositoryFactory()).HandleGet(request, h),
     });
 
     server.route({
         method: 'PUT',
-        path: '/api/logs/write',
+        path: '/api/logs',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new LogEntriesController(logsRepositoryFactory()).HandlePut(request, h),
     });
 

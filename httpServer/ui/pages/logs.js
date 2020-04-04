@@ -29,17 +29,8 @@ const LogsPage = ({ className, ...other }) => {
 
     useEffect(() => {
         const fetchRows = async () => {
-            const res = await fetch(`${getApiUrl()}/api/log/read`);
-            console.log(res);
-            //setRows(res);
-
-            setRows([
-                createData(123, "source 1", "problem with ABC"),
-                createData(124, "source 2", "problem with DEF"),
-                createData(125, "source 3", "problem with GHI"),
-            ]);
-
-
+            const res = await fetch(`${getApiUrl()}/api/logs`);
+            setRows(await res.json());
         };
 
         fetchRows();

@@ -8,7 +8,7 @@ import { MongoClient, Db } from 'mongodb';
 export class MongoLogEntriesRepository implements ILogEntriesRepository {
     constructor(private mongoClient: MongoClient) { }
 
-    async ReadEntries(since: Date): Promise<LogEntryValue[]> {
+    async ReadEntries(start: Number, size: Number, severity: string): Promise<LogEntryValue[]> {
         try {
             if (!this.mongoClient.isConnected()) {
                 await this.mongoClient.connect();
@@ -16,11 +16,7 @@ export class MongoLogEntriesRepository implements ILogEntriesRepository {
 
             const db: Db = this.mongoClient.db('beademing');
 
-            return db.collection('logs').find({
-                loggedAt: {
-                    $gt: since,
-                },
-            }).toArray();
+            return db.collection('logs').find({}).toArray();
         } catch (exception) {
             // todo: log exception
             console.error(exception);
