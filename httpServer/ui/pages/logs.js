@@ -83,7 +83,7 @@ const LogsPage = ({ className, ...other }) => {
                         <TableBody>
                             {rows.map((row) => (
                                 <TableRow key={row._id}>
-                                    <TableCell size="small" className={'logs-table__small-width'}>{row.loggedAt}</TableCell>
+                                    <TableCell size="small" className={'logs-table__small-width'}>{new Date(row.loggedAt).toLocaleString()}</TableCell>
                                     <TableCell size="small" className={'logs-table__small-width'}>{row.source}</TableCell>
                                     <TableCell size="small" className={'logs-table__small-width'}>
                                         <div className={'logs-table__severity_column logs-table__severity_column__' + row.severity}>{row.severity}</div>

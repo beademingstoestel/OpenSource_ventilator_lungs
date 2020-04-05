@@ -31,6 +31,12 @@ export class SettingsController {
             }
         }
 
+        request.log(['info'], {
+            text: 'Update settings value: ' + JSON.stringify(settings, null, '\t'),
+            source: 'Node.js',
+            severity: 'info',
+        });
+
         return {
             result: true,
             settings: completeSettings,
