@@ -84,6 +84,35 @@ $b: 'page-dashboard';
                 &__settings {
                     width: 30rem;
                     flex-grow: 0;
+
+                    .save-button {
+                        margin: 0rem;
+                        margin-top: 1rem;
+                        color: #333;
+                        height: 3.2rem;
+                        line-height: 1.5rem;
+                        font-size: 1.5em;
+                        width: 100%;
+                        padding: 0 0.5rem 0 0.5rem;
+                        text-transform: uppercase;
+                        border: 1px solid #333;
+                        border-radius: 4px;
+            
+                        svg {
+                            display: inline-block;
+                            height: 1rem;
+                            vertical-align: middle;
+
+                            path {
+                                fill: #333;
+                            }
+                        }
+            
+                        span {
+                            margin-left: 0.25rem;
+                            vertical-align: middle;
+                        }
+                    }
                 }
             }
         }

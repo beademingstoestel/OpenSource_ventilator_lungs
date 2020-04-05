@@ -54,7 +54,7 @@ $b: 'single-value-display';
         flex-wrap: wrap;
 
         > * {
-            flex: 1 1 calc(50% - 2rem);
+            flex: 1 1 calc(33% - 2rem);
         }
     }
 }
@@ -63,7 +63,7 @@ $b: 'single-value-display';
     margin: 1rem;
 
     &__name {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0;
     }
 
     &__controls {
@@ -85,7 +85,6 @@ $b: 'single-value-display';
 
     &__value {
         font-size: 2rem;
-        margin-left: 0.5rem;
         margin-right: 0.2rem;
     }
 }
