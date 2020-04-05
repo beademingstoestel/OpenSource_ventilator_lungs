@@ -11,6 +11,7 @@ $b: 'master-layout';
     &__content {
         flex: 1 1 auto;
         padding: 2rem;
+        padding-bottom: 0px;
 
         > * {
             height: 100%;

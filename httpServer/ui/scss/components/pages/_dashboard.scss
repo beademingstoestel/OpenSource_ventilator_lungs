@@ -4,6 +4,7 @@ $b: 'page-dashboard';
     display: flex;
     flex-direction: column;
     margin: -2rem;
+    height: calc(100% + 2rem);
 
     &__header {
         box-shadow: 0 1px 5px rgba(#000, 0.25);
@@ -60,7 +61,6 @@ $b: 'page-dashboard';
 
     &__layout {
         background-color: #f8f9fc;
-        flex: 1 0 auto;
         flex-grow: 1;
 
         display: flex;
