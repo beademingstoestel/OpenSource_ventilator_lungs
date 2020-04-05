@@ -22,10 +22,10 @@ export class TestRepository implements IValuesRepository {
                 randAmplitude = 40;
             }
 
-            const steps = (now - since.getTime()) / 50;
+            const steps = (now - since.getTime()) / 25;
 
             for (let i = 0; i < steps; i++) {
-                const time = since.getTime() + i * 50;
+                const time = since.getTime() + i * 25;
                 ret.push({
                     value: collection !== 'flow_values' ? Math.abs(Math.sin(time) * randAmplitude) : Math.sin(time) * randAmplitude,
                     loggedAt: new Date(time),

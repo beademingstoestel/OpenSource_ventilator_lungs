@@ -36,38 +36,43 @@ const LogsPage = ({ className, ...other }) => {
     return (
         <MasterLayout>
             <div className={'page-logs'}>
-                <div className={'page-logs__system-info'}>
-                    <div className={'page-logs__system-info__row'}>
-                        <div className={'page-logs__system-info__row__label'}>
-                            GUI version:
+                <div className={'page-logs__header'}>
+                    <div className={'page-logs__header__system-info'}>
+                        <div className={'page-logs__header__system-info__row'}>
+                            <div className={'page-logs__header__system-info__row__label'}>
+                                GUI version:
+                            </div>
+                            <div className={'page-logs__header__system-info__row__value'}>
+                                { version }
+                            </div>
                         </div>
-                        <div className={'page-logs__system-info__row__value'}>
-                            { version }
+                        <div className={'page-logs__header__system-info__row'}>
+                            <div className={'page-logs__header__system-info__row__label'}>
+                                Python daemon version:
+                            </div>
+                            <div className={'page-logs__header__system-info__row__value'}>
+                                { pythonVersion }
+                            </div>
+                        </div>
+                        <div className={'page-logs__header__system-info__row'}>
+                            <div className={'page-logs__header__system-info__row__label'}>
+                                Firmware version:
+                            </div>
+                            <div className={'page-logs__header__system-info__row__value'}>
+                                { firmwareVersion }
+                            </div>
+                        </div>
+                        <div className={'page-logs__header__system-info__row'}>
+                            <div className={'page-logs__header__system-info__row__label'}>
+                                Server status:
+                            </div>
+                            <div className={'page-logs__header__system-info__row__value'}>
+                                <a href="/status">View status</a>
+                            </div>
                         </div>
                     </div>
-                    <div className={'page-logs__system-info__row'}>
-                        <div className={'page-logs__system-info__row__label'}>
-                            Python daemon version:
-                        </div>
-                        <div className={'page-logs__system-info__row__value'}>
-                            { pythonVersion }
-                        </div>
-                    </div>
-                    <div className={'page-logs__system-info__row'}>
-                        <div className={'page-logs__system-info__row__label'}>
-                            Firmware version:
-                        </div>
-                        <div className={'page-logs__system-info__row__value'}>
-                            { firmwareVersion }
-                        </div>
-                    </div>
-                    <div className={'page-logs__system-info__row'}>
-                        <div className={'page-logs__system-info__row__label'}>
-                            Server status:
-                        </div>
-                        <div className={'page-logs__system-info__row__value'}>
-                            <a href="/status">View status</a>
-                        </div>
+                    <div className={'page-logs__header__buttons'}>
+                        <button className={'btn btn--primary'}>Set test settings</button>
                     </div>
                 </div>
                 <TableContainer className={'logs-table'} component={Paper}>

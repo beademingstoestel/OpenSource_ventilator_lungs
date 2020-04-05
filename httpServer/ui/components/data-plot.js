@@ -5,10 +5,15 @@ import { isArray } from 'util';
 
 export default class DataPlot extends React.Component {
 
-    colors = [
-        '#ff6600',
-        '#003399',
-    ];
+    convertHex(hex, opacity) {
+        hex = hex.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+
+        const result = 'rgba(' + r + ',' + g + ',' + b + ',' + opacity + ')';
+        return result;
+    }
 
     render() {
         const title = this.props.title;
@@ -30,7 +35,8 @@ export default class DataPlot extends React.Component {
                         lineTension: 0,
                         data: this.props.data[i].data,
                         showLine: true,
-                        fill: false,
+                        fill: this.props.data[i].fill,
+                        backgroundColor: this.convertHex(this.props.data[i].color, 0.3),
                         hiddenLegend: true,
                     });
                 }

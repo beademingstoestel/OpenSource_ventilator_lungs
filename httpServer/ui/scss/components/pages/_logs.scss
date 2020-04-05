@@ -3,24 +3,41 @@ $b: 'page-logs';
 $b: 'page-logs';
 
 .#{$b} {
-    &__system-info {
-        margin-bottom: 2em;
+    &__header {
+        display: flex;
+        flex-flow: row nowrap;
 
-        &__row {
-            display: flex;
-            flex-flow: row nowrap;
+        &__buttons {
+            flex-grow: 0;
+            vertical-align: middle;
 
-            &__label {
-                font-weight: bold;
-                flex-grow: 0;
-                margin-right: 2em;
-                min-width: 13em;
+            button {
+                vertical-align: middle;
             }
+        }
 
-            &__value {
-                font-weight: normal;
-                flex-grow: 1;
+        &__system-info {
+            flex-grow: 1;
+            margin-bottom: 2em;
+    
+            &__row {
+                display: flex;
+                flex-flow: row nowrap;
+    
+                &__label {
+                    font-weight: bold;
+                    flex-grow: 0;
+                    margin-right: 2em;
+                    min-width: 13em;
+                }
+    
+                &__value {
+                    font-weight: normal;
+                    flex-grow: 1;
+                }
             }
         }
     }
+
+    
 }

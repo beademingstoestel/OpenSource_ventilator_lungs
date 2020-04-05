@@ -3,6 +3,7 @@ $b: 'alert';
 .#{$b} {
     padding: 1rem;
     font-weight: $font-weight-bold;
+    margin-bottom: 1rem;
 
     &--danger {
         color: get-status-color('danger');
