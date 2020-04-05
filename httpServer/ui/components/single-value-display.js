@@ -104,6 +104,7 @@ const SingleValueDisplay = ({
     name,
     unit,
     updateValue,
+    decimal = 2,
     status = 'default',
     children,
     className,
@@ -112,11 +113,8 @@ const SingleValueDisplay = ({
     return (
         <div className={cx('single-value-display', `single-value-display--${status}`, className)} {...other}>
             <div className="single-value-display__data">
-                <div className="single-value-display__name">{name}</div>
-                <div className="single-value-display__value">{toFixedSafe(value, 2)}</div>
-            </div>
-            <div className="single-value-display__settings">
-                {children}
+                <div className="single-value-display__name" dangerouslySetInnerHTML={{ __html: name }}></div>
+                <div className="single-value-display__value">{toFixedSafe(value, decimal)}</div>
             </div>
         </div>
     );

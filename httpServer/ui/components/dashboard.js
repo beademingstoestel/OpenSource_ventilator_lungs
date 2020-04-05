@@ -90,7 +90,6 @@ export default class Dashboard extends React.Component {
                 MODE: 0,
                 ACTIVE: 0,
             },
-            showSettings: false,
             hasDirtySettings: false,
             updateSetting: (key, setting) => {
                 const settings = { ...this.state.settings };
@@ -647,6 +646,28 @@ export default class Dashboard extends React.Component {
                 </div>
 
                 <div className="page-dashboard__layout">
+                    <div className="page-dashboard__layout__sidebar">
+                        <div>
+                            <SingleValueDisplay
+                                name="Pressure"
+                                value={this.state.lastPressure}
+                                status={this.state.pressureStatus}
+                                decimal={false}
+                            ></SingleValueDisplay>
+                            <SingleValueDisplay
+                                name="Respiratory<br />rate"
+                                value={this.state.bpmValue}
+                                status={this.state.bpmStatus}
+                                decimal={false}
+                            ></SingleValueDisplay>
+                            <SingleValueDisplay
+                                name="Volume"
+                                value={this.state.lastVolume}
+                                decimal={false}
+                                status={this.state.volumeStatus}>
+                            </SingleValueDisplay>
+                        </div>
+                    </div>
                     <div className="page-dashboard__layout__body">
                         <div className="page-dashboard__alert alert alert--danger" hidden>Trigger parameter has alert</div>
                         <div className="page-dashboard__layout__body__measurements">
@@ -693,199 +714,168 @@ export default class Dashboard extends React.Component {
                                 </div>
                             </div>
                             <div className="page-dashboard__layout__body__measurements__settings">
-                                {!this.state.showSettings &&
-                                    <div>
-                                        <SingleValueDisplay
-                                            name="Pressure"
-                                            value={this.state.lastPressure}
-                                            status={this.state.pressureStatus}
-                                        >
-                                        </SingleValueDisplay>
-                                        <SingleValueDisplay
-                                            name="Respiratory rate"
-                                            value={this.state.bpmValue}
-                                            status={this.state.bpmStatus}
-                                        >
-                                        </SingleValueDisplay>
-                                        <SingleValueDisplay
-                                            name="Volume"
-                                            value={this.state.lastVolume}
-                                            status={this.state.volumeStatus}>
+                                <div>
+                                    <SingleValueDisplaySettingsOnly>
+                                        <SingleValueDisplaySettings
+                                            name="Peak pressure (PP)"
+                                            value={this.state.settings.PK}
+                                            unit="cmH2O"
+                                            settingKey={'PK'}
+                                            decimal={false}
+                                            step={1}
+                                            minValue={10}
+                                            maxValue={70}
+                                            warningThreshold={36}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                        <SingleValueDisplaySettings
+                                            name="Threshold PP"
+                                            value={this.state.settings.ADPK}
+                                            unit="cmH2O"
+                                            settingKey={'ADPK'}
+                                            decimal={false}
+                                            step={1}
+                                            minValue={0}
+                                            maxValue={35}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                        <SingleValueDisplaySettings
+                                            name="Set PEEP"
+                                            value={this.state.settings.PP}
+                                            settingKey={'PP'}
+                                            unit="cmH2O"
+                                            decimal={false}
+                                            step={5}
+                                            minValue={5}
+                                            maxValue={20}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                        <SingleValueDisplaySettings
+                                            name="Set PEEP threshold"
+                                            value={this.state.settings.ADPP}
+                                            settingKey={'ADPP'}
+                                            unit="cmH2O"
+                                            decimal={false}
+                                            step={1}
+                                            minValue={0}
+                                            maxValue={100}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                    </SingleValueDisplaySettingsOnly>
+                                    <SingleValueDisplaySettingsOnly>
+                                        <SingleValueDisplaySettings
+                                            name="Tidal volume (TV)"
+                                            value={this.state.settings.VT}
+                                            settingKey={'VT'}
+                                            unit="mL"
+                                            step={50}
+                                            minValue={250}
+                                            maxValue={800}
+                                            decimal={false}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                        <SingleValueDisplaySettings
+                                            name="Threshold VT"
+                                            value={this.state.settings.ADVT}
+                                            settingKey={'ADVT'}
+                                            unit="mL"
+                                            step={10}
+                                            minValue={0}
+                                            maxValue={200}
+                                            decimal={false}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                    </SingleValueDisplaySettingsOnly>
+                                    <SingleValueDisplaySettingsOnly>
+                                        <SingleValueDisplaySettings
+                                            name="Set RR value"
+                                            value={this.state.settings.RR}
+                                            settingKey={'RR'}
+                                            unit="bpm"
+                                            step={2}
+                                            minValue={10}
+                                            maxValue={30}
+                                            decimal={false}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                        <SingleValueDisplaySettings
+                                            name="I/E"
+                                            value={this.state.settings.IE}
+                                            settingKey={'IE'}
+                                            decimal={2}
+                                            step={0.05}
+                                            minValue={0.25}
+                                            maxValue={0.5}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                        <SingleValueDisplaySettings
+                                            name="Set T/inhale"
+                                            value={this.state.settings.TI}
+                                            settingKey={'TI'}
+                                            unit="sec"
+                                            decimal={1}
+                                            step={0.1}
+                                            minValue={this.state.minTInhale}
+                                            maxValue={this.state.maxTInhale}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                        <SingleValueDisplaySettings
+                                            name="Ramp"
+                                            value={this.state.settings.RP}
+                                            settingKey={'RP'}
+                                            unit="sec"
+                                            decimal={1}
+                                            step={0.1}
+                                            minValue={0.3}
+                                            maxValue={1.0}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                        {
+                                            this.state.settings.MODE === 0 && (
+                                                <SingleValueDisplaySettings
+                                                    name="Trigger sens. (V)"
+                                                    value={this.state.settings.TS}
+                                                    settingKey={'TS'}
+                                                    decimal={2}
+                                                    unit='L/min'
+                                                    step={0.1}
+                                                    minValue={0}
+                                                    maxValue={10}
+                                                    updateValue={this.state.updateSetting}
+                                                />
+                                            )
+                                        }
+                                        {
+                                            this.state.settings.MODE === 1 && (
+                                                <SingleValueDisplaySettings
+                                                    name="Trigger sensitivity (P)"
+                                                    value={this.state.settings.TP}
+                                                    settingKey={'TP'}
+                                                    decimal={2}
+                                                    unit='cmH2O'
+                                                    step={0.1}
+                                                    minValue={0}
+                                                    maxValue={10}
+                                                    updateValue={this.state.updateSetting}
+                                                />
+                                            )
+                                        }
+                                        <SingleValueDisplaySettings
+                                            name="Psupport"
+                                            value={this.state.settings.PS}
+                                            settingKey={'PS'}
+                                            unit="cmH2O"
+                                            decimal={false}
+                                            step={1}
+                                            minValue={10}
+                                            maxValue={this.state.maxPSupport}
+                                            updateValue={this.state.updateSetting}
+                                        />
+                                    </SingleValueDisplaySettingsOnly>
 
-                                        </SingleValueDisplay>
-                                    </div>
-                                }
-                                {this.state.showSettings &&
-                                    <div>
-                                        <SingleValueDisplaySettingsOnly>
-                                            <SingleValueDisplaySettings
-                                                name="Peak pressure (PP)"
-                                                value={this.state.settings.PK}
-                                                unit="cmH2O"
-                                                settingKey={'PK'}
-                                                decimal={false}
-                                                step={1}
-                                                minValue={10}
-                                                maxValue={70}
-                                                warningThreshold={36}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            <SingleValueDisplaySettings
-                                                name="Threshold PP"
-                                                value={this.state.settings.ADPK}
-                                                unit="cmH2O"
-                                                settingKey={'ADPK'}
-                                                decimal={false}
-                                                step={1}
-                                                minValue={0}
-                                                maxValue={35}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            <SingleValueDisplaySettings
-                                                name="Set PEEP"
-                                                value={this.state.settings.PP}
-                                                settingKey={'PP'}
-                                                unit="cmH2O"
-                                                decimal={false}
-                                                step={5}
-                                                minValue={5}
-                                                maxValue={20}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            <SingleValueDisplaySettings
-                                                name="Set PEEP threshold"
-                                                value={this.state.settings.ADPP}
-                                                settingKey={'ADPP'}
-                                                unit="cmH2O"
-                                                decimal={false}
-                                                step={1}
-                                                minValue={0}
-                                                maxValue={100}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                        </SingleValueDisplaySettingsOnly>
-                                        <SingleValueDisplaySettingsOnly>
-                                            <SingleValueDisplaySettings
-                                                name="Tidal volume (TV)"
-                                                value={this.state.settings.VT}
-                                                settingKey={'VT'}
-                                                unit="mL"
-                                                step={50}
-                                                minValue={250}
-                                                maxValue={800}
-                                                decimal={false}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            <SingleValueDisplaySettings
-                                                name="Threshold VT"
-                                                value={this.state.settings.ADVT}
-                                                settingKey={'ADVT'}
-                                                unit="mL"
-                                                step={10}
-                                                minValue={0}
-                                                maxValue={200}
-                                                decimal={false}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                        </SingleValueDisplaySettingsOnly>
-                                        <SingleValueDisplaySettingsOnly>
-                                            <SingleValueDisplaySettings
-                                                name="Set RR value"
-                                                value={this.state.settings.RR}
-                                                settingKey={'RR'}
-                                                unit="bpm"
-                                                step={2}
-                                                minValue={10}
-                                                maxValue={30}
-                                                decimal={false}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            <SingleValueDisplaySettings
-                                                name="I/E"
-                                                value={this.state.settings.IE}
-                                                settingKey={'IE'}
-                                                decimal={2}
-                                                step={0.05}
-                                                minValue={0.25}
-                                                maxValue={0.5}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            <SingleValueDisplaySettings
-                                                name="Set T/inhale"
-                                                value={this.state.settings.TI}
-                                                settingKey={'TI'}
-                                                unit="sec"
-                                                decimal={1}
-                                                step={0.1}
-                                                minValue={this.state.minTInhale}
-                                                maxValue={this.state.maxTInhale}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            <SingleValueDisplaySettings
-                                                name="Ramp"
-                                                value={this.state.settings.RP}
-                                                settingKey={'RP'}
-                                                unit="sec"
-                                                decimal={1}
-                                                step={0.1}
-                                                minValue={0.3}
-                                                maxValue={1.0}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            {
-                                                this.state.settings.MODE === 0 && (
-                                                    <SingleValueDisplaySettings
-                                                        name="Trigger sens. (V)"
-                                                        value={this.state.settings.TS}
-                                                        settingKey={'TS'}
-                                                        decimal={2}
-                                                        unit='L/min'
-                                                        step={0.1}
-                                                        minValue={0}
-                                                        maxValue={10}
-                                                        updateValue={this.state.updateSetting}
-                                                    />
-                                                )
-                                            }
-                                            {
-                                                this.state.settings.MODE === 1 && (
-                                                    <SingleValueDisplaySettings
-                                                        name="Trigger sensitivity (P)"
-                                                        value={this.state.settings.TP}
-                                                        settingKey={'TP'}
-                                                        decimal={2}
-                                                        unit='cmH2O'
-                                                        step={0.1}
-                                                        minValue={0}
-                                                        maxValue={10}
-                                                        updateValue={this.state.updateSetting}
-                                                    />
-                                                )
-                                            }
-                                            <SingleValueDisplaySettings
-                                                name="Psupport"
-                                                value={this.state.settings.PS}
-                                                settingKey={'PS'}
-                                                unit="cmH2O"
-                                                decimal={false}
-                                                step={1}
-                                                minValue={10}
-                                                maxValue={this.state.maxPSupport}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                        </SingleValueDisplaySettingsOnly>
-
-                                        <button className={'save-button'}>Save settings</button>
-                                    </div>
-                                }
+                                    <button className={'save-button'}>Confirm settings</button>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className="page-dashboard__layout__sidebar">
-                        <div>
-                            <button onClick={(ev) => this.setState({ showSettings: !this.state.showSettings })}>
-                                <GearIcon></GearIcon>
-                            </button>
                         </div>
                     </div>
                 </div>

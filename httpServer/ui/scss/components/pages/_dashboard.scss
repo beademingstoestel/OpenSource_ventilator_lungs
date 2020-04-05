@@ -119,19 +119,13 @@ $b: 'page-dashboard';
 
         &__sidebar {
             position: relative;
-            padding: 1rem;
-            background-color: #31708f;
+            padding: 0.5rem;
+            background-color: get-status-color('success');
             color: white;
             display: flex;
             flex-flow: row nowrap;
             flex-grow: 0;
-            width: 5rem;
-
-            button {
-                border: 1px solid white;
-                padding: 1rem;
-                border-radius: 4px;
-            }
+            width: 8rem;
         }
     }
 }

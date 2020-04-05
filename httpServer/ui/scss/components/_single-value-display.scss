@@ -5,13 +5,11 @@ $b: 'single-value-display';
     text-transform: uppercase;
     font-size: $font-size-small;
     border-radius: $border-radius-base;
-    border: 1px solid #fff;
     overflow: hidden;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     user-select: none;
-    width: 30rem;
 
     &__data {
         flex: 1 1 16rem;
@@ -23,7 +21,7 @@ $b: 'single-value-display';
     }
 
     &__value {
-        font-size: 3.5rem;
+        font-size: 3.0rem;
         font-family: monospace;
         cursor: pointer;
     }
@@ -52,6 +50,7 @@ $b: 'single-value-display';
         padding: 0;
         align-items: flex-start;
         flex-wrap: wrap;
+        border: 1px solid #fff;
 
         > * {
             flex: 1 1 calc(33% - 2rem);
