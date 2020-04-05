@@ -10,10 +10,6 @@ export class MongoLogEntriesRepository implements ILogEntriesRepository {
 
     async ReadEntries(start: Number, size: Number, severity: string): Promise<LogEntryValue[]> {
         try {
-            if (!this.mongoClient.isConnected()) {
-                await this.mongoClient.connect();
-            }
-
             const db: Db = this.mongoClient.db('beademing');
 
             return db.collection('logs').find({}).toArray();
@@ -25,10 +21,6 @@ export class MongoLogEntriesRepository implements ILogEntriesRepository {
 
     async WriteEntry(entry: LogEntryValue): Promise<void> {
         try {
-            if (!this.mongoClient.isConnected()) {
-                await this.mongoClient.connect();
-            }
-
             const db: Db = this.mongoClient.db('beademing');
 
             await db.collection('logs').insertOne(entry);

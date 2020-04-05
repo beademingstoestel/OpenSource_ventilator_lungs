@@ -10,10 +10,6 @@ export class MongoValuesRepository implements IValuesRepository {
 
     async ReadValues(collection: string, since: Date): Promise<TimeStampedValue[]> {
         try {
-            if (!this.mongoClient.isConnected()) {
-                await this.mongoClient.connect();
-            }
-
             const db: Db = this.mongoClient.db('beademing');
 
             return db.collection(collection).find({

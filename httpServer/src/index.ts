@@ -60,7 +60,7 @@ if (environment.RepositoryMode !== 'test') {
         connectionString += '?connect=direct;replicaSet=rs0;readPreference=primaryPreferred';
     }
 
-    mongoClient = new MongoClient(connectionString, { useUnifiedTopology: true, useNewUrlParser: true });
+    mongoClient = new MongoClient(connectionString, { useUnifiedTopology: true, useNewUrlParser: true, poolSize: 15 });
 }
 
 const valuesRepositoryFactory = function (): IValuesRepository {
@@ -118,6 +118,12 @@ const getServer = async function () {
                 logsRepository: logsRepositoryFactory(),
             },
         }]);
+
+    // get our mongodb connection ready
+    if (environment.RepositoryMode !== 'test') {
+        await mongoClient.connect();
+    }
+
     server.log(['info'], {
         text: 'Server startup with environment variables set to: ' + JSON.stringify(environment, null, '\t'),
         source: 'Node.js',

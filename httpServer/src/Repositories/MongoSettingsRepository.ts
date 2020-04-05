@@ -8,10 +8,6 @@ export class MongoSettingsRepository implements ISettingsRepository {
 
     async GetSettings(type: string): Promise<any> {
         try {
-            if (!this.mongoClient.isConnected()) {
-                await this.mongoClient.connect();
-            }
-
             const db: Db = this.mongoClient.db('beademing');
 
             const settingsObjects = await db.collection('settings').find({ type }).toArray();
@@ -32,10 +28,6 @@ export class MongoSettingsRepository implements ISettingsRepository {
 
     async SaveSettings(type: string, settings: any): Promise<any> {
         try {
-            if (!this.mongoClient.isConnected()) {
-                await this.mongoClient.connect();
-            }
-
             const oldSettings = await this.GetSettings(type);
             const newSettings = { ...oldSettings, ...settings };
 
