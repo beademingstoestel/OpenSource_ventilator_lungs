@@ -28,7 +28,7 @@ stages:
         command: build
         dockerfile: '$(Build.SourcesDirectory)/httpServer/docker/web/Dockerfile'
         buildContext: '$(Build.SourcesDirectory)/httpServer'
-        arguments: --build_number $(tag)
+        arguments: ----build-arg build_number=$(tag)
         tags: |
           $(tag)
           latest
