@@ -1,5 +1,32 @@
 $b: 'logs-table';
 
+.MuiPaper-root {
+    height: unset !important;
+}
+
 .#{$b} {
-    
+    &__severity_column {
+        background-color: darkred;
+        color: white;
+        text-align: center;
+        border-radius: 4px;
+
+        &__info {
+            background-color: darkgray;
+            color: #333;
+        }
+
+        &__warning {
+            background-color: darkorange;
+        }
+
+        &__debug {
+            background-color: lightgray;
+            color: #333;
+        }
+    }
+
+    &__small-width {
+        width: 10em;
+    }
 }

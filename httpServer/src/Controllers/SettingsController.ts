@@ -2,12 +2,17 @@
 import { Request, ResponseToolkit, HandlerDecorations, Lifecycle } from '@hapi/hapi';
 // eslint-disable-next-line no-unused-vars
 import { ISettingsRepository } from '../Repositories/ISettingsRepository';
+const { version } = require('../../package.json');
 
 export class SettingsController {
     constructor(private settingsRepository: ISettingsRepository, private broadCastSettings: (settings: any) => void) {}
 
     async HandleGet(request: Request, h: ResponseToolkit) {
-        return await this.settingsRepository.GetSettings('setting');
+        const settings = await this.settingsRepository.GetSettings('setting');
+
+        settings.GUI_VERSION = version;
+
+        return settings;
     }
 
     async HandlePut(request: Request, h: ResponseToolkit) {

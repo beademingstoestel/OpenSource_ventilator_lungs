@@ -119,7 +119,7 @@ const getServer = async function () {
             },
         }]);
     server.log(['info'], {
-        text: 'Server startup with environment variables set to: ' + JSON.stringify(environment),
+        text: 'Server startup with environment variables set to: ' + JSON.stringify(environment, null, '\t'),
         source: 'Node.js',
         severity: 'info',
     });
@@ -129,6 +129,11 @@ const getServer = async function () {
 
 const startSlave = async function () {
     const server = await getServer();
+    server.log(['debug'], {
+        text: 'Start server in slave mode.',
+        source: 'Node.js',
+        severity: 'debug',
+    });
 
     /* define routes */
     server.route({
@@ -321,6 +326,11 @@ const startSlave = async function () {
 
 const startMaster = async function () {
     const server = await getServer();
+    server.log(['debug'], {
+        text: 'Start server in master mode.',
+        source: 'Node.js',
+        severity: 'debug',
+    });
 
     /* define routes */
     server.route({

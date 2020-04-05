@@ -13,16 +13,24 @@ import Paper from '@material-ui/core/Paper';
 import { getApiUrl } from '../helpers/api-urls';
 
 const LogsPage = ({ className, ...other }) => {
-
     const [rows, setRows] = useState([]);
+    const [version, setVersion] = useState('-');
+    const [pythonVersion, setPythonVersion] = useState('-');
+    const [firmwareVersion, setFirmwareVersion] = useState('-');
 
     useEffect(() => {
-        const fetchRows = async () => {
-            const res = await fetch(`${getApiUrl()}/api/logs`);
-            setRows(await res.json());
+        const fetchData = async () => {
+            const resLogs = await fetch(`${getApiUrl()}/api/logs`);
+            setRows(await resLogs.json());
+
+            const resSettings = await fetch(`${getApiUrl()}/api/settings`);
+            const settings = await resSettings.json();
+            setVersion(settings.GUI_VERSION);
+            setPythonVersion(settings.PYTHON_VERSION ?? 'not set');
+            setFirmwareVersion(settings.FW ?? 'not set');
         };
 
-        fetchRows();
+        fetchData();
     }, []);
 
     return (
@@ -34,7 +42,7 @@ const LogsPage = ({ className, ...other }) => {
                             GUI version:
                         </div>
                         <div className={'page-logs__system-info__row__value'}>
-                            1.2
+                            { version }
                         </div>
                     </div>
                     <div className={'page-logs__system-info__row'}>
@@ -42,7 +50,15 @@ const LogsPage = ({ className, ...other }) => {
                             Python daemon version:
                         </div>
                         <div className={'page-logs__system-info__row__value'}>
-                            1.2
+                            { pythonVersion }
+                        </div>
+                    </div>
+                    <div className={'page-logs__system-info__row'}>
+                        <div className={'page-logs__system-info__row__label'}>
+                            Firmware version:
+                        </div>
+                        <div className={'page-logs__system-info__row__value'}>
+                            { firmwareVersion }
                         </div>
                     </div>
                     <div className={'page-logs__system-info__row'}>
@@ -66,13 +82,13 @@ const LogsPage = ({ className, ...other }) => {
                         </TableHead>
                         <TableBody>
                             {rows.map((row) => (
-                                <TableRow key={row.loggedAt}>
-                                    <TableCell size="small">{row.loggedAt}</TableCell>
-                                    <TableCell size="small">{row.source}</TableCell>
-                                    <TableCell size="small">
-                                        <div className={'severity_column severity_column__severity__' + row.severity}>{row.severity}</div>
+                                <TableRow key={row._id}>
+                                    <TableCell size="small" className={'logs-table__small-width'}>{row.loggedAt}</TableCell>
+                                    <TableCell size="small" className={'logs-table__small-width'}>{row.source}</TableCell>
+                                    <TableCell size="small" className={'logs-table__small-width'}>
+                                        <div className={'logs-table__severity_column logs-table__severity_column__' + row.severity}>{row.severity}</div>
                                     </TableCell>
-                                    <TableCell align="left">{row.text}</TableCell>
+                                    <TableCell align="left"><pre>{row.text}</pre></TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
