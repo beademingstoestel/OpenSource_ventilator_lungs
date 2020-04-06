@@ -92,6 +92,7 @@ export default class Dashboard extends React.Component {
                 ADPP: 0,
                 MODE: 0,
                 ACTIVE: 0,
+                MT: 0,
             },
             hasDirtySettings: false,
             updateSetting: (key, setting) => {
@@ -596,6 +597,10 @@ export default class Dashboard extends React.Component {
         }
     }
 
+    toggleMute(e) {
+        this.saveSetting('MT', e.target.checked ? 0 : 1);
+    }
+
     render() {
         return (
             <div className={cx('page-dashboard', this.props.className)}>
@@ -686,7 +691,7 @@ export default class Dashboard extends React.Component {
                         </div>
                     </div>
                     <div className="page-dashboard__layout__body">
-                        {this.state.currentAlarm &&
+                        {parseInt(this.state.currentAlarm) > 0 &&
                             <div className="page-dashboard__alert alert alert--danger">
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 1) &&
                                     <div>BPM too low</div>
@@ -750,7 +755,7 @@ export default class Dashboard extends React.Component {
                                     </div>
                                     <div className="form__group form__group--shrink">
                                         <div className="option-toggle option-toggle--danger">
-                                            <input type="checkbox" id="alarm" />
+                                            <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e) } />
                                             <label htmlFor="alarm">
                                                 <BellIcon size="md" />
                                             </label>
