@@ -232,9 +232,9 @@ const startSlave = async function () {
 
     server.route({
         method: 'PUT',
-        path: '/api/error',
+        path: '/api/alarm',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-            server.publish('/api/error', request.payload);
+            server.publish('/api/alarm', request.payload);
             return {
                 result: true,
             };
@@ -256,7 +256,7 @@ const startSlave = async function () {
     server.subscription('/api/flow_values');
     server.subscription('/api/cpu_values');
     server.subscription('/api/settings');
-    server.subscription('/api/error');
+    server.subscription('/api/alarm');
 
     server.subscription('/api/servertime');
 

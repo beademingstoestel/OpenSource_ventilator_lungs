@@ -873,7 +873,7 @@ export default class Dashboard extends React.Component {
                                         />
                                     </SingleValueDisplaySettingsOnly>
 
-                                    <button className={'save-button'}>Confirm settings</button>
+                                    <button className={'save-button'} onClick={(e) => this.saveSettings(e)} disabled={!this.state.hasDirtySettings}>Confirm settings</button>
                                 </div>
                             </div>
                         </div>
