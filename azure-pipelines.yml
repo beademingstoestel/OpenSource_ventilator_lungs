@@ -25,9 +25,19 @@ stages:
       inputs:
         containerRegistry: 'DockerHubConnection'
         repository: 'beademingstoestel/interface'
-        command: buildAndPush
+        command: build
         dockerfile: '$(Build.SourcesDirectory)/httpServer/docker/web/Dockerfile'
         buildContext: '$(Build.SourcesDirectory)/httpServer'
+        arguments: --build-arg build_number=$(tag)
+        tags: |
+          $(tag)
+          latest
+    - task: Docker@2
+      displayName: push interface image
+      inputs:
+        containerRegistry: 'DockerHubConnection'
+        repository: 'beademingstoestel/interface'
+        command: push
         tags: |
           $(tag)
           latest
