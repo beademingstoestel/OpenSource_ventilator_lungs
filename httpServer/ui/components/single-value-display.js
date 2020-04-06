@@ -29,14 +29,18 @@ const SingleValueDisplaySettings = ({ name, settingKey, value, unit, decimal = 2
                         updateValue(settingKey, newValue);
 
                         if ((warningThreshold !== 0) && (newValue >= warningThreshold)) {
-                            toast.warn('Warning: ' + newValue + ' is close to the maximum of ' + maxValue);
+                            toast.warn('Warning: ' + newValue + ' is close to the maximum of ' + maxValue, {
+                                position: toast.POSITION.BOTTOM_LEFT,
+                            });
+                        } else {
+                            toast.success(name + ' updated to: ' + newValue, {
+                                position: toast.POSITION.BOTTOM_LEFT,
+                            });
                         }
-                        else {
-                            toast.success(name + ' updated to: ' + newValue);
-                        }
-                    }
-                    else {
-                        toast.error('Value ' + newValue + ' is out of range. Min: ' + minValue + ' Max: ' + maxValue);
+                    } else {
+                        toast.error('Value ' + newValue + ' is out of range. Min: ' + minValue + ' Max: ' + maxValue, {
+                            position: toast.POSITION.BOTTOM_LEFT,
+                        });
                     }
                 }}
                 decimal={decimal}

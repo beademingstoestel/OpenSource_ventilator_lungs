@@ -73,6 +73,7 @@ export default class Dashboard extends React.Component {
             minTInhale: 0,
             maxTInhale: 0,
             maxPSupport: 35,
+            currentAlarm: 0,
             settings: {
                 RR: 20,
                 VT: 400,
@@ -159,6 +160,10 @@ export default class Dashboard extends React.Component {
         };
     }
 
+    shouldShowAlarmState(alarm, mask) {
+        return (alarm & mask) === 1;
+    }
+
     computeTInhale(respiratoryRate, IE) {
         return (60 / (respiratoryRate * IE)).toFixed(1);
     }
@@ -192,9 +197,11 @@ export default class Dashboard extends React.Component {
         }
 
         newPoints.forEach((newPoint) => {
+            const localTime = new Date(newPoint.loggedAt).getTime() - serverTimeCorrection;
+
             toArray.push({
-                loggedAt: new Date(newPoint.loggedAt).getTime(),
-                x: new Date(newPoint.loggedAt).getTime() - this.currentGraphTime,
+                loggedAt: localTime,
+                x: localTime - this.currentGraphTime,
                 y: newPoint.value,
             });
         });
@@ -299,7 +306,7 @@ export default class Dashboard extends React.Component {
         }
 
         // ask the server for the time
-        if (!(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        if (!(getWsUrl().indexOf('localhost') > -1 || getWsUrl().indexOf('127.0.0.1') > -1)) {
             try {
                 // kind of naive, but good enough for what we need
                 const loop = 10;
@@ -342,6 +349,12 @@ export default class Dashboard extends React.Component {
 
         this.client.subscribe('/api/trigger_values', (newPoints) => {
             this.processIncomingPoints(this.rawTriggerValues, newPoints);
+        });
+
+        this.client.subscribe('/api/alarms', (alarm) => {
+            this.setState({
+                currentAlarm: alarm.value,
+            });
         });
 
         const self = this;
@@ -669,7 +682,54 @@ export default class Dashboard extends React.Component {
                         </div>
                     </div>
                     <div className="page-dashboard__layout__body">
-                        <div className="page-dashboard__alert alert alert--danger" hidden>Trigger parameter has alert</div>
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 1) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 1</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 2) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 2</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 3) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 3</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 4) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 4</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 5) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 5</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 6) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 6</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 7) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 7</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 8) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 8</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 9) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 9</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 10) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 10</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 11) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 11</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 12) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 12</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 13) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 13</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 14) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 14</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 15) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 15</div>
+                        }
+                        {this.shouldShowAlarmState(this.state.currentAlarm, 16) &&
+                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 16</div>
+                        }
                         <div className="page-dashboard__layout__body__measurements">
                             <div className="page-dashboard__layout__body__measurements__graphs">
                                 <form className="form form--horizontal-xs">
@@ -725,7 +785,7 @@ export default class Dashboard extends React.Component {
                                             step={1}
                                             minValue={10}
                                             maxValue={70}
-                                            warningThreshold={36}
+                                            warningThreshold={60}
                                             updateValue={this.state.updateSetting}
                                         />
                                         <SingleValueDisplaySettings
@@ -794,7 +854,7 @@ export default class Dashboard extends React.Component {
                                             unit="bpm"
                                             step={2}
                                             minValue={10}
-                                            maxValue={30}
+                                            maxValue={35}
                                             decimal={false}
                                             updateValue={this.state.updateSetting}
                                         />
@@ -805,7 +865,7 @@ export default class Dashboard extends React.Component {
                                             decimal={2}
                                             step={0.05}
                                             minValue={0.25}
-                                            maxValue={0.5}
+                                            maxValue={1.0}
                                             updateValue={this.state.updateSetting}
                                         />
                                         <SingleValueDisplaySettings
