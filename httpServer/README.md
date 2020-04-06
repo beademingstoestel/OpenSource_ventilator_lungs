@@ -86,7 +86,7 @@ Create a file called env-local.json in the root of the project. It is advisable 
 
 # Endpoints and @hapi/nes subscribeable paths
 
-- /api/alarm:
+- /api/alarms:
   - @hapi/nes: listen for alarms raised by the controller or python
   - PUT: raise new alarms
     - body json object:
