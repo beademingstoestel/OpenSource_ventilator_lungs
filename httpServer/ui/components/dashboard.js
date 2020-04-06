@@ -34,7 +34,9 @@ const refreshRate = 100;
 const defaultXRange = 10000;
 const integerPrecision = 1;
 const minimumIE = 0.25;
-const maximumIE = 0.50;
+const maximumIE = 0.9;
+const minimumTInhale = 0.4;
+const maximumTInhale = 10;
 let serverTimeCorrection = 0;
 
 export default class Dashboard extends React.Component {
@@ -70,8 +72,8 @@ export default class Dashboard extends React.Component {
             patientInfo: '',
             showShutdownConfirmationDialog: false,
             showBeepConfirmationDialog: false,
-            minTInhale: 0,
-            maxTInhale: 0,
+            minTInhale: minimumTInhale,
+            maxTInhale: maximumTInhale,
             maxPSupport: 35,
             currentAlarm: 0,
             settings: {
@@ -112,8 +114,8 @@ export default class Dashboard extends React.Component {
                     this.dirtySettings.TI = settings.TI;
 
                     this.setState({
-                        minTInhale: this.computeTInhale(settings.RR, maximumIE),
-                        maxTInhale: this.computeTInhale(settings.RR, minimumIE),
+                        maxTInhale: Math.min(maximumTInhale, this.computeTInhale(settings.RR, maximumIE)),
+                        minTInhale: Math.max(minimumTInhale, this.computeTInhale(settings.RR, minimumIE)),
                     });
 
                     // console.log("RR Changed to " + settings["RR"] + ", TI adjusted to " + settings["TI"]);
@@ -123,8 +125,8 @@ export default class Dashboard extends React.Component {
                     this.dirtySettings.TI = settings.TI;
 
                     this.setState({
-                        minTInhale: this.computeTInhale(settings.RR, maximumIE),
-                        maxTInhale: this.computeTInhale(settings.RR, minimumIE),
+                        maxTInhale: Math.min(maximumTInhale, this.computeTInhale(settings.RR, maximumIE)),
+                        minTInhale: Math.max(minimumTInhale, this.computeTInhale(settings.RR, minimumIE)),
                     });
 
                     // console.log("IE Changed to " + settings["IE"] + ", TI adjusted to " + settings["TI"]);
@@ -166,11 +168,11 @@ export default class Dashboard extends React.Component {
     }
 
     computeTInhale(respiratoryRate, IE) {
-        return (60 / (respiratoryRate * IE)).toFixed(1);
+        return (60 / parseFloat(respiratoryRate) * parseFloat(IE));
     }
 
     computeIE(respiratoryRate, TInhale) {
-        return ((60 / respiratoryRate) / TInhale).toFixed(2);
+        return ((parseFloat(TInhale) * parseFloat(respiratoryRate)) / 60);
     }
 
     toggleMode() {
@@ -558,12 +560,12 @@ export default class Dashboard extends React.Component {
     }
 
     toggleActiveState() {
-        this.saveSetting('ACTIVE', this.state.settings.ACTIVE === 0 ? 1 : 0);
+        this.saveSetting('ACTIVE', parseInt(this.state.settings.ACTIVE) === 0 ? 1 : 0);
     }
 
     askActiveStateChange() {
         // if we are in active mode, show the dialog box to confirm deactivation
-        if (this.state.settings.ACTIVE === 2) {
+        if (parseInt(this.state.settings.ACTIVE) === 2) {
             this.setState({ showShutdownConfirmationDialog: true });
         } else {
             // go to active state 1 -> sounds beep
@@ -612,9 +614,9 @@ export default class Dashboard extends React.Component {
                         </div>
                     </div>
                     <div className="page-dashboard__machine-info">
-                        <button className={'btn ' + (this.state.settings.ACTIVE === 2 ? 'running' : 'inactive')}
+                        <button className={'btn ' + (parseInt(this.state.settings.ACTIVE) === 2 ? 'running' : 'inactive')}
                             onClick={() => this.askActiveStateChange()}>
-                            <OnOffIcon size="md" /><span>{this.state.settings.ACTIVE === 2 ? 'Stop ventilator' : 'Start ventilator'}</span>
+                            <OnOffIcon size="md" /><span>{parseInt(this.state.settings.ACTIVE) === 2 ? 'Stop ventilator' : 'Start ventilator'}</span>
                         </button>
 
                         <Dialog open={this.state.showShutdownConfirmationDialog}
@@ -687,28 +689,28 @@ export default class Dashboard extends React.Component {
                         {this.state.currentAlarm &&
                             <div className="page-dashboard__alert alert alert--danger">
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 1) &&
-                                    <div>Alarm text for mask 1</div>
+                                    <div>BPM too low</div>
                                 }
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 2) &&
-                                    <div>Alarm text for mask 2</div>
+                                    <div>Respiratory rate below threshold</div>
                                 }
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 4) &&
-                                    <div>Alarm text for mask 3</div>
+                                    <div>Inhale/exhale time above 10s</div>
                                 }
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 8) &&
-                                    <div>Alarm text for mask 4</div>
+                                    <div>bit 4</div>
                                 }
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 16) &&
-                                    <div>Alarm text for mask 5</div>
+                                    <div>Pressure below peep level</div>
                                 }
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 32) &&
-                                    <div>Alarm text for mask 6</div>
+                                    <div>Pressure outside of thresholds</div>
                                 }
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 64) &&
-                                    <div>Alarm text for mask 7</div>
+                                    <div>Volume outside of allowed range</div>
                                 }
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 128) &&
-                                    <div>Alarm text for mask 8</div>
+                                    <div>Volume not near zero at the end of the cycle</div>
                                 }
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 256) &&
                                     <div>Alarm text for mask 9</div>
@@ -734,7 +736,7 @@ export default class Dashboard extends React.Component {
                                 {this.shouldShowAlarmState(this.state.currentAlarm, 32768) &&
                                     <div>Alarm text for mask 16</div>
                                 }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 2147745792) &&
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 4294967296) &&
                                     <div>Alarm text for python exception</div>
                                 }
                             </div>
@@ -861,9 +863,9 @@ export default class Dashboard extends React.Component {
                                             value={this.state.settings.RR}
                                             settingKey={'RR'}
                                             unit="bpm"
-                                            step={2}
+                                            step={1}
                                             minValue={10}
-                                            maxValue={36}
+                                            maxValue={35}
                                             decimal={false}
                                             updateValue={this.state.updateSetting}
                                         />

@@ -56,15 +56,10 @@ const SingleValueDisplaySettings = ({ name, settingKey, value, unit, decimal = 2
                 <button
                     className="single-value-display-settings__control"
                     onClick={(ev) => {
-                        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) - step).toFixed(decimal);
+                        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) - step);
 
-                        if (isInputInRange(minValue, maxValue, newValue)) {
-                            updateValue(settingKey, newValue);
-
-                            if ((warningThreshold !== 0) && (newValue >= warningThreshold)) {
-                                toast.warn('Warning: ' + newValue + ' is close to the maximum of ' + maxValue);
-                            }
-                        }
+                        newValue = Math.max(newValue, minValue);
+                        updateValue(settingKey, newValue);
                         ev.preventDefault();
                     }}
                 >
@@ -73,15 +68,11 @@ const SingleValueDisplaySettings = ({ name, settingKey, value, unit, decimal = 2
                 <button
                     className="single-value-display-settings__control"
                     onClick={(ev) => {
-                        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) + step).toFixed(decimal);
+                        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) + step);
 
-                        if (isInputInRange(minValue, maxValue, newValue)) {
-                            updateValue(settingKey, newValue);
-
-                            if ((warningThreshold !== 0) && (newValue >= warningThreshold)) {
-                                toast.warn('Warning: ' + newValue + ' is close to the maximum of ' + maxValue);
-                            }
-                        }
+                        newValue = Math.min(newValue, maxValue);
+                        updateValue(settingKey, newValue);
+                        ev.preventDefault();
                     }}
                 >
                     <CaretIcon direction="up" size="md" />
