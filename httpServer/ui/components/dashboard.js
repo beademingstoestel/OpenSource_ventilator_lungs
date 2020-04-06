@@ -161,7 +161,8 @@ export default class Dashboard extends React.Component {
     }
 
     shouldShowAlarmState(alarm, mask) {
-        return (alarm & mask) === 1;
+        console.log(alarm, mask, (alarm & mask) === mask);
+        return (alarm & mask) === mask;
     }
 
     computeTInhale(respiratoryRate, IE) {
@@ -352,8 +353,9 @@ export default class Dashboard extends React.Component {
         });
 
         this.client.subscribe('/api/alarms', (alarm) => {
+            console.log('alarm raised: ' + JSON.stringify(alarm));
             this.setState({
-                currentAlarm: alarm.value,
+                currentAlarm: parseInt(alarm.value),
             });
         });
 
@@ -682,53 +684,60 @@ export default class Dashboard extends React.Component {
                         </div>
                     </div>
                     <div className="page-dashboard__layout__body">
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 1) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 1</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 2) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 2</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 3) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 3</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 4) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 4</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 5) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 5</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 6) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 6</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 7) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 7</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 8) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 8</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 9) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 9</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 10) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 10</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 11) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 11</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 12) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 12</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 13) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 13</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 14) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 14</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 15) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 15</div>
-                        }
-                        {this.shouldShowAlarmState(this.state.currentAlarm, 16) &&
-                            <div className="page-dashboard__alert alert alert--danger" hidden>Alarm text for mask 16</div>
+                        {this.state.currentAlarm &&
+                            <div className="page-dashboard__alert alert alert--danger">
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 1) &&
+                                    <div>Alarm text for mask 1</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 2) &&
+                                    <div>Alarm text for mask 2</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 4) &&
+                                    <div>Alarm text for mask 3</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 8) &&
+                                    <div>Alarm text for mask 4</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 16) &&
+                                    <div>Alarm text for mask 5</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 32) &&
+                                    <div>Alarm text for mask 6</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 64) &&
+                                    <div>Alarm text for mask 7</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 128) &&
+                                    <div>Alarm text for mask 8</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 256) &&
+                                    <div>Alarm text for mask 9</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 512) &&
+                                    <div>Alarm text for mask 10</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 1024) &&
+                                    <div>Alarm text for mask 11</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 2048) &&
+                                    <div>Alarm text for mask 12</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 4096) &&
+                                    <div>Alarm text for mask 13</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 8192) &&
+                                    <div>Alarm text for mask 14</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 16384) &&
+                                    <div>Alarm text for mask 15</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 32768) &&
+                                    <div>Alarm text for mask 16</div>
+                                }
+                                {this.shouldShowAlarmState(this.state.currentAlarm, 2147745792) &&
+                                    <div>Alarm text for python exception</div>
+                                }
+                            </div>
                         }
                         <div className="page-dashboard__layout__body__measurements">
                             <div className="page-dashboard__layout__body__measurements__graphs">
@@ -854,7 +863,7 @@ export default class Dashboard extends React.Component {
                                             unit="bpm"
                                             step={2}
                                             minValue={10}
-                                            maxValue={35}
+                                            maxValue={36}
                                             decimal={false}
                                             updateValue={this.state.updateSetting}
                                         />
@@ -865,7 +874,7 @@ export default class Dashboard extends React.Component {
                                             decimal={2}
                                             step={0.05}
                                             minValue={0.25}
-                                            maxValue={1.0}
+                                            maxValue={0.9}
                                             updateValue={this.state.updateSetting}
                                         />
                                         <SingleValueDisplaySettings
