@@ -250,10 +250,10 @@ const startSlave = async function () {
     });
 
     server.route({
-        method: 'GET',
-        path: '/api/calculatedvalues',
+        method: 'PUT',
+        path: '/api/calculated_values',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-            server.publish('/api/calculatedvalues', request.payload);
+            server.publish('/api/calculated_values', request.payload);
             return {
                 result: true,
             };
@@ -268,7 +268,7 @@ const startSlave = async function () {
     server.subscription('/api/cpu_values');
     server.subscription('/api/settings');
     server.subscription('/api/alarms');
-    server.subscription('/api/calculatedvalues');
+    server.subscription('/api/calculated_values');
 
     server.subscription('/api/servertime');
 

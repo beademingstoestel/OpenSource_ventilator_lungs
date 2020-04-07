@@ -94,6 +94,12 @@ export default class Dashboard extends React.Component {
                 ACTIVE: 0,
                 MT: 0,
             },
+            calculatedValues: {
+                IE: 0.0,
+                VolumeMin: 0.0,
+                RespatoryRate: 0.0,
+                PressurePlateau: 0.0,
+            },
             hasDirtySettings: false,
             updateSetting: (key, setting) => {
                 const settings = { ...this.state.settings };
@@ -358,6 +364,12 @@ export default class Dashboard extends React.Component {
             console.log('alarm raised: ' + JSON.stringify(alarm));
             this.setState({
                 currentAlarm: parseInt(alarm.value),
+            });
+        });
+
+        this.client.subscribe('/api/calculated_values', (calculatedValues) => {
+            this.setState({
+                calculatedValues: { ...calculatedValues },
             });
         });
 
@@ -670,22 +682,28 @@ export default class Dashboard extends React.Component {
                     <div className="page-dashboard__layout__sidebar">
                         <div>
                             <SingleValueDisplay
-                                name="Pressure"
-                                value={this.state.lastPressure}
-                                status={this.state.pressureStatus}
+                                name="Pressure<br />Plat"
+                                value={this.state.calculatedValues.PressurePlateau}
+                                status={'normal'}
                                 decimal={false}
                             ></SingleValueDisplay>
                             <SingleValueDisplay
                                 name="Respiratory<br />rate"
-                                value={this.state.bpmValue}
-                                status={this.state.bpmStatus}
+                                value={this.state.calculatedValues.RespatoryRate}
+                                status={'normal'}
                                 decimal={false}
                             ></SingleValueDisplay>
                             <SingleValueDisplay
-                                name="Volume"
-                                value={this.state.lastVolume}
+                                name="Volume/min (L)"
+                                value={this.state.calculatedValues.VolumeMin}
                                 decimal={false}
-                                status={this.state.volumeStatus}>
+                                status={'normal'}>
+                            </SingleValueDisplay>
+                            <SingleValueDisplay
+                                name="IE"
+                                value={this.state.calculatedValues.IE}
+                                decimal={false}
+                                status={'normal'}>
                             </SingleValueDisplay>
                         </div>
                     </div>
