@@ -75,7 +75,7 @@ export default class Dashboard extends React.Component {
             minTInhale: minimumTInhale,
             maxTInhale: maximumTInhale,
             maxPSupport: 35,
-            currentAlarm: 0,
+            currentAlarm: 1,
             settings: {
                 RR: 20,
                 VT: 400,
@@ -93,6 +93,7 @@ export default class Dashboard extends React.Component {
                 MODE: 0,
                 ACTIVE: 0,
                 MT: 0,
+                RA: 0,
             },
             calculatedValues: {
                 IE: 0.0,
@@ -612,6 +613,10 @@ export default class Dashboard extends React.Component {
         this.saveSetting('MT', e.target.checked ? 0 : 1);
     }
 
+    resetAlarm(e) {
+        this.saveSetting('RA', 1);
+    }
+
     render() {
         return (
             <div className={cx('page-dashboard', this.props.className)}>
@@ -710,57 +715,60 @@ export default class Dashboard extends React.Component {
                     <div className="page-dashboard__layout__body">
                         {parseInt(this.state.currentAlarm) > 0 &&
                             <div className="page-dashboard__alert alert alert--danger">
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 1) &&
-                                    <div>BPM too low</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 2) &&
-                                    <div>Respiratory rate below threshold</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 4) &&
-                                    <div>Inhale/exhale time above 10s</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 8) &&
-                                    <div>bit 4</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 16) &&
-                                    <div>Pressure below peep level</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 32) &&
-                                    <div>Pressure outside of thresholds</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 64) &&
-                                    <div>Volume outside of allowed range</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 128) &&
-                                    <div>Volume not near zero at the end of the cycle</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 256) &&
-                                    <div>Alarm text for mask 9</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 512) &&
-                                    <div>Alarm text for mask 10</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 1024) &&
-                                    <div>Alarm text for mask 11</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 2048) &&
-                                    <div>Alarm text for mask 12</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 4096) &&
-                                    <div>Alarm text for mask 13</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 8192) &&
-                                    <div>Alarm text for mask 14</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 16384) &&
-                                    <div>Alarm text for mask 15</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 32768) &&
-                                    <div>Alarm text for mask 16</div>
-                                }
-                                {this.shouldShowAlarmState(this.state.currentAlarm, 4294967296) &&
-                                    <div>Alarm text for python exception</div>
-                                }
+                                <div>
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 1) &&
+                                        <div>BPM too low</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 2) &&
+                                        <div>Respiratory rate below threshold</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 4) &&
+                                        <div>Inhale/exhale time above 10s</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 8) &&
+                                        <div>bit 4</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 16) &&
+                                        <div>Pressure below peep level</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 32) &&
+                                        <div>Pressure outside of thresholds</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 64) &&
+                                        <div>Volume outside of allowed range</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 128) &&
+                                        <div>Volume not near zero at the end of the cycle</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 256) &&
+                                        <div>Alarm text for mask 9</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 512) &&
+                                        <div>Alarm text for mask 10</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 1024) &&
+                                        <div>Alarm text for mask 11</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 2048) &&
+                                        <div>Alarm text for mask 12</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 4096) &&
+                                        <div>Alarm text for mask 13</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 8192) &&
+                                        <div>Alarm text for mask 14</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 16384) &&
+                                        <div>Alarm text for mask 15</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 32768) &&
+                                        <div>Alarm text for mask 16</div>
+                                    }
+                                    {this.shouldShowAlarmState(this.state.currentAlarm, 4294967296) &&
+                                        <div>Alarm text for python exception</div>
+                                    }
+                                </div>
+                                <button onClick={(e) => this.resetAlarm() }>Reset alarm</button>
                             </div>
                         }
                         <div className="page-dashboard__layout__body__measurements">
@@ -966,7 +974,11 @@ export default class Dashboard extends React.Component {
                                         />
                                     </SingleValueDisplaySettingsOnly>
 
-                                    <button className={'save-button'} onClick={(e) => this.saveSettings(e)} disabled={!this.state.hasDirtySettings}>Confirm settings</button>
+                                    <button className={'save-button'}
+                                        onClick={(e) => this.saveSettings(e)}
+                                        disabled={!this.state.hasDirtySettings}>
+                                            Confirm settings
+                                    </button>
                                 </div>
                             </div>
                         </div>

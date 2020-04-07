@@ -235,6 +235,25 @@ const startSlave = async function () {
         path: '/api/alarms',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
             server.publish('/api/alarms', request.payload);
+
+            const alarmValue = parseInt((<any>request.payload).value);
+
+            try {
+                if (alarmValue) {
+                    request.log(['error'], {
+                        text: 'Update alarm value: ' + JSON.stringify(request.payload, null, '\t'),
+                        source: 'Node.js',
+                        severity: 'error',
+                    });
+                } else {
+                    request.log(['debug'], {
+                        text: 'Update alarm value: ' + JSON.stringify(request.payload, null, '\t'),
+                        source: 'Node.js',
+                        severity: 'debug',
+                    });
+                }
+            } catch (exception) {}
+
             return {
                 result: true,
             };

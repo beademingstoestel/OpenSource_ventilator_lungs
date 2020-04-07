@@ -6,6 +6,24 @@ $b: 'page-dashboard';
     margin: -2rem;
     height: calc(100% + 2rem);
 
+    &__alert {
+        display: flex;
+        flex-flow: row nowrap;
+
+        div {
+            flex-grow: 1;
+        }
+
+        button {
+            flex-grow: 0;
+            color: white;
+            border: 1px solid darkred;
+            background-color: darkred;
+            border-radius: 4px;
+            padding: 1rem;
+        }
+    }
+
     &__header {
         box-shadow: 0 1px 5px rgba(#000, 0.25);
         padding: 1rem;
@@ -88,15 +106,22 @@ $b: 'page-dashboard';
                     .save-button {
                         margin: 0rem;
                         margin-top: 1rem;
-                        color: #333;
+                        color: rgb(3, 131, 41);
                         height: 3.2rem;
                         line-height: 1.5rem;
                         font-size: 1.5em;
                         width: 100%;
                         padding: 0 0.5rem 0 0.5rem;
                         text-transform: uppercase;
-                        border: 1px solid #333;
+                        border: 1px solid rgb(3, 131, 41);
                         border-radius: 4px;
+                        background-color: rgba(3, 131, 41, 0.5);
+
+                        &:disabled {
+                            background-color: #CCC;
+                            color: #666;
+                            border: 1px solid #666;
+                        }
             
                         svg {
                             display: inline-block;

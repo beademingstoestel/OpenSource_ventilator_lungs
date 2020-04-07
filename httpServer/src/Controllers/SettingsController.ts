@@ -31,10 +31,10 @@ export class SettingsController {
             }
         }
 
-        request.log(['info'], {
+        request.log(['debug'], {
             text: 'Update settings value: ' + JSON.stringify(settings, null, '\t'),
             source: 'Node.js',
-            severity: 'info',
+            severity: 'debug',
         });
 
         return {

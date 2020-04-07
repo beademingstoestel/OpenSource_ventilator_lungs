@@ -8,11 +8,16 @@ import { MongoClient, Db } from 'mongodb';
 export class MongoLogEntriesRepository implements ILogEntriesRepository {
     constructor(private mongoClient: MongoClient) { }
 
-    async ReadEntries(start: Number, size: Number, severity: string): Promise<LogEntryValue[]> {
+    async ReadEntries(start: number, size: number, severity: string): Promise<LogEntryValue[]> {
         try {
             const db: Db = this.mongoClient.db('beademing');
 
-            return db.collection('logs').find({}).toArray();
+            return db.collection('logs')
+                .find({})
+                .sort({ loggedAt: -1 })
+                .skip(start)
+                .limit(size)
+                .toArray();
         } catch (exception) {
             // todo: log exception
             console.error(exception);
