@@ -17,7 +17,7 @@ export class SettingsController {
 
     async HandlePut(request: Request, h: ResponseToolkit) {
         const settings = <object>request.payload;
-        const resendComplete = (typeof request.query.returncomplete === 'undefined') ? true : request.query.returncomplete === 'true';
+        const resendComplete = (typeof request.query.returncomplete === 'undefined') ? false : request.query.returncomplete === 'true';
 
         const completeSettings = await this.settingsRepository.SaveSettings('setting', settings);
 

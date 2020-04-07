@@ -164,7 +164,6 @@ export default class Dashboard extends React.Component {
     }
 
     shouldShowAlarmState(alarm, mask) {
-        console.log(alarm, mask, (alarm & mask) === mask);
         return (alarm & mask) === mask;
     }
 
