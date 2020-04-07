@@ -87,10 +87,18 @@ Create a file called env-local.json in the root of the project. It is advisable 
 # Endpoints and @hapi/nes subscribeable paths
 
 - /api/alarms:
-  - @hapi/nes: listen for alarms raised by the controller or python
+  - @hapi/nes: listen for alarms raised by the controller or daemon
   - PUT: raise new alarms
     - body json object:
       - value: int
+- /api/calculated_values
+  - @hapi/nes: listen for values calculated by the daemon
+  - PUT: raise new calculatedvalues
+    - body json object:
+      - IE: float
+      - VolumeMin: float
+      - RespatoryRate: float
+      - PressurePlateau: float
 - /api/settings:
   - @hapi/nes: listen for changes in the settings object
   - GET: retrieve the settings object

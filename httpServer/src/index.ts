@@ -249,6 +249,17 @@ const startSlave = async function () {
         },
     });
 
+    server.route({
+        method: 'GET',
+        path: '/api/calculatedvalues',
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+            server.publish('/api/calculatedvalues', request.payload);
+            return {
+                result: true,
+            };
+        },
+    });
+
     server.subscription('/api/volume_values');
     server.subscription('/api/pressure_values');
     server.subscription('/api/breathsperminute_values');
@@ -257,6 +268,7 @@ const startSlave = async function () {
     server.subscription('/api/cpu_values');
     server.subscription('/api/settings');
     server.subscription('/api/alarms');
+    server.subscription('/api/calculatedvalues');
 
     server.subscription('/api/servertime');
 
