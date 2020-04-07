@@ -75,7 +75,7 @@ export default class Dashboard extends React.Component {
             minTInhale: minimumTInhale,
             maxTInhale: maximumTInhale,
             maxPSupport: 35,
-            currentAlarm: 1,
+            currentAlarm: 0,
             settings: {
                 RR: 20,
                 VT: 400,
