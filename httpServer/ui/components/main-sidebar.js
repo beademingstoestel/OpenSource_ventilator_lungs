@@ -18,38 +18,38 @@ const MainSidebar = ({ className, ...other }) => {
 
     function getAlarmTexts(alarmValue) {
         const alarmTexts = {
-            0: 'BPM too low',
-            1: 'Alarm not defined',
-            2: 'Alarm not defined',
-            3: 'Alarm not defined',
-            4: 'Peep not within thresholds',
-            5: 'Pressure not within thresholds',
-            6: 'Volume not within thresholds',
-            7: 'Residual volume is not zero',
-            8: 'Alarm not defined',
-            9: 'Alarm not defined',
-            10: 'Alarm not defined',
-            11: 'Alarm not defined',
-            12: 'Alarm not defined',
-            13: 'Alarm not defined',
-            14: 'Alarm not defined',
-            15: 'Alarm not defined',
-            16: 'Alarm not defined',
-            17: 'Pressure not within thresholds (arduino)',
-            18: 'Volume not within thresholds (arduino)',
-            19: 'Peep not within thresholds (arduino)',
-            20: 'Pressure sensor error',
-            21: 'Machine is overheating',
-            22: 'Flow sensor error',
-            23: 'Pressure sensor calibration failed',
-            24: 'Flow sensor calibration failed',
-            25: 'Limit switch sensor error',
-            26: 'HALL sensor error',
-            27: 'No external power, switch to battery',
-            28: 'Battery low',
-            29: 'Battery critical',
-            30: 'Fan not operational',
-            31: 'GUI not found',
+            0: { message: 'BPM too low' },
+            1: { message: 'Alarm not defined' },
+            2: { message: 'Alarm not defined' },
+            3: { message: 'Alarm not defined' },
+            4: { message: 'Peep not within thresholds' },
+            5: { message: 'Pressure not within thresholds' },
+            6: { message: 'Volume not within thresholds' },
+            7: { message: 'Residual volume is not zero' },
+            8: { message: 'Alarm not defined' },
+            9: { message: 'Alarm not defined' },
+            10: { message: 'Alarm not defined' },
+            11: { message: 'Alarm not defined' },
+            12: { message: 'Alarm not defined' },
+            13: { message: 'Alarm not defined' },
+            14: { message: 'Alarm not defined' },
+            15: { message: 'Alarm not defined' },
+            16: { message: 'Alarm not defined' },
+            17: { message: 'Pressure not within thresholds (arduino)', redundantWith: 5 },
+            18: { message: 'Volume not within thresholds (arduino)', redundantWith: 6 },
+            19: { message: 'Peep not within thresholds (arduino)', ignore: true },
+            20: { message: 'Pressure sensor error' },
+            21: { message: 'Machine is overheating' },
+            22: { message: 'Flow sensor error' },
+            23: { message: 'Pressure sensor calibration failed' },
+            24: { message: 'Flow sensor calibration failed' },
+            25: { message: 'Limit switch sensor error' },
+            26: { message: 'HALL sensor error' },
+            27: { message: 'No external power, switch to battery' },
+            28: { message: 'Battery low' },
+            29: { message: 'Battery critical' },
+            30: { message: 'Fan not operational' },
+            31: { message: 'GUI not found' },
         };
 
         const messages = [];
@@ -57,8 +57,8 @@ const MainSidebar = ({ className, ...other }) => {
         let shiftAlarm = alarmValue;
 
         for (let i = 0; i < 32; i++) {
-            if ((shiftAlarm & 1) > 0) {
-                messages.push(<div>{alarmTexts[i]}</div>);
+            if ((shiftAlarm & 1) > 0 && alarmTexts[i].ignore !== true) {
+                messages.push(<div>{alarmTexts[i].message}</div>);
             }
 
             shiftAlarm = shiftAlarm >> 1;
