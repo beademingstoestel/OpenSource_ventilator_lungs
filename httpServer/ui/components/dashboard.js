@@ -39,12 +39,15 @@ const minimumTInhale = 0.4;
 const maximumTInhale = 10;
 let serverTimeCorrection = 0;
 
+const debugBreathingCycle = true;
+
 export default class Dashboard extends React.Component {
     currentGraphTime = new Date().getTime();
     rawPressureValues = [];
     rawVolumeValues = [];
     rawFlowValues = [];
     rawTriggerValues = [];
+    rawTargetPressureValues = [];
     rawBpmValue = 0;
     animationInterval = 0;
     client = null;
@@ -101,6 +104,9 @@ export default class Dashboard extends React.Component {
                 RespatoryRate: 0.0,
                 PressurePlateau: 0.0,
             },
+            breathingCycleStart: null,
+            exhaleMoment: null,
+            breathingCycleEnd: null,
             hasDirtySettings: false,
             updateSetting: (key, setting) => {
                 const settings = { ...this.state.settings };
@@ -349,6 +355,12 @@ export default class Dashboard extends React.Component {
             this.processIncomingPoints(this.rawPressureValues, newPoints);
         });
 
+        if (debugBreathingCycle) {
+            this.client.subscribe('/api/targetpressure_values', (newPoints) => {
+                this.processIncomingPoints(this.rawTargetPressureValues, newPoints);
+            });
+        }
+
         this.client.subscribe('/api/volume_values', (newPoints) => {
             this.processIncomingPoints(this.rawVolumeValues, newPoints);
         });
@@ -376,6 +388,18 @@ export default class Dashboard extends React.Component {
 
         const self = this;
         this.client.subscribe('/api/settings', (newSettings) => {
+            if (newSettings.breathingCycleStart) {
+                return;
+            }
+
+            if (newSettings.breathingCycleEnd) {
+                return;
+            }
+
+            if (newSettings.exhaleMoment) {
+                return;
+            }
+
             self.setState({
                 settings: { ...self.state.settings, ...newSettings },
             });
@@ -402,6 +426,8 @@ export default class Dashboard extends React.Component {
             const oldTriggerValues = [];
             const newFlowValues = [];
             const oldFlowValues = [];
+            const newTargetPressureValues = [];
+            const oldTargetPressureValues = [];
 
             this.rawPressureValues.forEach((point) => {
                 if (point.loggedAt >= this.currentGraphTime) {
@@ -420,6 +446,26 @@ export default class Dashboard extends React.Component {
                     }
                 }
             });
+
+            if (debugBreathingCycle) {
+                this.rawTargetPressureValues.forEach((point) => {
+                    if (point.loggedAt >= this.currentGraphTime) {
+                        if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                            newTargetPressureValues.push({
+                                y: point.y / integerPrecision,
+                                x: point.x / 1000,
+                            });
+                        }
+                    } else {
+                        if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                            oldTargetPressureValues.push({
+                                y: point.y / integerPrecision,
+                                x: point.x / 1000,
+                            });
+                        }
+                    }
+                });
+            }
 
             this.rawVolumeValues.forEach((point) => {
                 if (point.loggedAt >= this.currentGraphTime) {
@@ -487,6 +533,20 @@ export default class Dashboard extends React.Component {
                     fill: true,
                 },
             ];
+
+            if (debugBreathingCycle) {
+                newPressureDataPlots.push({
+                    data: newTargetPressureValues,
+                    color: '#000',
+                    fill: true,
+                });
+                newPressureDataPlots.push({
+                    data: oldTargetPressureValues,
+                    color: '#000',
+                    fill: true,
+                });
+            }
+
             const newFlowDataPlots = [
                 {
                     data: newFlowValues,
@@ -573,10 +633,12 @@ export default class Dashboard extends React.Component {
     }
 
     toggleActiveState() {
+        console.log('toggle active state');
         this.saveSetting('ACTIVE', parseInt(this.state.settings.ACTIVE) === 0 ? 1 : 0);
     }
 
     askActiveStateChange() {
+        console.log('ask to change active state');
         // if we are in active mode, show the dialog box to confirm deactivation
         if (parseInt(this.state.settings.ACTIVE) === 2) {
             this.setState({ showShutdownConfirmationDialog: true });
@@ -615,6 +677,57 @@ export default class Dashboard extends React.Component {
 
     resetAlarm(e) {
         this.saveSetting('RA', 1);
+    }
+
+    getAlarmTexts(alarmValue) {
+        const alarmTexts = {
+            0: 'BPM too low',
+            1: 'Alarm not defined',
+            2: 'Alarm not defined',
+            3: 'Alarm not defined',
+            4: 'Peep not within thresholds',
+            5: 'Pressure not within thresholds',
+            6: 'Volume not within thresholds',
+            7: 'Residual volume is not zero',
+            8: 'Alarm not defined',
+            9: 'Alarm not defined',
+            10: 'Alarm not defined',
+            11: 'Alarm not defined',
+            12: 'Alarm not defined',
+            13: 'Alarm not defined',
+            14: 'Alarm not defined',
+            15: 'Alarm not defined',
+            16: 'Alarm not defined',
+            17: 'Pressure not within thresholds (arduino)',
+            18: 'Volume not within thresholds (arduino)',
+            19: 'Peep not within thresholds (arduino)',
+            20: 'Pressure sensor error',
+            21: 'Machine is overheating',
+            22: 'Flow sensor error',
+            23: 'Pressure sensor calibration failed',
+            24: 'Flow sensor calibration failed',
+            25: 'Limit switch sensor error',
+            26: 'HALL sensor error',
+            27: 'No external power, switch to battery',
+            28: 'Battery low',
+            29: 'Battery critical',
+            30: 'Fan not operational',
+            31: 'GUI not found',
+        };
+
+        const messages = [];
+
+        let shiftAlarm = alarmValue;
+
+        for (let i = 0; i < 32; i++) {
+            if ((shiftAlarm & 1) > 0) {
+                messages.push(<div>{alarmTexts[i]}</div>);
+            }
+
+            shiftAlarm = shiftAlarm >> 1;
+        }
+
+        return messages;
     }
 
     render() {
@@ -713,62 +826,12 @@ export default class Dashboard extends React.Component {
                         </div>
                     </div>
                     <div className="page-dashboard__layout__body">
-                        {parseInt(this.state.currentAlarm) > 0 &&
+                        {parseInt(this.state.currentAlarm) > 0 && parseInt(this.state.settings.ACTIVE) > 0 &&
                             <div className="page-dashboard__alert alert alert--danger">
                                 <div>
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 1) &&
-                                        <div>BPM too low</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 2) &&
-                                        <div>Respiratory rate below threshold</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 4) &&
-                                        <div>Inhale/exhale time above 10s</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 8) &&
-                                        <div>bit 4</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 16) &&
-                                        <div>Pressure below peep level</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 32) &&
-                                        <div>Pressure outside of thresholds</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 64) &&
-                                        <div>Volume outside of allowed range</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 128) &&
-                                        <div>Volume not near zero at the end of the cycle</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 256) &&
-                                        <div>Alarm text for mask 9</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 512) &&
-                                        <div>Alarm text for mask 10</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 1024) &&
-                                        <div>Alarm text for mask 11</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 2048) &&
-                                        <div>Alarm text for mask 12</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 4096) &&
-                                        <div>Alarm text for mask 13</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 8192) &&
-                                        <div>Alarm text for mask 14</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 16384) &&
-                                        <div>Alarm text for mask 15</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 32768) &&
-                                        <div>Alarm text for mask 16</div>
-                                    }
-                                    {this.shouldShowAlarmState(this.state.currentAlarm, 4294967296) &&
-                                        <div>Alarm text for python exception</div>
-                                    }
+                                    {this.getAlarmTexts(this.state.currentAlarm)}
                                 </div>
-                                <button onClick={(e) => this.resetAlarm() }>Reset alarm</button>
+                                <button onClick={(e) => this.resetAlarm()}>Reset alarm</button>
                             </div>
                         }
                         <div className="page-dashboard__layout__body__measurements">
@@ -780,7 +843,7 @@ export default class Dashboard extends React.Component {
                                     </div>
                                     <div className="form__group form__group--shrink">
                                         <div className="option-toggle option-toggle--danger">
-                                            <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e) } />
+                                            <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e)} />
                                             <label htmlFor="alarm">
                                                 <BellIcon size="md" />
                                             </label>
@@ -793,6 +856,9 @@ export default class Dashboard extends React.Component {
                                             data={this.state.pressureDataPlots}
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
+                                            breathingCycleStart={debugBreathingCycle ? this.state.breathingCycleStart : null}
+                                            exhaleMoment={debugBreathingCycle ? this.state.exhaleMoment : null}
+                                            breathingCycleEnd={debugBreathingCycle ? this.state.breathingCycleEnd : null}
                                             minY={-5}
                                             maxY={80}
                                             peak={this.state.settings.PK}
@@ -818,7 +884,7 @@ export default class Dashboard extends React.Component {
                                 <div>
                                     <SingleValueDisplaySettingsOnly>
                                         <SingleValueDisplaySettings
-                                            name="Peak pressure (PP)"
+                                            name="Peak pressure (PK)"
                                             value={this.state.settings.PK}
                                             unit="cmH2O"
                                             settingKey={'PK'}
@@ -830,7 +896,7 @@ export default class Dashboard extends React.Component {
                                             updateValue={this.state.updateSetting}
                                         />
                                         <SingleValueDisplaySettings
-                                            name="Threshold PP"
+                                            name="Threshold PK"
                                             value={this.state.settings.ADPK}
                                             unit="cmH2O"
                                             settingKey={'ADPK'}
@@ -841,7 +907,7 @@ export default class Dashboard extends React.Component {
                                             updateValue={this.state.updateSetting}
                                         />
                                         <SingleValueDisplaySettings
-                                            name="Set PEEP"
+                                            name="PEEP level"
                                             value={this.state.settings.PP}
                                             settingKey={'PP'}
                                             unit="cmH2O"
@@ -852,7 +918,7 @@ export default class Dashboard extends React.Component {
                                             updateValue={this.state.updateSetting}
                                         />
                                         <SingleValueDisplaySettings
-                                            name="Set PEEP threshold"
+                                            name="Threshold PEEP"
                                             value={this.state.settings.ADPP}
                                             settingKey={'ADPP'}
                                             unit="cmH2O"
@@ -977,7 +1043,7 @@ export default class Dashboard extends React.Component {
                                     <button className={'save-button'}
                                         onClick={(e) => this.saveSettings(e)}
                                         disabled={!this.state.hasDirtySettings}>
-                                            Confirm settings
+                                        Confirm settings
                                     </button>
                                 </div>
                             </div>

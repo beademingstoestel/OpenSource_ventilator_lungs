@@ -73,6 +73,51 @@ export default class DataPlot extends React.Component {
             });
         }
 
+        if (this.props.breathingCycleStart) {
+            chartData.datasets.push({
+                label: 'breathing cycle start',
+                borderColor: '#000',
+                borderWidth: 1,
+                borderJoinStyle: 'round',
+                pointRadius: 0,
+                pointBorderWidth: 1,
+                lineTension: 0,
+                data: [{ x: this.props.breathingCycleStart, y: this.props.minY + 1 }, { x: this.props.breathingCycleStart, y: this.props.maxY - 1 }],
+                showLine: true,
+                fill: false,
+            });
+        }
+
+        if (this.props.breathingCycleEnd) {
+            chartData.datasets.push({
+                label: 'breathing cycle end',
+                borderColor: '#000',
+                borderWidth: 1,
+                borderJoinStyle: 'round',
+                pointRadius: 0,
+                pointBorderWidth: 1,
+                lineTension: 0,
+                data: [{ x: this.props.breathingCycleEnd, y: this.props.minY + 1 }, { x: this.props.breathingCycleEnd, y: this.props.maxY - 1 }],
+                showLine: true,
+                fill: false,
+            });
+        }
+
+        if (this.props.exhaleMoment) {
+            chartData.datasets.push({
+                label: 'exhale',
+                borderColor: '#000',
+                borderWidth: 1,
+                borderJoinStyle: 'round',
+                pointRadius: 0,
+                pointBorderWidth: 1,
+                lineTension: 0,
+                data: [{ x: this.props.exhaleMoment, y: this.props.minY + 1 }, { x: this.props.exhaleMoment, y: this.props.maxY - 1 }],
+                showLine: true,
+                fill: false,
+            });
+        }
+
         if (this.props.threshold) {
             const upperThreshold = parseInt(this.props.peak) + parseInt(this.props.threshold);
             const lowerThreshold = parseInt(this.props.peak) - parseInt(this.props.threshold);

@@ -6,6 +6,7 @@ import { IValuesRepository } from './Repositories/IValuesRepository';
 import { MongoValuesRepository } from './Repositories/MongoValuesRepository';
 import { TriggerValuesController } from './Controllers/TriggerValuesController';
 import { PressureValuesController } from './Controllers/PressureValuesController';
+import { TargetPressureValuesController } from './Controllers/TargetPressureValuesController';
 import { BreathsPerMinuteValuesController } from './Controllers/BreathsPerMinuteValuesController';
 import * as fs from 'fs';
 // eslint-disable-next-line no-unused-vars
@@ -168,6 +169,12 @@ const startSlave = async function () {
 
     server.route({
         method: 'GET',
+        path: '/api/targetpressure_values',
+        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new TargetPressureValuesController(valuesRepositoryFactory()).HandleGet(request, h),
+    });
+
+    server.route({
+        method: 'GET',
         path: '/api/flow_values',
         handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new FlowValuesController(valuesRepositoryFactory()).HandleGet(request, h),
     });
@@ -281,6 +288,7 @@ const startSlave = async function () {
 
     server.subscription('/api/volume_values');
     server.subscription('/api/pressure_values');
+    server.subscription('/api/targetpressure_values');
     server.subscription('/api/breathsperminute_values');
     server.subscription('/api/trigger_values');
     server.subscription('/api/flow_values');
@@ -326,6 +334,12 @@ const startSlave = async function () {
         db.collection('pressure_values').watch().on('change', data => {
             if (data.operationType === 'insert') {
                 server.publish('/api/pressure_values', [data.fullDocument]);
+            }
+        });
+
+        db.collection('targetpressure_values').watch().on('change', data => {
+            if (data.operationType === 'insert') {
+                server.publish('/api/targetpressure_values', [data.fullDocument]);
             }
         });
 
