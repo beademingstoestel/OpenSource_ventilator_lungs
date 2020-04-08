@@ -6,25 +6,6 @@ $b: 'page-dashboard';
     margin: -2rem;
     height: calc(100% + 2rem);
 
-    &__alert {
-        display: flex;
-        flex-flow: row nowrap;
-
-        div {
-            flex-grow: 1;
-        }
-
-        button {
-            flex-grow: 0;
-            color: white;
-            border: 1px solid darkred;
-            background-color: darkred;
-            border-radius: 4px;
-            padding: 1rem;
-            vertical-align: middle;
-        }
-    }
-
     &__header {
         box-shadow: 0 1px 5px rgba(#000, 0.25);
         padding: 1rem;

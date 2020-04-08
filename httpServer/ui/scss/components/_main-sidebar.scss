@@ -7,6 +7,26 @@ $b: 'main-sidebar';
     position: relative;
     overflow: hidden;
 
+    &__alert {
+        padding: 1rem;
+
+        div {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid darkred;
+        }
+
+        button {
+            flex-grow: 0;
+            color: white;
+            border: 1px solid darkred;
+            background-color: darkred;
+            border-radius: 4px;
+            padding: 1rem;
+            vertical-align: middle;
+            width: 100%;
+        }
+    }
+
     &::after {
         content: '';
         display: block;

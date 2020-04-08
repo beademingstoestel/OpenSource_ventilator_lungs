@@ -78,7 +78,6 @@ export default class Dashboard extends React.Component {
             minTInhale: minimumTInhale,
             maxTInhale: maximumTInhale,
             maxPSupport: 35,
-            currentAlarm: 0,
             settings: {
                 RR: 20,
                 VT: 400,
@@ -347,7 +346,6 @@ export default class Dashboard extends React.Component {
             }
         }
 
-        // todo: no hardcoded values
         this.client = new Client(`${getWsUrl()}`);
         await this.client.connect();
 
@@ -371,13 +369,6 @@ export default class Dashboard extends React.Component {
 
         this.client.subscribe('/api/trigger_values', (newPoints) => {
             this.processIncomingPoints(this.rawTriggerValues, newPoints);
-        });
-
-        this.client.subscribe('/api/alarms', (alarm) => {
-            console.log('alarm raised: ' + JSON.stringify(alarm));
-            this.setState({
-                currentAlarm: parseInt(alarm.value),
-            });
         });
 
         this.client.subscribe('/api/calculated_values', (calculatedValues) => {
@@ -826,14 +817,6 @@ export default class Dashboard extends React.Component {
                         </div>
                     </div>
                     <div className="page-dashboard__layout__body">
-                        {parseInt(this.state.currentAlarm) > 0 && parseInt(this.state.settings.ACTIVE) > 0 &&
-                            <div className="page-dashboard__alert alert alert--danger">
-                                <div>
-                                    {this.getAlarmTexts(this.state.currentAlarm)}
-                                </div>
-                                <button onClick={(e) => this.resetAlarm()}>Reset alarm</button>
-                            </div>
-                        }
                         <div className="page-dashboard__layout__body__measurements">
                             <div className="page-dashboard__layout__body__measurements__graphs">
                                 <form className="form form--horizontal-xs">
