@@ -16,6 +16,25 @@ const MainSidebar = ({ className, ...other }) => {
 
     const [currentAlarm, setCurrentAlarm] = useState(0);
 
+    async function resetAlarm(e) {
+        try {
+            const tosend = {};
+            tosend['RA'] = 1;
+
+            // returncomplete also makes sure the python code and controller only receive the changed values
+            await fetch(`${getApiUrl()}/api/settings?returncomplete=false`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(tosend),
+            });
+        } catch (e) {
+            // todo: show error to the user
+            console.log(e);
+        }
+    }
+
     function getAlarmTexts(alarmValue) {
         const alarmTexts = {
             0: { message: 'BPM too low' },
@@ -92,7 +111,7 @@ const MainSidebar = ({ className, ...other }) => {
             {parseInt(currentAlarm) > 0 &&
                 <div className="main-sidebar__alert alert alert--danger">
                     {getAlarmTexts(currentAlarm)}
-                    <button>Reset alarm</button>
+                    <button onClick={(e) => resetAlarm(e)}>Reset alarm</button>
                 </div>
             }
             <ul className="main-sidebar__menu">

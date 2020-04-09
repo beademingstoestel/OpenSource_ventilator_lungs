@@ -15,7 +15,7 @@ import { getApiUrl } from '../helpers/api-urls';
 const LogsPage = ({ className, ...other }) => {
     const [rows, setRows] = useState([]);
     const [version, setVersion] = useState('-');
-    const [pythonVersion, setPythonVersion] = useState('-');
+    const [daemonVersion, setDaemonVersion] = useState('-');
     const [firmwareVersion, setFirmwareVersion] = useState('-');
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const LogsPage = ({ className, ...other }) => {
             const resSettings = await fetch(`${getApiUrl()}/api/settings`);
             const settings = await resSettings.json();
             setVersion(settings.GUI_VERSION);
-            setPythonVersion(settings.PYTHON_VERSION ?? 'not set');
+            setDaemonVersion(settings.DAEMON_VERSION ?? 'not set');
             setFirmwareVersion(settings.FW ?? 'not set');
         };
 
@@ -48,10 +48,10 @@ const LogsPage = ({ className, ...other }) => {
                         </div>
                         <div className={'page-logs__header__system-info__row'}>
                             <div className={'page-logs__header__system-info__row__label'}>
-                                Python daemon version:
+                                Daemon version:
                             </div>
                             <div className={'page-logs__header__system-info__row__value'}>
-                                { pythonVersion }
+                                { daemonVersion }
                             </div>
                         </div>
                         <div className={'page-logs__header__system-info__row'}>

@@ -788,153 +788,88 @@ export default class Dashboard extends React.Component {
                 </div>
 
                 <div className="page-dashboard__layout">
-                    <div className="page-dashboard__layout__sidebar">
-                        <div>
-                            <SingleValueDisplay
-                                name="Pressure<br />Plat"
-                                value={this.state.calculatedValues.PressurePlateau}
-                                status={'normal'}
-                                decimal={false}
-                            ></SingleValueDisplay>
-                            <SingleValueDisplay
-                                name="Respiratory<br />rate"
-                                value={this.state.calculatedValues.RespatoryRate}
-                                status={'normal'}
-                                decimal={false}
-                            ></SingleValueDisplay>
-                            <SingleValueDisplay
-                                name="Volume/min (L)"
-                                value={this.state.calculatedValues.VolumeMin}
-                                decimal={false}
-                                status={'normal'}>
-                            </SingleValueDisplay>
-                            <SingleValueDisplay
-                                name="IE"
-                                value={this.state.calculatedValues.IE}
-                                decimal={false}
-                                status={'normal'}>
-                            </SingleValueDisplay>
-                        </div>
-                    </div>
                     <div className="page-dashboard__layout__body">
                         <div className="page-dashboard__layout__body__measurements">
-                            <div className="page-dashboard__layout__body__measurements__graphs">
-                                <form className="form form--horizontal-xs">
-                                    <div className="form__group">
-                                        <label className="form__label" htmlFor="interval">Interval</label>
-                                        <input type="range" min="5000" max="60000" step="5000" id="interval" defaultValue={defaultXRange} onChange={(ev) => this.setSliderValue(ev)} className="form__control" />
-                                    </div>
-                                    <div className="form__group form__group--shrink">
-                                        <div className="option-toggle option-toggle--danger">
-                                            <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e)} />
-                                            <label htmlFor="alarm">
-                                                <BellIcon size="md" />
-                                            </label>
-                                        </div>
-                                    </div>
-                                </form>
-                                <div className="box u-mt-1">
-                                    <div className="box__body">
-                                        <DataPlot title='Pressure (cmH2O)'
-                                            data={this.state.pressureDataPlots}
-                                            multipleDatasets={true}
-                                            timeScale={this.state.xLengthMs / 1000.0}
-                                            breathingCycleStart={debugBreathingCycle ? this.state.breathingCycleStart : null}
-                                            exhaleMoment={debugBreathingCycle ? this.state.exhaleMoment : null}
-                                            breathingCycleEnd={debugBreathingCycle ? this.state.breathingCycleEnd : null}
-                                            minY={-5}
-                                            maxY={80}
-                                            peak={this.state.settings.PK}
-                                            threshold={this.state.settings.ADPK} />
-                                        <DataPlot title='Flow (L/min)'
-                                            data={this.state.flowDataPlots}
-                                            multipleDatasets={true}
-                                            timeScale={this.state.xLengthMs / 1000.0}
-                                            minY={-100}
-                                            maxY={100} />
-                                        <DataPlot title='Volume (mL)'
-                                            data={this.state.volumeValues}
-                                            multipleDatasets={true}
-                                            timeScale={this.state.xLengthMs / 1000.0}
-                                            minY={-50}
-                                            maxY={800}
-                                            peak={this.state.settings.VT}
-                                            threshold={this.state.settings.ADVT} />
-                                    </div>
-                                </div>
-                            </div>
                             <div className="page-dashboard__layout__body__measurements__settings">
                                 <div>
                                     <SingleValueDisplaySettingsOnly>
-                                        <SingleValueDisplaySettings
-                                            name="Peak pressure (PK)"
-                                            value={this.state.settings.PK}
-                                            unit="cmH2O"
-                                            settingKey={'PK'}
-                                            decimal={false}
-                                            step={1}
-                                            minValue={10}
-                                            maxValue={70}
-                                            warningThreshold={60}
-                                            updateValue={this.state.updateSetting}
-                                        />
-                                        <SingleValueDisplaySettings
-                                            name="Threshold PK"
-                                            value={this.state.settings.ADPK}
-                                            unit="cmH2O"
-                                            settingKey={'ADPK'}
-                                            decimal={false}
-                                            step={1}
-                                            minValue={0}
-                                            maxValue={35}
-                                            updateValue={this.state.updateSetting}
-                                        />
-                                        <SingleValueDisplaySettings
-                                            name="PEEP level"
-                                            value={this.state.settings.PP}
-                                            settingKey={'PP'}
-                                            unit="cmH2O"
-                                            decimal={false}
-                                            step={5}
-                                            minValue={5}
-                                            maxValue={20}
-                                            updateValue={this.state.updateSetting}
-                                        />
-                                        <SingleValueDisplaySettings
-                                            name="Threshold PEEP"
-                                            value={this.state.settings.ADPP}
-                                            settingKey={'ADPP'}
-                                            unit="cmH2O"
-                                            decimal={false}
-                                            step={1}
-                                            minValue={0}
-                                            maxValue={100}
-                                            updateValue={this.state.updateSetting}
-                                        />
+                                        <div>
+                                            <SingleValueDisplaySettings
+                                                name="Peak pressure (PK)"
+                                                value={this.state.settings.PK}
+                                                unit="cmH2O"
+                                                settingKey={'PK'}
+                                                decimal={false}
+                                                step={1}
+                                                minValue={10}
+                                                maxValue={70}
+                                                warningThreshold={60}
+                                                updateValue={this.state.updateSetting}
+                                            />
+                                            <SingleValueDisplaySettings
+                                                name="PEEP level"
+                                                value={this.state.settings.PP}
+                                                settingKey={'PP'}
+                                                unit="cmH2O"
+                                                decimal={false}
+                                                step={5}
+                                                minValue={5}
+                                                maxValue={20}
+                                                updateValue={this.state.updateSetting}
+                                            />
+                                        </div>
+                                        <div className={'single-value-display-settings__alarm'}>
+                                            <SingleValueDisplaySettings
+                                                name="Alarm limits PK"
+                                                value={this.state.settings.ADPK}
+                                                unit="cmH2O"
+                                                settingKey={'ADPK'}
+                                                decimal={false}
+                                                step={1}
+                                                minValue={0}
+                                                maxValue={35}
+                                                updateValue={this.state.updateSetting}
+                                            />
+                                            <SingleValueDisplaySettings
+                                                name="Alarm limits PEEP"
+                                                value={this.state.settings.ADPP}
+                                                settingKey={'ADPP'}
+                                                unit="cmH2O"
+                                                decimal={false}
+                                                step={1}
+                                                minValue={0}
+                                                maxValue={100}
+                                                updateValue={this.state.updateSetting}
+                                            />
+                                        </div>
                                     </SingleValueDisplaySettingsOnly>
                                     <SingleValueDisplaySettingsOnly>
-                                        <SingleValueDisplaySettings
-                                            name="Tidal volume (TV)"
-                                            value={this.state.settings.VT}
-                                            settingKey={'VT'}
-                                            unit="mL"
-                                            step={50}
-                                            minValue={250}
-                                            maxValue={800}
-                                            decimal={false}
-                                            updateValue={this.state.updateSetting}
-                                        />
-                                        <SingleValueDisplaySettings
-                                            name="Threshold VT"
-                                            value={this.state.settings.ADVT}
-                                            settingKey={'ADVT'}
-                                            unit="mL"
-                                            step={10}
-                                            minValue={0}
-                                            maxValue={200}
-                                            decimal={false}
-                                            updateValue={this.state.updateSetting}
-                                        />
+                                        <div>
+                                            <SingleValueDisplaySettings
+                                                name="Tidal volume (TV)"
+                                                value={this.state.settings.VT}
+                                                settingKey={'VT'}
+                                                unit="mL"
+                                                step={50}
+                                                minValue={250}
+                                                maxValue={800}
+                                                decimal={false}
+                                                updateValue={this.state.updateSetting}
+                                            />
+                                        </div>
+                                        <div className={'single-value-display-settings__alarm'}>
+                                            <SingleValueDisplaySettings
+                                                name="Alarm limits VT"
+                                                value={this.state.settings.ADVT}
+                                                settingKey={'ADVT'}
+                                                unit="mL"
+                                                step={10}
+                                                minValue={0}
+                                                maxValue={200}
+                                                decimal={false}
+                                                updateValue={this.state.updateSetting}
+                                            />
+                                        </div>
                                     </SingleValueDisplaySettingsOnly>
                                     <SingleValueDisplaySettingsOnly>
                                         <SingleValueDisplaySettings
@@ -1030,6 +965,79 @@ export default class Dashboard extends React.Component {
                                     </button>
                                 </div>
                             </div>
+                            <div className="page-dashboard__layout__body__measurements__graphs">
+                                <form className="form form--horizontal-xs">
+                                    <div className="form__group">
+                                        <label className="form__label" htmlFor="interval">Interval</label>
+                                        <input type="range" min="5000" max="60000" step="5000" id="interval" defaultValue={defaultXRange} onChange={(ev) => this.setSliderValue(ev)} className="form__control" />
+                                    </div>
+                                    <div className="form__group form__group--shrink">
+                                        <div className="option-toggle option-toggle--danger">
+                                            <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e)} />
+                                            <label htmlFor="alarm">
+                                                <BellIcon size="md" />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div className="box u-mt-1">
+                                    <div className="box__body">
+                                        <DataPlot title='Pressure (cmH2O)'
+                                            data={this.state.pressureDataPlots}
+                                            multipleDatasets={true}
+                                            timeScale={this.state.xLengthMs / 1000.0}
+                                            breathingCycleStart={debugBreathingCycle ? this.state.breathingCycleStart : null}
+                                            exhaleMoment={debugBreathingCycle ? this.state.exhaleMoment : null}
+                                            breathingCycleEnd={debugBreathingCycle ? this.state.breathingCycleEnd : null}
+                                            minY={-5}
+                                            maxY={80}
+                                            peak={this.state.settings.PK}
+                                            threshold={this.state.settings.ADPK} />
+                                        <DataPlot title='Flow (L/min)'
+                                            data={this.state.flowDataPlots}
+                                            multipleDatasets={true}
+                                            timeScale={this.state.xLengthMs / 1000.0}
+                                            minY={-100}
+                                            maxY={100} />
+                                        <DataPlot title='Volume (mL)'
+                                            data={this.state.volumeValues}
+                                            multipleDatasets={true}
+                                            timeScale={this.state.xLengthMs / 1000.0}
+                                            minY={-50}
+                                            maxY={800}
+                                            peak={this.state.settings.VT}
+                                            threshold={this.state.settings.ADVT} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="page-dashboard__layout__sidebar">
+                        <div>
+                            <SingleValueDisplay
+                                name="Pressure<br />Plat"
+                                value={this.state.calculatedValues.PressurePlateau}
+                                status={'normal'}
+                                decimal={false}
+                            ></SingleValueDisplay>
+                            <SingleValueDisplay
+                                name="Respiratory<br />rate"
+                                value={this.state.calculatedValues.RespatoryRate}
+                                status={'normal'}
+                                decimal={false}
+                            ></SingleValueDisplay>
+                            <SingleValueDisplay
+                                name="Volume/min (L)"
+                                value={this.state.calculatedValues.VolumeMin}
+                                decimal={false}
+                                status={'normal'}>
+                            </SingleValueDisplay>
+                            <SingleValueDisplay
+                                name="IE"
+                                value={this.state.calculatedValues.IE}
+                                decimal={false}
+                                status={'normal'}>
+                            </SingleValueDisplay>
                         </div>
                     </div>
                 </div>
