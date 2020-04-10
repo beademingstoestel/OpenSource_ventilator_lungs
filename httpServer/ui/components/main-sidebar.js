@@ -110,8 +110,8 @@ const MainSidebar = ({ className, ...other }) => {
         <nav className={cx('main-sidebar', className)} {...other}>
             {parseInt(currentAlarm) > 0 &&
                 <div className="main-sidebar__alert alert alert--danger">
-                    {getAlarmTexts(currentAlarm)}
                     <button onClick={(e) => resetAlarm(e)}>Reset alarm</button>
+                    {getAlarmTexts(currentAlarm)}
                 </div>
             }
             <ul className="main-sidebar__menu">

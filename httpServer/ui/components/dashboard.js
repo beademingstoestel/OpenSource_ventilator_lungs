@@ -1025,14 +1025,12 @@ export default class Dashboard extends React.Component {
                                 value={this.state.calculatedValues.pressurePlateau}
                                 decimal={1}
                                 status={'normal'}
-                                decimal={false}
                             ></SingleValueDisplay>
                             <SingleValueDisplay
                                 name="Respiratory<br />rate"
                                 value={this.state.calculatedValues.respatoryRate}
-                                decimal={2}
+                                decimal={this.state.calculatedValues.respatoryRate < 10 ? 2 : 1}
                                 status={'normal'}
-                                decimal={false}
                             ></SingleValueDisplay>
                             <SingleValueDisplay
                                 name="Tidal volume (mL)"
@@ -1043,7 +1041,7 @@ export default class Dashboard extends React.Component {
                             <SingleValueDisplay
                                 name="Delivered volume (L/min)"
                                 value={this.state.calculatedValues.volumePerMinute}
-                                decimal={2}
+                                decimal={this.state.calculatedValues.volumePerMinute < 10 ? 2 : 1}
                                 status={'normal'}>
                             </SingleValueDisplay>
                             <SingleValueDisplay
