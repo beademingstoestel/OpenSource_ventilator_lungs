@@ -96,9 +96,9 @@ Create a file called env-local.json in the root of the project. It is advisable 
   - PUT: raise new calculatedvalues
     - body json object:
       - IE: float
-      - VolumeMin: float
-      - RespatoryRate: float
-      - PressurePlateau: float
+      - volumePerMinute: float
+      - respatoryRate: float
+      - pressurePlateau: float
 - /api/settings:
   - @hapi/nes: listen for changes in the settings object
   - GET: retrieve the settings object

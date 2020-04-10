@@ -53,6 +53,12 @@ export default class Dashboard extends React.Component {
     client = null;
     dirtySettings = {};
     previousSettings = {};
+    calculatedValues = {
+        volumePerMinute: 0.0,
+        pressurePlateau: 0.0,
+        tidalVolume: 0.0,
+        bpm: 0.0,
+    };
 
     saving = false;
 
@@ -66,10 +72,10 @@ export default class Dashboard extends React.Component {
             xLengthMs: defaultXRange,
             lastPressure: 0,
             lastVolume: 0,
+            lastBpmValue: 0,
             pressureStatus: 'normal',
             volumeStatus: 'normal',
             bpmStatus: 'normal',
-            bpmValue: 0,
             patientName: '',
             patientAdmittanceDate: new Date(),
             patientInfo: '',
@@ -99,13 +105,14 @@ export default class Dashboard extends React.Component {
             },
             calculatedValues: {
                 IE: 0.0,
-                VolumeMin: 0.0,
-                RespatoryRate: 0.0,
-                PressurePlateau: 0.0,
+                volumePerMinute: 0.0,
+                respatoryRate: 0.0,
+                pressurePlateau: 0.0,
+                breathingCycleStart: null,
+                exhaleMoment: null,
+                tidalVolume: 0.0,
+                breathingCycleEnd: null,
             },
-            breathingCycleStart: null,
-            exhaleMoment: null,
-            breathingCycleEnd: null,
             hasDirtySettings: false,
             updateSetting: (key, setting) => {
                 const settings = { ...this.state.settings };
@@ -371,13 +378,11 @@ export default class Dashboard extends React.Component {
             this.processIncomingPoints(this.rawTriggerValues, newPoints);
         });
 
-        this.client.subscribe('/api/calculated_values', (calculatedValues) => {
-            this.setState({
-                calculatedValues: { ...calculatedValues },
-            });
+        const self = this;
+        this.client.subscribe('/api/calculated_values', (newCalculatedValues) => {
+            self.calculatedValues = newCalculatedValues;
         });
 
-        const self = this;
         this.client.subscribe('/api/settings', (newSettings) => {
             if (newSettings.breathingCycleStart) {
                 return;
@@ -598,7 +603,8 @@ export default class Dashboard extends React.Component {
                 pressureStatus: 'normal',
                 bpmStatus: 'normal',
                 volumeStatus: 'normal',
-                bpmValue: self.rawBpmValue,
+                calculatedValues: { ...self.state.calculatedValues, ...self.calculatedValues },
+                lastBpmValue: self.rawBpmValue,
                 lastPressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
                 lastVolume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
             });
@@ -844,34 +850,6 @@ export default class Dashboard extends React.Component {
                                         </div>
                                     </SingleValueDisplaySettingsOnly>
                                     <SingleValueDisplaySettingsOnly>
-                                        <div>
-                                            <SingleValueDisplaySettings
-                                                name="Tidal volume (TV)"
-                                                value={this.state.settings.VT}
-                                                settingKey={'VT'}
-                                                unit="mL"
-                                                step={50}
-                                                minValue={250}
-                                                maxValue={800}
-                                                decimal={false}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                        </div>
-                                        <div className={'single-value-display-settings__alarm'}>
-                                            <SingleValueDisplaySettings
-                                                name="Alarm limits VT"
-                                                value={this.state.settings.ADVT}
-                                                settingKey={'ADVT'}
-                                                unit="mL"
-                                                step={10}
-                                                minValue={0}
-                                                maxValue={200}
-                                                decimal={false}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                        </div>
-                                    </SingleValueDisplaySettingsOnly>
-                                    <SingleValueDisplaySettingsOnly>
                                         <SingleValueDisplaySettings
                                             name="Set RR value"
                                             value={this.state.settings.RR}
@@ -957,6 +935,34 @@ export default class Dashboard extends React.Component {
                                             updateValue={this.state.updateSetting}
                                         />
                                     </SingleValueDisplaySettingsOnly>
+                                    <SingleValueDisplaySettingsOnly>
+                                        <div>
+                                            <SingleValueDisplaySettings
+                                                name="Tidal volume (TV)"
+                                                value={this.state.settings.VT}
+                                                settingKey={'VT'}
+                                                unit="mL"
+                                                step={50}
+                                                minValue={250}
+                                                maxValue={800}
+                                                decimal={false}
+                                                updateValue={this.state.updateSetting}
+                                            />
+                                        </div>
+                                        <div className={'single-value-display-settings__alarm'}>
+                                            <SingleValueDisplaySettings
+                                                name="Alarm limits VT"
+                                                value={this.state.settings.ADVT}
+                                                settingKey={'ADVT'}
+                                                unit="mL"
+                                                step={10}
+                                                minValue={0}
+                                                maxValue={200}
+                                                decimal={false}
+                                                updateValue={this.state.updateSetting}
+                                            />
+                                        </div>
+                                    </SingleValueDisplaySettingsOnly>
 
                                     <button className={'save-button'}
                                         onClick={(e) => this.saveSettings(e)}
@@ -990,7 +996,7 @@ export default class Dashboard extends React.Component {
                                             exhaleMoment={debugBreathingCycle ? this.state.exhaleMoment : null}
                                             breathingCycleEnd={debugBreathingCycle ? this.state.breathingCycleEnd : null}
                                             minY={-5}
-                                            maxY={80}
+                                            maxY={40}
                                             peak={this.state.settings.PK}
                                             threshold={this.state.settings.ADPK} />
                                         <DataPlot title='Flow (L/min)'
@@ -1016,26 +1022,34 @@ export default class Dashboard extends React.Component {
                         <div>
                             <SingleValueDisplay
                                 name="Pressure<br />Plat"
-                                value={this.state.calculatedValues.PressurePlateau}
+                                value={this.state.calculatedValues.pressurePlateau}
+                                decimal={1}
                                 status={'normal'}
                                 decimal={false}
                             ></SingleValueDisplay>
                             <SingleValueDisplay
                                 name="Respiratory<br />rate"
-                                value={this.state.calculatedValues.RespatoryRate}
+                                value={this.state.calculatedValues.respatoryRate}
+                                decimal={2}
                                 status={'normal'}
                                 decimal={false}
                             ></SingleValueDisplay>
                             <SingleValueDisplay
-                                name="Volume/min (L)"
-                                value={this.state.calculatedValues.VolumeMin}
+                                name="Tidal volume (mL)"
+                                value={this.state.calculatedValues.tidalVolume}
                                 decimal={false}
+                                status={'normal'}>
+                            </SingleValueDisplay>
+                            <SingleValueDisplay
+                                name="Delivered volume (L/min)"
+                                value={this.state.calculatedValues.volumePerMinute}
+                                decimal={2}
                                 status={'normal'}>
                             </SingleValueDisplay>
                             <SingleValueDisplay
                                 name="IE"
                                 value={this.state.calculatedValues.IE}
-                                decimal={false}
+                                decimal={2}
                                 status={'normal'}>
                             </SingleValueDisplay>
                         </div>
