@@ -88,8 +88,8 @@ const MainSidebar = ({ className, ...other }) => {
     }
 
     useEffect(() => {
+        const client = new Client(`${getWsUrl()}`);
         const subscribeAlarm = async () => {
-            const client = new Client(`${getWsUrl()}`);
             await client.connect();
 
             client.subscribe('/api/alarms', (alarm) => {
@@ -98,6 +98,10 @@ const MainSidebar = ({ className, ...other }) => {
         };
 
         subscribeAlarm();
+
+        return function cleanUp() {
+            client.disconnect();
+        };
     }, []);
 
     const menuItems = [

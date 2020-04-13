@@ -3,16 +3,22 @@ $b: 'main-sidebar';
 .#{$b} {
     background-color: get-brand-color();
     color: #fff;
-    padding: 2rem;
+    padding: 1rem;
     position: relative;
     overflow: hidden;
 
     &__alert {
-        padding: 1rem;
+        padding: 0.5rem;
+        z-index: 999;
 
         div {
-            margin-bottom: 1rem;
-            border-bottom: 1px solid darkred;
+            margin-top: 0.25rem;
+            color: darkred;
+
+            &:not(:last-child) {
+                border-bottom: 1px solid darkred;
+                padding-bottom: 0.25;
+            }
         }
 
         button {
@@ -21,7 +27,7 @@ $b: 'main-sidebar';
             border: 1px solid darkred;
             background-color: darkred;
             border-radius: 4px;
-            padding: 1rem;
+            padding: 0.5rem;
             vertical-align: middle;
             width: 100%;
         }
@@ -36,6 +42,7 @@ $b: 'main-sidebar';
         bottom: -50%;
         left: 0;
         background: linear-gradient(69.25deg, get-brand-color('secondary'), get-brand-color('secondary') 50%, transparent 50.25%, transparent 100%);
+        z-index: 1;
     }
 
     &__menu {
@@ -44,6 +51,8 @@ $b: 'main-sidebar';
         list-style-type: none;
         padding: 0;
         margin: 0;
+        position: relative;
+        z-index: 999;
     }
 
     &__menu-item {

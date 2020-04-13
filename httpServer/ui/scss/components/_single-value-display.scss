@@ -91,3 +91,41 @@ $b: 'single-value-display';
         background-color: #ff6600;
     }
 }
+
+.#{$b}-settings__header {
+    color: white;
+    background-color: darkgray;
+    padding: 0.5rem;
+    text-transform: uppercase;
+    font-size: $font-size-base;
+    border-radius: $border-radius-base;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    user-select: none;
+    display: flex;
+    flex-flow: row nowrap;
+    text-align: start;
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+
+    svg {
+        margin-right: 0.5rem;
+        vertical-align: middle;
+    }
+
+    span {
+        vertical-align: middle;        
+    }
+
+    .switch__option1 {
+        margin-right: 0.5rem;
+    }
+
+    .switch {
+        align-self: flex-start;
+        cursor: pointer;
+        flex: 1 1 calc(50% - 2rem);
+    }
+}

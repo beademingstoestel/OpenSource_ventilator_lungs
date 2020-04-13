@@ -100,9 +100,9 @@ $b: 'page-dashboard';
                         background-color: rgba(3, 131, 41, 0.5);
 
                         &:disabled {
-                            background-color: #CCC;
-                            color: #666;
-                            border: 1px solid #666;
+                            background-color: #DDD;
+                            color:darkgray;
+                            border: 1px solid darkgray;
                         }
             
                         svg {
@@ -126,13 +126,14 @@ $b: 'page-dashboard';
 
         &__sidebar {
             position: relative;
-            padding: 0.5rem;
+            padding: 0;
             background-color: get-status-color('success');
             color: white;
             display: flex;
             flex-flow: row nowrap;
             flex-grow: 0;
             width: 8rem;
+            overflow-x: hidden;
         }
     }
 }
