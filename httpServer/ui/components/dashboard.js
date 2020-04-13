@@ -33,8 +33,8 @@ const SingleValueDisplaySettingsOnly = dynamic(() => import('../components/singl
 const refreshRate = 100;
 const defaultXRange = 10000;
 const integerPrecision = 1;
-const minimumIE = 0.25;
-const maximumIE = 0.9;
+const minimumIE = 0.20;
+const maximumIE = 0.80;
 const minimumTInhale = 0.4;
 const maximumTInhale = 10;
 let serverTimeCorrection = 0;
@@ -865,10 +865,11 @@ export default class Dashboard extends React.Component {
                                             name="I/E"
                                             value={this.state.settings.IE}
                                             settingKey={'IE'}
+                                            displayFunction={'toIERatio'}
                                             decimal={2}
-                                            step={0.05}
-                                            minValue={0.25}
-                                            maxValue={0.9}
+                                            step={0.01}
+                                            minValue={minimumIE}
+                                            maxValue={maximumIE}
                                             updateValue={this.state.updateSetting}
                                         />
                                         <SingleValueDisplaySettings
@@ -911,7 +912,7 @@ export default class Dashboard extends React.Component {
                                         {
                                             this.state.settings.MODE === 1 && (
                                                 <SingleValueDisplaySettings
-                                                    name="Trigger sensitivity (P)"
+                                                    name="Trigger sens. (P)"
                                                     value={this.state.settings.TP}
                                                     settingKey={'TP'}
                                                     decimal={2}
@@ -973,10 +974,6 @@ export default class Dashboard extends React.Component {
                             </div>
                             <div className="page-dashboard__layout__body__measurements__graphs">
                                 <form className="form form--horizontal-xs">
-                                    <div className="form__group">
-                                        <label className="form__label" htmlFor="interval">Interval</label>
-                                        <input type="range" min="5000" max="60000" step="5000" id="interval" defaultValue={defaultXRange} onChange={(ev) => this.setSliderValue(ev)} className="form__control" />
-                                    </div>
                                     <div className="form__group form__group--shrink">
                                         <div className="option-toggle option-toggle--danger">
                                             <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e)} />
@@ -1045,8 +1042,9 @@ export default class Dashboard extends React.Component {
                                 status={'normal'}>
                             </SingleValueDisplay>
                             <SingleValueDisplay
-                                name="IE"
+                                name="I/E"
                                 value={this.state.calculatedValues.IE}
+                                displayFunction={'toIERatio'}
                                 decimal={2}
                                 status={'normal'}>
                             </SingleValueDisplay>

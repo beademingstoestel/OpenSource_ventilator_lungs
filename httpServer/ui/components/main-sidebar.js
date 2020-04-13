@@ -10,6 +10,7 @@ import NetworkIcon from './icons/network';
 
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 import { Client } from '@hapi/nes/lib/client';
+import HistoryIcon from './icons/history';
 
 const MainSidebar = ({ className, ...other }) => {
     const { pathname: currentPath } = useRouter();
@@ -102,6 +103,7 @@ const MainSidebar = ({ className, ...other }) => {
     const menuItems = [
         { path: '/', label: 'Dashboard', icon: <GaugeIcon /> },
         { path: '/patient-information', label: 'Patient information', icon: <PersonIcon /> },
+        { path: '/history', label: 'History', icon: <HistoryIcon viewboxWidth={1024} viewboxHeight={1024} /> },
         { path: '/network-settings', label: 'Network settings', icon: <NetworkIcon /> },
         { path: '/logs', label: 'System logs', icon: <TerminalIcon /> },
     ];
