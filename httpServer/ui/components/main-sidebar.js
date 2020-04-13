@@ -100,7 +100,9 @@ const MainSidebar = ({ className, ...other }) => {
         subscribeAlarm();
 
         return function cleanUp() {
-            client.disconnect();
+            try {
+                client.disconnect();
+            } catch (exception) { console.log(exception); }
         };
     }, []);
 

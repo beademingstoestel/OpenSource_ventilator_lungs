@@ -115,8 +115,9 @@ export default class Dashboard extends React.Component {
                 breathingCycleEnd: null,
             },
             hasDirtySettings: false,
-            updateSetting: (key, setting) => {
+            updateSetting: async (key, setting) => {
                 const settings = { ...this.state.settings };
+                console.log(settings);
                 settings[key] = setting;
                 this.dirtySettings[key] = setting;
 
@@ -175,12 +176,18 @@ export default class Dashboard extends React.Component {
                     // console.log("TI Changed to " + settings["TI"] + ", IE adjusted to " + settings["IE"]);
                 }
 
-                this.setState({
+                await this.setStateAsync({
                     settings,
                     hasDirtySettings: true,
                 });
             },
         };
+    }
+
+    setStateAsync(state) {
+        return new Promise((resolve) => {
+            this.setState(state, resolve);
+        });
     }
 
     computeTInhale(respiratoryRate, IE) {
@@ -203,13 +210,13 @@ export default class Dashboard extends React.Component {
         return (this.state.settings.TS < 10000 && this.state.settings.TP < 10000);
     }
 
-    toggleTriggersEnabled(triggersEnabled) {
+    async toggleTriggersEnabled(triggersEnabled) {
         if (!triggersEnabled) {
-            this.state.updateSetting('TS', 10000);
-            this.state.updateSetting('TP', 10000);
+            await this.state.updateSetting('TS', 10000);
+            await this.state.updateSetting('TP', 10000);
         } else {
-            this.state.updateSetting('TS', 2.0);
-            this.state.updateSetting('TP', 1.0);
+            await this.state.updateSetting('TS', 2.0);
+            await this.state.updateSetting('TP', 1.0);
         }
     }
 
@@ -217,12 +224,18 @@ export default class Dashboard extends React.Component {
         return (this.state.settings.VT < 10000);
     }
 
-    toggleVolumeLimitingEnabled(volumeLimitingEnabled) {
+    async toggleVolumeLimitingEnabled(volumeLimitingEnabled) {
         if (!volumeLimitingEnabled) {
-            this.state.updateSetting('VT', 10000);
+            await this.state.updateSetting('VT', 10000);
+            await this.state.updateSetting('ADVT', 9800);
         } else {
-            this.state.updateSetting('VT', 250);
+            await this.state.updateSetting('VT', 250);
+            await this.state.updateSetting('ADVT', 200);
         }
+    }
+
+    async updateMinimumADTV(key, setting) {
+        await this.state.updateSetting(key, 10000 - setting);
     }
 
     processIncomingPoints(toArray, newPoints) {
@@ -704,7 +717,7 @@ export default class Dashboard extends React.Component {
                             T {new Date().toLocaleTimeString()}
                         </div>
                         <div>
-                            Mode: {this.state.settings.MODE === 0 ? 'Flow' : 'Volume'}
+                            Mode: {this.state.settings.MODE === 0 ? 'Flow' : 'Pressure'}
                         </div>
                     </div>
                     <div className="page-dashboard__machine-info">
@@ -817,11 +830,13 @@ export default class Dashboard extends React.Component {
                                             <Switch label={'Use triggers'}
                                                 switched={this.triggersEnabled()}
                                                 switchChanged={this.toggleTriggersEnabled.bind(this)}>></Switch>
-                                            <OptionSwitch labelOption1={'Flow'}
-                                                labelOption2={'Volume'}
-                                                switched={this.state.settings.MODE === 1}
-                                                switchChanged={this.toggleMode.bind(this)}>
-                                            </OptionSwitch>
+                                            {this.triggersEnabled() &&
+                                                <OptionSwitch labelOption1={'Flow'}
+                                                    labelOption2={'Pressure'}
+                                                    switched={this.state.settings.MODE === 1}
+                                                    switchChanged={this.toggleMode.bind(this)}>
+                                                </OptionSwitch>
+                                            }
                                         </div>
                                         <SingleValueDisplaySettingsOnly>
                                             <SingleValueDisplaySettings
@@ -870,7 +885,7 @@ export default class Dashboard extends React.Component {
                                             />
                                             { this.triggersEnabled() && this.state.settings.MODE === 0 &&
                                                 <SingleValueDisplaySettings
-                                                    name="Trigger sens. (V)"
+                                                    name="Trigger sens."
                                                     value={this.state.settings.TS}
                                                     settingKey={'TS'}
                                                     decimal={2}
@@ -883,7 +898,7 @@ export default class Dashboard extends React.Component {
                                             }
                                             { this.triggersEnabled() && this.state.settings.MODE === 1 &&
                                                 <SingleValueDisplaySettings
-                                                    name="Trigger sens. (P)"
+                                                    name="Trigger sens."
                                                     value={this.state.settings.TP}
                                                     settingKey={'TP'}
                                                     decimal={2}
@@ -910,33 +925,55 @@ export default class Dashboard extends React.Component {
                                         </SingleValueDisplaySettingsOnly>
                                     </div>
                                     <div>
-                                        <div className={'single-value-display-settings__header'}><Switch label={'Use volume control'}></Switch></div>
+                                        <div className={'single-value-display-settings__header'}>
+                                            <Switch label={'Use volume control'}
+                                                switched={this.volumeLimitingEnabled()}
+                                                switchChanged={this.toggleVolumeLimitingEnabled.bind(this)}
+                                            ></Switch>
+                                        </div>
                                         <SingleValueDisplaySettingsOnly>
                                             <div>
-                                                <SingleValueDisplaySettings
-                                                    name="Tidal volume (TV)"
-                                                    value={this.state.settings.VT}
-                                                    settingKey={'VT'}
-                                                    unit="mL"
-                                                    step={50}
-                                                    minValue={250}
-                                                    maxValue={800}
-                                                    decimal={false}
-                                                    updateValue={this.state.updateSetting}
-                                                />
+                                                {this.volumeLimitingEnabled() &&
+                                                    <SingleValueDisplaySettings
+                                                        name="Tidal volume (TV)"
+                                                        value={this.state.settings.VT}
+                                                        settingKey={'VT'}
+                                                        unit="mL"
+                                                        step={50}
+                                                        minValue={250}
+                                                        maxValue={800}
+                                                        decimal={false}
+                                                        updateValue={this.state.updateSetting}
+                                                    />
+                                                }
                                             </div>
                                             <div className={'single-value-display-settings__alarm'}>
-                                                <SingleValueDisplaySettings
-                                                    name="Alarm limits VT"
-                                                    value={this.state.settings.ADVT}
-                                                    settingKey={'ADVT'}
-                                                    unit="mL"
-                                                    step={10}
-                                                    minValue={0}
-                                                    maxValue={200}
-                                                    decimal={false}
-                                                    updateValue={this.state.updateSetting}
-                                                />
+                                                {this.volumeLimitingEnabled() &&
+                                                    <SingleValueDisplaySettings
+                                                        name="Alarm limits TV"
+                                                        value={this.state.settings.ADVT}
+                                                        settingKey={'ADVT'}
+                                                        unit="mL"
+                                                        step={10}
+                                                        minValue={0}
+                                                        maxValue={200}
+                                                        decimal={false}
+                                                        updateValue={this.state.updateSetting}
+                                                    />
+                                                }
+                                                {!this.volumeLimitingEnabled() &&
+                                                    <SingleValueDisplaySettings
+                                                        name="Minimum TV alarm"
+                                                        value={10000 - this.state.settings.ADVT}
+                                                        settingKey={'ADVT'}
+                                                        unit="mL"
+                                                        step={10}
+                                                        minValue={50}
+                                                        maxValue={800}
+                                                        decimal={false}
+                                                        updateValue={this.updateMinimumADTV.bind(this)}
+                                                    />
+                                                }
                                             </div>
                                         </SingleValueDisplaySettingsOnly>
                                     </div>
