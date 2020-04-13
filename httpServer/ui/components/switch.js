@@ -7,8 +7,16 @@ const transFormOnSwitchState = (switched) => {
 };
 
 const Switch = ({ isChecked = false, label = '', switched = true, switchChanged = null }) => {
+    function switchClicked(e) {
+        if (switchChanged) {
+            switchChanged(!switched);
+        }
+
+        e.preventDefault();
+    }
+
     return (
-        <div className="switch">
+        <div className="switch" onClick={(e) => switchClicked(e)}>
             <svg xmlns="http://www.w3.org/2000/svg"
                 aria-hidden="true"
                 focusable="false"
@@ -24,8 +32,16 @@ const Switch = ({ isChecked = false, label = '', switched = true, switchChanged 
 };
 
 const OptionSwitch = ({ isChecked = false, labelOption1 = '', labelOption2 = '', switched = false, switchChanged = null }) => {
+    function switchClicked(e) {
+        if (switchChanged) {
+            switchChanged(!switched);
+        }
+
+        e.preventDefault();
+    }
+
     return (
-        <div className="switch">
+        <div className="switch" onClick={(e) => switchClicked(e)}>
             <span className={'switch__option1'}>{labelOption1}</span><svg xmlns="http://www.w3.org/2000/svg"
                 aria-hidden="true"
                 focusable="false"

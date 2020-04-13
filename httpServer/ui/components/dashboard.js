@@ -191,11 +191,37 @@ export default class Dashboard extends React.Component {
         return ((parseFloat(TInhale) * parseFloat(respiratoryRate)) / 60);
     }
 
-    toggleMode() {
-        if (this.state.settings.MODE === 0) {
+    toggleMode(isVolume) {
+        if (isVolume) {
             this.state.updateSetting('MODE', 1);
         } else {
             this.state.updateSetting('MODE', 0);
+        }
+    }
+
+    triggersEnabled() {
+        return (this.state.settings.TS < 10000 && this.state.settings.TP < 10000);
+    }
+
+    toggleTriggersEnabled(triggersEnabled) {
+        if (!triggersEnabled) {
+            this.state.updateSetting('TS', 10000);
+            this.state.updateSetting('TP', 10000);
+        } else {
+            this.state.updateSetting('TS', 2.0);
+            this.state.updateSetting('TP', 1.0);
+        }
+    }
+
+    volumeLimitingEnabled() {
+        return (this.state.settings.VT < 10000);
+    }
+
+    toggleVolumeLimitingEnabled(volumeLimitingEnabled) {
+        if (!volumeLimitingEnabled) {
+            this.state.updateSetting('VT', 10000);
+        } else {
+            this.state.updateSetting('VT', 250);
         }
     }
 
@@ -626,11 +652,6 @@ export default class Dashboard extends React.Component {
         });
     }
 
-    toggleActiveState() {
-        console.log('toggle active state');
-        this.saveSetting('ACTIVE', parseInt(this.state.settings.ACTIVE) === 0 ? 1 : 0);
-    }
-
     askActiveStateChange() {
         console.log('ask to change active state');
         // if we are in active mode, show the dialog box to confirm deactivation
@@ -678,12 +699,12 @@ export default class Dashboard extends React.Component {
                         <li>{this.state.patientAdmittanceDate.toLocaleString()}</li>
                         <li>{this.state.patientInfo}</li>
                     </ul>
-                    <div className="page-dashboard__timing-info" onClick={() => this.toggleMode()}>
+                    <div className="page-dashboard__timing-info">
                         <div>
                             T {new Date().toLocaleTimeString()}
                         </div>
                         <div>
-                            Mode: {this.state.settings.MODE === 0 ? 'Flow' : 'Pressure'}
+                            Mode: {this.state.settings.MODE === 0 ? 'Flow' : 'Volume'}
                         </div>
                     </div>
                     <div className="page-dashboard__machine-info">
@@ -793,8 +814,14 @@ export default class Dashboard extends React.Component {
                                     </SingleValueDisplaySettingsOnly>
                                     <div>
                                         <div className={'single-value-display-settings__header'}>
-                                            <Switch label={'Use triggers'}></Switch>
-                                            <OptionSwitch labelOption1={'Flow'} labelOption2={'Volume'}></OptionSwitch>
+                                            <Switch label={'Use triggers'}
+                                                switched={this.triggersEnabled()}
+                                                switchChanged={this.toggleTriggersEnabled.bind(this)}>></Switch>
+                                            <OptionSwitch labelOption1={'Flow'}
+                                                labelOption2={'Volume'}
+                                                switched={this.state.settings.MODE === 1}
+                                                switchChanged={this.toggleMode.bind(this)}>
+                                            </OptionSwitch>
                                         </div>
                                         <SingleValueDisplaySettingsOnly>
                                             <SingleValueDisplaySettings
@@ -841,47 +868,45 @@ export default class Dashboard extends React.Component {
                                                 maxValue={1.0}
                                                 updateValue={this.state.updateSetting}
                                             />
-                                            {
-                                                this.state.settings.MODE === 0 && (
-                                                    <SingleValueDisplaySettings
-                                                        name="Trigger sens. (V)"
-                                                        value={this.state.settings.TS}
-                                                        settingKey={'TS'}
-                                                        decimal={2}
-                                                        unit='L/min'
-                                                        step={0.1}
-                                                        minValue={0}
-                                                        maxValue={10}
-                                                        updateValue={this.state.updateSetting}
-                                                    />
-                                                )
+                                            { this.triggersEnabled() && this.state.settings.MODE === 0 &&
+                                                <SingleValueDisplaySettings
+                                                    name="Trigger sens. (V)"
+                                                    value={this.state.settings.TS}
+                                                    settingKey={'TS'}
+                                                    decimal={2}
+                                                    unit='L/min'
+                                                    step={0.1}
+                                                    minValue={0}
+                                                    maxValue={10}
+                                                    updateValue={this.state.updateSetting}
+                                                />
                                             }
-                                            {
-                                                this.state.settings.MODE === 1 && (
-                                                    <SingleValueDisplaySettings
-                                                        name="Trigger sens. (P)"
-                                                        value={this.state.settings.TP}
-                                                        settingKey={'TP'}
-                                                        decimal={2}
-                                                        unit='cmH2O'
-                                                        step={0.1}
-                                                        minValue={0}
-                                                        maxValue={10}
-                                                        updateValue={this.state.updateSetting}
-                                                    />
-                                                )
+                                            { this.triggersEnabled() && this.state.settings.MODE === 1 &&
+                                                <SingleValueDisplaySettings
+                                                    name="Trigger sens. (P)"
+                                                    value={this.state.settings.TP}
+                                                    settingKey={'TP'}
+                                                    decimal={2}
+                                                    unit='cmH2O'
+                                                    step={0.1}
+                                                    minValue={0}
+                                                    maxValue={10}
+                                                    updateValue={this.state.updateSetting}
+                                                />
                                             }
-                                            <SingleValueDisplaySettings
-                                                name="Psupport"
-                                                value={this.state.settings.PS}
-                                                settingKey={'PS'}
-                                                unit="cmH2O"
-                                                decimal={false}
-                                                step={1}
-                                                minValue={10}
-                                                maxValue={this.state.maxPSupport}
-                                                updateValue={this.state.updateSetting}
-                                            />
+                                            { this.triggersEnabled() &&
+                                                <SingleValueDisplaySettings
+                                                    name="Psupport"
+                                                    value={this.state.settings.PS}
+                                                    settingKey={'PS'}
+                                                    unit="cmH2O"
+                                                    decimal={false}
+                                                    step={1}
+                                                    minValue={10}
+                                                    maxValue={this.state.maxPSupport}
+                                                    updateValue={this.state.updateSetting}
+                                                />
+                                            }
                                         </SingleValueDisplaySettingsOnly>
                                     </div>
                                     <div>
