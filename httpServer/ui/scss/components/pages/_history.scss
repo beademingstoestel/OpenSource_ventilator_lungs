@@ -1,0 +1,51 @@
+$b: 'page-history';
+
+.#{$b} {
+    display: flex;
+    flex-direction: row;
+    flex-flow: row nowrap;
+    height: 100%;
+    margin-top: -2rem;
+    margin-left: -2rem;
+    height: calc(100% + 2rem);
+
+    &__alarms-list {
+        min-width: 25rem;
+        overflow-y: scroll;
+        height: 100%;
+        flex-grow: 0;
+        padding: 1rem;
+        margin-right: 2rem;
+
+        &__entry {
+            cursor: pointer;
+
+            &__title {
+                vertical-align: middle;
+                text-align: end;
+                display: flex;
+
+                &.alarm {
+                    color: darkred;
+                }
+
+                svg {
+                    flex-grow: 0;
+                    vertical-align: middle;
+                    width: 2rem;
+                    height: 2rem;
+                }
+
+                div {
+                    flex-grow: 1;
+                    vertical-align: middle;
+                    font-weight: bolder;
+                }
+            }
+        }
+    }
+
+    &__graphs {
+        flex-grow: 1;
+    }
+}

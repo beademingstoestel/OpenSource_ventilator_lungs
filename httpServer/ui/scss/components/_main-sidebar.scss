@@ -6,6 +6,7 @@ $b: 'main-sidebar';
     padding: 1rem;
     position: relative;
     overflow: hidden;
+    min-width: 15rem;
 
     &__alert {
         padding: 0.5rem;

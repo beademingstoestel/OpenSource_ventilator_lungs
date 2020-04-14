@@ -2,6 +2,7 @@ $b: 'master-layout';
 
 .#{$b} {
     min-height: 100vh;
+    height: 100%;
     display: flex;
 
     // @include media-breakpoint-up('sm') {

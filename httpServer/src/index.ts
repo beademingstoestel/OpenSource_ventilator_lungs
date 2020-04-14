@@ -24,6 +24,7 @@ import { MongoClient, Db } from 'mongodb';
 import { PatientInfoController } from './Controllers/PatientInfoController';
 import { FlowValuesController } from './Controllers/FlowValuesController';
 import { CpuValuesController } from './Controllers/CpuValuesController';
+import EventsController from './Controllers/EventsController';
 
 /* define configuration */
 
@@ -238,28 +239,34 @@ const startSlave = async function () {
     });
 
     server.route({
+        method: 'GET',
+        path: '/api/events',
+        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new EventsController(valuesRepositoryFactory()).HandleGet(request, h),
+    });
+
+    let alarmValue = 0;
+    server.route({
         method: 'PUT',
         path: '/api/alarms',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+            // todo: create get call to get latest alarm so we can only publish on changing value
             server.publish('/api/alarms', request.payload);
+            const newAlarmValue = parseInt((<any>request.payload).value);
 
-            const alarmValue = parseInt((<any>request.payload).value);
+            if (newAlarmValue !== alarmValue) {
+                try {
+                    const valuesRepository = valuesRepositoryFactory();
+                    valuesRepository.InsertValue('events', {
+                        data: {
+                            value: newAlarmValue,
+                        },
+                        type: 'alarm',
+                        loggedAt: new Date(),
+                    });
+                } catch (exception) {}
 
-            try {
-                if (alarmValue) {
-                    request.log(['error'], {
-                        text: 'Update alarm value: ' + JSON.stringify(request.payload, null, '\t'),
-                        source: 'Node.js',
-                        severity: 'error',
-                    });
-                } else {
-                    request.log(['debug'], {
-                        text: 'Update alarm value: ' + JSON.stringify(request.payload, null, '\t'),
-                        source: 'Node.js',
-                        severity: 'debug',
-                    });
-                }
-            } catch (exception) {}
+                alarmValue = newAlarmValue;
+            }
 
             return {
                 result: true,
@@ -316,7 +323,7 @@ const startSlave = async function () {
 
         setInterval(async () => {
             for (const key in lastDateTime) {
-                const newValues = await valuesRepository.ReadValues(key, lastDateTime[key]);
+                const newValues = await valuesRepository.ReadValues(key, lastDateTime[key], new Date());
 
                 if (newValues.length > 0) {
                     server.publish(`/api/${key}`, newValues);

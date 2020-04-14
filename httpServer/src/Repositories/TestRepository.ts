@@ -4,7 +4,11 @@ import { IValuesRepository } from './IValuesRepository';
 import { TimeStampedValue } from '../Models/TimeStampedValue';
 
 export class TestRepository implements IValuesRepository {
-    ReadValues(collection: string, since: Date): Promise<TimeStampedValue[]> {
+    InsertValue(collection: string, data: any): Promise<void> {
+        return Promise.resolve();
+    }
+
+    ReadValues(collection: string, since: Date, until: Date = new Date()): Promise<TimeStampedValue[]> {
         // return a random value for each 100 ms since since
 
         const now = new Date().getTime();

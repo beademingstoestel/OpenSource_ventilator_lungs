@@ -2,5 +2,6 @@
 import { TimeStampedValue } from '../Models/TimeStampedValue';
 
 export interface IValuesRepository {
-    ReadValues(collection: string, since: Date): Promise<Array<TimeStampedValue>>;
+    ReadValues(collection: string, since: Date, until: Date): Promise<Array<TimeStampedValue>>;
+    InsertValue(collection: string, data: any): Promise<void>;
 }
