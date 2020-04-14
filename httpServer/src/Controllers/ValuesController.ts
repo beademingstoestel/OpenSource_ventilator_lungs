@@ -11,7 +11,7 @@ export class ValuesController {
 
         if (request.query[key]) {
             const sinceString: string = <string>request.query[key];
-            date = new Date(sinceString);
+            date = new Date(+sinceString);
         } else {
             // default last 5 seconds
             date = new Date();

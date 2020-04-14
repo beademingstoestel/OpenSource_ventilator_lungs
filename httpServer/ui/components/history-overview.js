@@ -4,42 +4,142 @@ import BellIcon from '../components/icons/bell';
 
 import { getApiUrl } from '../helpers/api-urls';
 
-const twelveHoursMs = 12 * 3600 * 1000;
+const twelveHoursMs = new Date().getTime() - 12 * 3600 * 1000;
 
 export default class HistoryOverview extends React.Component {
+    since = 0;
+    timeFrame = 0;
+
     constructor(props) {
         super(props);
 
         this.state = {
             pressureDataPlots: [],
             flowDataPlots: [],
-            volumeValues: [],
-            alarms: [],
+            volumeDataPlots: [],
+            events: [],
+            xLengthMs: 10,
         };
     }
 
     async componentDidMount() {
-        // get alarms from latest 12 hours
-        const alarmsResponse = await fetch(`${getApiUrl()}/api/alarms?since=${twelveHoursMs}`);
-        const alarms = await alarmsResponse.json();
+        // get events from latest 12 hours
+        const eventsResponse = await fetch(`${getApiUrl()}/api/events?since=${twelveHoursMs}`);
+        const events = await eventsResponse.json();
+
+        if (events.length > 0) {
+            this.jumpToEvent(events[0]);
+        }
 
         this.setState({
-            alarms,
+            events,
         });
     }
 
-    async getData() {
+    async jumpToEvent(event) {
+        if (event.type === 'alarm') {
+            const startTime = new Date(event.loggedAt).getTime() - 15000;
+            this.getData(startTime, 30000);
+        }
+    }
 
+    async getData(since, timeFrame) {
+        const pressureDataResponse = await fetch(`${getApiUrl()}/api/pressure_values?since=${since}&until=${since + timeFrame}`);
+        const pressureDatas = (await pressureDataResponse.json()).reverse();
+
+        const pressureArray = [];
+        pressureDatas.forEach(pressureData => {
+            pressureArray.push({
+                x: (new Date(pressureData.loggedAt) - since) / 1000,
+                y: pressureData.value,
+            });
+        });
+
+        const targetPressureDataResponse = await fetch(`${getApiUrl()}/api/targetpressure_values?since=${since}&until=${since + timeFrame}`);
+        const targetPressureDatas = (await targetPressureDataResponse.json()).reverse();
+
+        const targetPressureArray = [];
+        targetPressureDatas.forEach(targetPressureData => {
+            targetPressureArray.push({
+                x: (new Date(targetPressureData.loggedAt) - since) / 1000,
+                y: targetPressureData.value,
+            });
+        });
+
+        const newPressureDataPlots = [
+            {
+                data: pressureArray,
+                color: '#ff6600',
+                fill: true,
+            },
+            {
+                data: targetPressureArray,
+                color: '#000',
+                fill: true,
+            },
+        ];
+
+        const flowResponse = await fetch(`${getApiUrl()}/api/flow_values?since=${since}&until=${since + timeFrame}`);
+        const flowDatas = (await flowResponse.json()).reverse();
+
+        const flowArray = [];
+        flowDatas.forEach(flowData => {
+            flowArray.push({
+                x: (new Date(flowData.loggedAt) - since) / 1000,
+                y: flowData.value,
+            });
+        });
+
+        const newFlowDataPlots = [
+            {
+                data: flowArray,
+                color: '#ff6600',
+                fill: true,
+            },
+        ];
+
+        const volumeResponse = await fetch(`${getApiUrl()}/api/volume_values?since=${since}&until=${since + timeFrame}`);
+        const volumeDatas = (await volumeResponse.json()).reverse();
+
+        const volumeArray = [];
+        volumeDatas.forEach(volumeData => {
+            volumeArray.push({
+                x: (new Date(volumeData.loggedAt) - since) / 1000,
+                y: volumeData.value,
+            });
+        });
+
+        const newVolumeDataPlots = [
+            {
+                data: volumeArray,
+                color: '#ff6600',
+                fill: true,
+            },
+        ];
+
+        this.setState({
+            xLengthMs: timeFrame / 1000,
+            pressureDataPlots: newPressureDataPlots,
+            flowDataPlots: newFlowDataPlots,
+            volumeDataPlots: newVolumeDataPlots,
+        });
+
+        this.since = since;
+        this.timeFrame = timeFrame;
     }
 
     render() {
         return (
             <div className={cx('page-history', this.props.className)}>
                 <div className={'page-history__alarms-list'}>
-                    {this.state.alarms.length > 0 && this.state.alarms.map((alarm) => {
-                        return (<div key={alarm._id} className={'page-history__alarms-list__entry'}>
-                            <div className={'page-history__alarms-list__entry__title alarm'}>
-                                <BellIcon></BellIcon><div>{new Date(alarm.loggedAt).toLocaleString()}</div>
+                    {this.state.events.length > 0 && this.state.events.map((event) => {
+                        return (<div key={event._id} className={'page-history__alarms-list__entry'}>
+                            <div className={'page-history__alarms-list__entry__title ' + event.type}
+                                onClick={(e) => {
+                                    this.jumpToEvent(event);
+                                    e.preventDefault();
+                                }}>
+                                <BellIcon></BellIcon><div>{new Date(event.loggedAt).toLocaleString()}</div>
                             </div>
                         </div>);
                     })}
@@ -60,7 +160,7 @@ export default class HistoryOverview extends React.Component {
                                 minY={-100}
                                 maxY={100} />
                             <DataPlot title='Volume (mL)'
-                                data={this.state.volumeValues}
+                                data={this.state.volumeDataPlots}
                                 multipleDatasets={true}
                                 timeScale={this.state.xLengthMs / 1000.0}
                                 minY={-50}
