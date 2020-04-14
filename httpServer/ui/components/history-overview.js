@@ -19,6 +19,7 @@ export default class HistoryOverview extends React.Component {
             volumeDataPlots: [],
             events: [],
             xLengthMs: 10,
+            title: '',
         };
     }
 
@@ -41,6 +42,10 @@ export default class HistoryOverview extends React.Component {
             const startTime = new Date(event.loggedAt).getTime() - 15000;
             this.getData(startTime, 30000);
         }
+    }
+
+    async moveGraph(milliseconds) {
+        await this.getData(this.since + milliseconds, this.timeFrame);
     }
 
     async getData(since, timeFrame) {
@@ -122,6 +127,7 @@ export default class HistoryOverview extends React.Component {
             pressureDataPlots: newPressureDataPlots,
             flowDataPlots: newFlowDataPlots,
             volumeDataPlots: newVolumeDataPlots,
+            title: `History (${new Date(since).toLocaleTimeString()} - ${new Date(since + timeFrame).toLocaleTimeString()})`,
         });
 
         this.since = since;
@@ -145,6 +151,11 @@ export default class HistoryOverview extends React.Component {
                     })}
                 </div>
                 <div className={'page-history__graphs'}>
+                    <div className={'page-history__graphs__controls'}>
+                        <button onClick={() => this.moveGraph(-5000) }>&lt;</button>
+                        <div>{this.state.title}</div>
+                        <button onClick={() => this.moveGraph(5000) }>&gt;</button>
+                    </div>
                     <div className="box u-mt-1">
                         <div className="box__body">
                             <DataPlot title='Pressure (cmH2O)'
