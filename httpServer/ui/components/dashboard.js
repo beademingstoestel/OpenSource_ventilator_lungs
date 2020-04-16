@@ -49,7 +49,6 @@ export default class Dashboard extends React.Component {
     rawFlowValues = [];
     rawTriggerValues = [];
     rawTargetPressureValues = [];
-    rawBpmValue = 0;
     animationInterval = 0;
     client = null;
     dirtySettings = {};
@@ -238,29 +237,63 @@ export default class Dashboard extends React.Component {
         await this.state.updateSetting(key, 10000 - setting);
     }
 
-    processIncomingPoints(toArray, newPoints) {
+    processIncomingPoints(newPoints) {
         var cutoffTime = new Date().getTime() - this.state.xLengthMs;
 
-        // shift old values
-        let removeSplicePoint = 0;
-        for (let i = 0; i < toArray.length; i++) {
-            if (toArray[i].loggedAt > cutoffTime + 200) {
-                removeSplicePoint = i;
-                break;
-            }
-        }
+        const toArrays = [
+            this.rawFlowValues,
+            this.rawVolumeValues,
+            this.rawPressureValues,
+            this.rawTargetPressureValues,
+            this.rawTriggerValues,
+        ];
 
-        if (removeSplicePoint > 0) {
-            toArray.splice(0, removeSplicePoint);
-        }
+        // shift old values
+        toArrays.forEach((toArray) => {
+            let removeSplicePoint = 0;
+            for (let i = 0; i < toArray.length; i++) {
+                if (toArray[i].loggedAt > cutoffTime + 200) {
+                    removeSplicePoint = i;
+                    break;
+                }
+            }
+
+            if (removeSplicePoint > 0) {
+                toArray.splice(0, removeSplicePoint);
+            }
+        });
 
         newPoints.forEach((newPoint) => {
             const localTime = new Date(newPoint.loggedAt).getTime() - serverTimeCorrection;
 
-            toArray.push({
+            this.rawFlowValues.push({
                 loggedAt: localTime,
                 x: localTime - this.currentGraphTime,
-                y: newPoint.value,
+                y: newPoint.value.flow,
+            });
+
+            this.rawTriggerValues.push({
+                loggedAt: localTime,
+                x: localTime - this.currentGraphTime,
+                y: newPoint.value.trigger,
+            });
+
+            this.rawPressureValues.push({
+                loggedAt: localTime,
+                x: localTime - this.currentGraphTime,
+                y: newPoint.value.pressure,
+            });
+
+            this.rawTargetPressureValues.push({
+                loggedAt: localTime,
+                x: localTime - this.currentGraphTime,
+                y: newPoint.value.targetPressure,
+            });
+
+            this.rawVolumeValues.push({
+                loggedAt: localTime,
+                x: localTime - this.currentGraphTime,
+                y: newPoint.value.volume,
             });
         });
     }
@@ -392,26 +425,8 @@ export default class Dashboard extends React.Component {
         this.client = new Client(`${getWsUrl()}`);
         await this.client.connect();
 
-        this.client.subscribe('/api/pressure_values', (newPoints) => {
-            this.processIncomingPoints(this.rawPressureValues, newPoints);
-        });
-
-        if (debugBreathingCycle) {
-            this.client.subscribe('/api/targetpressure_values', (newPoints) => {
-                this.processIncomingPoints(this.rawTargetPressureValues, newPoints);
-            });
-        }
-
-        this.client.subscribe('/api/volume_values', (newPoints) => {
-            this.processIncomingPoints(this.rawVolumeValues, newPoints);
-        });
-
-        this.client.subscribe('/api/flow_values', (newPoints) => {
-            this.processIncomingPoints(this.rawFlowValues, newPoints);
-        });
-
-        this.client.subscribe('/api/trigger_values', (newPoints) => {
-            this.processIncomingPoints(this.rawTriggerValues, newPoints);
+        this.client.subscribe('/api/measured_values', (newValues) => {
+            this.processIncomingPoints(newValues);
         });
 
         const self = this;
@@ -435,12 +450,6 @@ export default class Dashboard extends React.Component {
             self.setState({
                 settings: { ...self.state.settings, ...newSettings },
             });
-        });
-
-        this.client.subscribe('/api/breathsperminute_values', (newPoints) => {
-            const lastpoint = newPoints[newPoints.length - 1];
-
-            self.rawBpmValue = lastpoint.value;
         });
 
         this.animationInterval = setInterval(() => {
@@ -640,7 +649,7 @@ export default class Dashboard extends React.Component {
                 bpmStatus: 'normal',
                 volumeStatus: 'normal',
                 calculatedValues: { ...self.state.calculatedValues, ...self.calculatedValues },
-                lastBpmValue: self.rawBpmValue,
+                lastBpmValue: 0,
                 lastPressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
                 lastVolume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
             });
@@ -795,7 +804,7 @@ export default class Dashboard extends React.Component {
                                                 unit="cmH2O"
                                                 decimal={false}
                                                 step={5}
-                                                minValue={5}
+                                                minValue={0}
                                                 maxValue={20}
                                                 updateValue={this.state.updateSetting}
                                             />

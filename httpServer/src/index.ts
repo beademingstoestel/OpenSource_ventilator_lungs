@@ -1,13 +1,8 @@
 import * as Hapi from '@hapi/hapi';
-import { VolumeValuesController } from './Controllers/VolumeValuesController';
 import { TestRepository } from './Repositories/TestRepository';
 // eslint-disable-next-line no-unused-vars
 import { IValuesRepository } from './Repositories/IValuesRepository';
 import { MongoValuesRepository } from './Repositories/MongoValuesRepository';
-import { TriggerValuesController } from './Controllers/TriggerValuesController';
-import { PressureValuesController } from './Controllers/PressureValuesController';
-import { TargetPressureValuesController } from './Controllers/TargetPressureValuesController';
-import { BreathsPerMinuteValuesController } from './Controllers/BreathsPerMinuteValuesController';
 import * as fs from 'fs';
 // eslint-disable-next-line no-unused-vars
 import { ISettingsRepository } from './Repositories/ISettingsRepository';
@@ -22,9 +17,8 @@ import { LogEntriesController } from './Controllers/LogEntriesController';
 // eslint-disable-next-line no-unused-vars
 import { MongoClient, Db } from 'mongodb';
 import { PatientInfoController } from './Controllers/PatientInfoController';
-import { FlowValuesController } from './Controllers/FlowValuesController';
-import { CpuValuesController } from './Controllers/CpuValuesController';
 import EventsController from './Controllers/EventsController';
+import { ValuesController } from './Controllers/ValuesController';
 
 /* define configuration */
 
@@ -158,44 +152,8 @@ const startSlave = async function () {
 
     server.route({
         method: 'GET',
-        path: '/api/volume_values',
-        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new VolumeValuesController(valuesRepositoryFactory()).HandleGet(request, h),
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/api/pressure_values',
-        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new PressureValuesController(valuesRepositoryFactory()).HandleGet(request, h),
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/api/targetpressure_values',
-        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new TargetPressureValuesController(valuesRepositoryFactory()).HandleGet(request, h),
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/api/flow_values',
-        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new FlowValuesController(valuesRepositoryFactory()).HandleGet(request, h),
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/api/cpu_values',
-        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new CpuValuesController(valuesRepositoryFactory()).HandleGet(request, h),
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/api/breathsperminute_values',
-        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new BreathsPerMinuteValuesController(valuesRepositoryFactory()).HandleGet(request, h),
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/api/trigger_values',
-        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new TriggerValuesController(valuesRepositoryFactory()).HandleGet(request, h),
+        path: '/api/measured_values',
+        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new ValuesController(valuesRepositoryFactory(), 'measured_values').HandleGet(request, h),
     });
 
     const broadcastSettings = (settings: any): void => {
@@ -293,13 +251,7 @@ const startSlave = async function () {
         },
     });
 
-    server.subscription('/api/volume_values');
-    server.subscription('/api/pressure_values');
-    server.subscription('/api/targetpressure_values');
-    server.subscription('/api/breathsperminute_values');
-    server.subscription('/api/trigger_values');
-    server.subscription('/api/flow_values');
-    server.subscription('/api/cpu_values');
+    server.subscription('/api/measured_values');
     server.subscription('/api/settings');
     server.subscription('/api/alarms');
     server.subscription('/api/calculated_values');
@@ -311,25 +263,16 @@ const startSlave = async function () {
     // start sending updates over websocket
     if (environment.RepositoryMode === 'test' || !environment.WatchMode) {
         const now = new Date();
-        const lastDateTime = {
-            volume_values: now,
-            pressure_values: now,
-            breathsperminute_values: now,
-            trigger_values: now,
-            flow_values: now,
-            cpu_values: now,
-        };
+        let lastDateTime = now;
         const valuesRepository = valuesRepositoryFactory();
 
         setInterval(async () => {
-            for (const key in lastDateTime) {
-                const newValues = await valuesRepository.ReadValues(key, lastDateTime[key], new Date());
+            const newValues = await valuesRepository.ReadValues('measured_values', lastDateTime, new Date());
 
-                if (newValues.length > 0) {
-                    server.publish(`/api/${key}`, newValues);
-                    lastDateTime[key] = newValues[newValues.length - 1].loggedAt;
-                }
-            };
+            if (newValues.length > 0) {
+                server.publish('/api/measured_values', newValues);
+                lastDateTime = newValues[newValues.length - 1].loggedAt;
+            }
         }, environment.UpdateRate);
     } else {
         if (!mongoClient.isConnected()) {
@@ -338,45 +281,9 @@ const startSlave = async function () {
 
         const db: Db = mongoClient.db('beademing');
 
-        db.collection('pressure_values').watch().on('change', data => {
+        db.collection('measured_values').watch().on('change', data => {
             if (data.operationType === 'insert') {
-                server.publish('/api/pressure_values', [data.fullDocument]);
-            }
-        });
-
-        db.collection('targetpressure_values').watch().on('change', data => {
-            if (data.operationType === 'insert') {
-                server.publish('/api/targetpressure_values', [data.fullDocument]);
-            }
-        });
-
-        db.collection('volume_values').watch().on('change', data => {
-            if (data.operationType === 'insert') {
-                server.publish('/api/volume_values', [data.fullDocument]);
-            }
-        });
-
-        db.collection('trigger_values').watch().on('change', data => {
-            if (data.operationType === 'insert') {
-                server.publish('/api/trigger_values', [data.fullDocument]);
-            }
-        });
-
-        db.collection('breathsperminute_values').watch().on('change', data => {
-            if (data.operationType === 'insert') {
-                server.publish('/api/breathsperminute_values', [data.fullDocument]);
-            }
-        });
-
-        db.collection('flow_values').watch().on('change', data => {
-            if (data.operationType === 'insert') {
-                server.publish('/api/flow_values', [data.fullDocument]);
-            }
-        });
-
-        db.collection('cpu_values').watch().on('change', data => {
-            if (data.operationType === 'insert') {
-                server.publish('/api/cpu_values', [data.fullDocument]);
+                server.publish('/api/measured_values', [data.fullDocument]);
             }
         });
     }
