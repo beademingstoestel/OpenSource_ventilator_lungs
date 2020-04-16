@@ -116,7 +116,6 @@ export default class Dashboard extends React.Component {
             hasDirtySettings: false,
             updateSetting: async (key, setting) => {
                 const settings = { ...this.state.settings };
-                console.log(settings);
                 settings[key] = setting;
                 this.dirtySettings[key] = setting;
 
@@ -171,8 +170,11 @@ export default class Dashboard extends React.Component {
                     // recalculte the IE in any case, know that we know that the TI is kept with range, this also clears rounding errors
                     settings.IE = this.computeIE(settings.RR, settings.TI);
                     this.dirtySettings.IE = settings.IE;
+                } else if (key === 'PP') {
+                    const oldValue = this.state.settings.PP;
 
-                    // console.log("TI Changed to " + settings["TI"] + ", IE adjusted to " + settings["IE"]);
+                    settings.TP += setting - oldValue;
+                    this.dirtySettings.TP = settings.TP;
                 }
 
                 await this.setStateAsync({
@@ -909,12 +911,14 @@ export default class Dashboard extends React.Component {
                                                 <SingleValueDisplaySettings
                                                     name="Trigger sens."
                                                     value={this.state.settings.TP}
+                                                    displayFunction={(value, decimal) => (this.state.settings.PP - this.state.settings.TP).toFixed(decimal)}
+                                                    reverseButtons={true}
                                                     settingKey={'TP'}
                                                     decimal={2}
                                                     unit='cmH2O'
                                                     step={0.1}
-                                                    minValue={0}
-                                                    maxValue={10}
+                                                    minValue={-20}
+                                                    maxValue={this.state.settings.PP}
                                                     updateValue={this.state.updateSetting}
                                                 />
                                             }

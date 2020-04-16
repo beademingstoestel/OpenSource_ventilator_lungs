@@ -4,6 +4,7 @@ import NumPad from 'react-numpad';
 import CaretIcon from './icons/caret';
 
 import { toast } from 'react-toastify';
+import { isFunction } from 'util';
 
 const toFixedSafe = (value, precision) => {
     if (value.toFixed) {
@@ -26,6 +27,18 @@ const toIERatio = (value) => {
     }
 };
 
+const display = (displayFunction, value, decimal) => {
+    if (isFunction(displayFunction)) {
+        return displayFunction(value, decimal);
+    } else {
+        if (displayFunction === 'toFixedSafe') {
+            return toFixedSafe(value, decimal);
+        } else if (displayFunction === 'toIERatio') {
+            return toIERatio(value);
+        }
+    }
+};
+
 const SingleValueDisplaySettings = ({
     name,
     settingKey,
@@ -38,13 +51,20 @@ const SingleValueDisplaySettings = ({
     maxValue,
     warningThreshold = 0,
     displayFunction = 'toFixedSafe',
+    reverseButtons = false,
 }) => {
-    function display() {
-        if (displayFunction === 'toFixedSafe') {
-            return toFixedSafe(value, decimal);
-        } else if (displayFunction === 'toIERatio') {
-            return toIERatio(value);
-        }
+    function incrementWithStep(ev) {
+        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) + step);
+
+        newValue = Math.min(newValue, maxValue);
+        updateValue(settingKey, newValue);
+    }
+
+    function decrementWithStep(ev) {
+        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) - step);
+
+        newValue = Math.max(newValue, minValue);
+        updateValue(settingKey, newValue);
     }
 
     return (
@@ -77,17 +97,19 @@ const SingleValueDisplaySettings = ({
                 value={toFixedSafe(value, decimal)}
                 theme="hello"
             >
-                <span className="single-value-display-settings__value">{display(value, decimal)}</span>
+                <span className="single-value-display-settings__value">{display(displayFunction, value, decimal)}</span>
                 <span className="single-value-display-settings__unit">{unit}</span>
             </NumPad.Number>
             <div className="single-value-display-settings__controls">
                 <button
                     className="single-value-display-settings__control"
                     onClick={(ev) => {
-                        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) - step);
+                        if (reverseButtons) {
+                            incrementWithStep();
+                        } else {
+                            decrementWithStep();
+                        }
 
-                        newValue = Math.max(newValue, minValue);
-                        updateValue(settingKey, newValue);
                         ev.preventDefault();
                     }}
                 >
@@ -96,10 +118,12 @@ const SingleValueDisplaySettings = ({
                 <button
                     className="single-value-display-settings__control"
                     onClick={(ev) => {
-                        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) + step);
+                        if (reverseButtons) {
+                            decrementWithStep();
+                        } else {
+                            incrementWithStep();
+                        }
 
-                        newValue = Math.min(newValue, maxValue);
-                        updateValue(settingKey, newValue);
                         ev.preventDefault();
                     }}
                 >
@@ -134,19 +158,11 @@ const SingleValueDisplay = ({
     displayFunction = 'toFixedSafe',
     ...other
 }) => {
-    function display() {
-        if (displayFunction === 'toFixedSafe') {
-            return toFixedSafe(value, decimal);
-        } else if (displayFunction === 'toIERatio') {
-            return toIERatio(value);
-        }
-    }
-
     return (
         <div className={cx('single-value-display', `single-value-display--${status}`, className)} {...other}>
             <div className="single-value-display__data">
                 <div className="single-value-display__name" dangerouslySetInnerHTML={{ __html: name }}></div>
-                <div className="single-value-display__value">{display()}</div>
+                <div className="single-value-display__value">{display(displayFunction, value, decimal)}</div>
             </div>
         </div>
     );
