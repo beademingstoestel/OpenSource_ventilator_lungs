@@ -54,15 +54,18 @@ npm run dev
 When not run in testing mode, the code will look for a mongodb server to fetch data from. Make sure the database defined in the environment values (see above) exists and create following collections and indices:
 
 ```
-db.createCollection("volume_values");
-db.createCollection("pressure_values");
-db.createCollection("breathsperminute_values");
-db.createCollection("trigger_values");
-db.volume_values.createIndex( { loggedAt: 1 } );
-db.pressure_values.createIndex( { loggedAt: 1 } );
-db.breathsperminute_values.createIndex( { loggedAt: 1 } );
-db.trigger_values.createIndex( { loggedAt: 1 } );
+db.getSiblingDB("beademing").createCollection("measured_values");
+db.getSiblingDB("beademing").createCollection("settings");
+db.getSiblingDB("beademing").createCollection("events");
+db.getSiblingDB("beademing").createCollection("logs");
+
+db.getSiblingDB("beademing").measured_values.createIndex( { loggedAt: -1 } );
+db.getSiblingDB("beademing").logs.createIndex( { loggedAt: -1 } );
+db.getSiblingDB("beademing").logs.createIndex( { severity: 1 } );
+db.getSiblingDB("beademing").events.createIndex( { loggedAt: -1 } );
 ```
+
+To use the watch mode (see environment variables) the mongo database has to run as a replication set called RS0.
 
 Afterwards proceed as you would normally to run a node.js project:
 
@@ -84,13 +87,19 @@ Create a file called env-local.json in the root of the project. It is advisable 
 - ListenInterface: the interface the http server should be listening on
 - UpdateRate: the minimum time between websocket pushes of new data
 
+All of this values can also be passed as environment variables when using docker.
+
 # Endpoints and @hapi/nes subscribeable paths
 
 - /api/alarms:
-  - @hapi/nes: listen for alarms raised by the controller or daemon
   - PUT: raise new alarms
     - body json object:
       - value: int
+- /api/alarms:
+  - GET: returns a list of all events
+    - query parameters: 
+      - since: Date object, default 5 seconds ago
+      - until: Date object, default now
 - /api/calculated_values
   - @hapi/nes: listen for values calculated by the daemon
   - PUT: raise new calculatedvalues
@@ -117,13 +126,9 @@ Create a file called env-local.json in the root of the project. It is advisable 
       - source: string (python, nodejs)
       - text: string
       - loggedAt: datetime
-- /api/pressure_values
-- /api/cpu_values
-- /api/flow_values
-- /api/volume_values
-- /api/trigger_values
-- /api/breathsperminute_values
-  - GET: retrieve an array with values
+- /api/measured_values
+  - GET: retrieve an array with all values as measured by the hardware
     - query parameters: 
       - since: Date object, default 5 seconds ago
+      - until: Date object, default now
   - @hapi/nes: listen for new values coming in
