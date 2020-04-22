@@ -8,3 +8,5 @@ printjson(db.getSiblingDB("beademing").measured_values.createIndex( { loggedAt: 
 printjson(db.getSiblingDB("beademing").logs.createIndex( { loggedAt: -1 } ));
 printjson(db.getSiblingDB("beademing").logs.createIndex( { severity: 1 } ));
 printjson(db.getSiblingDB("beademing").events.createIndex( { loggedAt: -1 } ));
+printjson(db.getSiblingDB("beademing").events.createIndex( { reset: -1 } ));
+printjson(db.getSiblingDB("beademing").events.createIndex( { type: -1 } ));

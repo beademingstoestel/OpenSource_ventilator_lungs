@@ -49,25 +49,32 @@ export default class HistoryOverview extends React.Component {
     }
 
     async getData(since, timeFrame) {
-        const pressureDataResponse = await fetch(`${getApiUrl()}/api/pressure_values?since=${since}&until=${since + timeFrame}`);
-        const pressureDatas = (await pressureDataResponse.json()).reverse();
+        const measuredValuesDataResponse = await fetch(`${getApiUrl()}/api/measured_values?since=${since}&until=${since + timeFrame}`);
+        const measuredValuesData = (await measuredValuesDataResponse.json()).reverse();
 
         const pressureArray = [];
-        pressureDatas.forEach(pressureData => {
-            pressureArray.push({
-                x: (new Date(pressureData.loggedAt) - since) / 1000,
-                y: pressureData.value,
-            });
-        });
-
-        const targetPressureDataResponse = await fetch(`${getApiUrl()}/api/targetpressure_values?since=${since}&until=${since + timeFrame}`);
-        const targetPressureDatas = (await targetPressureDataResponse.json()).reverse();
-
         const targetPressureArray = [];
-        targetPressureDatas.forEach(targetPressureData => {
+        const flowArray = [];
+        const volumeArray = [];
+        measuredValuesData.forEach(measurement => {
+            pressureArray.push({
+                x: (new Date(measurement.loggedAt) - since) / 1000,
+                y: measurement.value.pressure,
+            });
+
             targetPressureArray.push({
-                x: (new Date(targetPressureData.loggedAt) - since) / 1000,
-                y: targetPressureData.value,
+                x: (new Date(measurement.loggedAt) - since) / 1000,
+                y: measurement.value.targetPressure,
+            });
+
+            flowArray.push({
+                x: (new Date(measurement.loggedAt) - since) / 1000,
+                y: measurement.value.flow,
+            });
+
+            volumeArray.push({
+                x: (new Date(measurement.loggedAt) - since) / 1000,
+                y: measurement.value.volume,
             });
         });
 
@@ -84,17 +91,6 @@ export default class HistoryOverview extends React.Component {
             },
         ];
 
-        const flowResponse = await fetch(`${getApiUrl()}/api/flow_values?since=${since}&until=${since + timeFrame}`);
-        const flowDatas = (await flowResponse.json()).reverse();
-
-        const flowArray = [];
-        flowDatas.forEach(flowData => {
-            flowArray.push({
-                x: (new Date(flowData.loggedAt) - since) / 1000,
-                y: flowData.value,
-            });
-        });
-
         const newFlowDataPlots = [
             {
                 data: flowArray,
@@ -102,17 +98,6 @@ export default class HistoryOverview extends React.Component {
                 fill: true,
             },
         ];
-
-        const volumeResponse = await fetch(`${getApiUrl()}/api/volume_values?since=${since}&until=${since + timeFrame}`);
-        const volumeDatas = (await volumeResponse.json()).reverse();
-
-        const volumeArray = [];
-        volumeDatas.forEach(volumeData => {
-            volumeArray.push({
-                x: (new Date(volumeData.loggedAt) - since) / 1000,
-                y: volumeData.value,
-            });
-        });
 
         const newVolumeDataPlots = [
             {

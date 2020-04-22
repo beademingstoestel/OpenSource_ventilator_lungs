@@ -219,6 +219,7 @@ const startSlave = async function () {
                             value: newAlarmValue,
                         },
                         type: 'alarm',
+                        reset: false,
                         loggedAt: new Date(),
                     });
                 } catch (exception) {}
