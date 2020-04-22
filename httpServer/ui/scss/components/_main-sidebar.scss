@@ -11,6 +11,13 @@ $b: 'main-sidebar';
     &__alert {
         padding: 0.5rem;
         z-index: 999;
+        overflow-y: auto;
+        max-height: 350px;
+        position: relative;
+        width: calc(100% + 2rem);
+        top: -1rem;
+        left: -1rem;
+        border-right: 1px solid get-brand-color();
 
         div {
             margin-top: 0.25rem;

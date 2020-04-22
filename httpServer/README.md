@@ -96,6 +96,8 @@ All of this values can also be passed as environment variables when using docker
     - body json object:
       - value: int
 - /api/alarms:
+  - GET: returns a list of all non-reset alarms
+- /api/events:
   - GET: returns a list of all events
     - query parameters: 
       - since: Date object, default 5 seconds ago

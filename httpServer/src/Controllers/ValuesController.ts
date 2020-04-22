@@ -4,7 +4,7 @@ import { Request, ResponseToolkit, HandlerDecorations, Lifecycle } from '@hapi/h
 import { IValuesRepository } from '../Repositories/IValuesRepository';
 
 export class ValuesController {
-    constructor(private repository: IValuesRepository, private collection: string) {}
+    constructor(private repository: IValuesRepository, private collection: string, private filter: any = {}) {}
 
     DateFromRequest(request: Request, key: string = 'since'): Date {
         let date: Date;
@@ -27,6 +27,6 @@ export class ValuesController {
         const since: Date = this.DateFromRequest(request, 'since');
         const until: Date = this.DateFromRequest(request, 'until');
 
-        return this.repository.ReadValues(this.collection, since, until);
+        return this.repository.ReadValues(this.collection, since, until, this.filter);
     }
 }

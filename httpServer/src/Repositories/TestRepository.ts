@@ -8,7 +8,11 @@ export class TestRepository implements IValuesRepository {
         return Promise.resolve();
     }
 
-    ReadValues(collection: string, since: Date, until: Date = new Date()): Promise<TimeStampedValue[]> {
+    UpdateMany(collection: string, filter: any, update: any): Promise<void> {
+        return Promise.resolve();
+    }
+
+    ReadValues(collection: string, since: Date, until: Date = new Date(), filter: any = {}): Promise<TimeStampedValue[]> {
         // return a random value for each 100 ms since since
 
         const now = new Date().getTime();

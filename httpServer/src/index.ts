@@ -19,6 +19,7 @@ import { MongoClient, Db } from 'mongodb';
 import { PatientInfoController } from './Controllers/PatientInfoController';
 import EventsController from './Controllers/EventsController';
 import { ValuesController } from './Controllers/ValuesController';
+import AlarmsController from './Controllers/AlarmsController';
 
 /* define configuration */
 
@@ -163,13 +164,17 @@ const startSlave = async function () {
     server.route({
         method: 'GET',
         path: '/api/settings',
-        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new SettingsController(settingsRepositoryFactory(), broadcastSettings).HandleGet(request, h),
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new SettingsController(settingsRepositoryFactory(),
+            valuesRepositoryFactory(),
+            broadcastSettings).HandleGet(request, h),
     });
 
     server.route({
         method: 'PUT',
         path: '/api/settings',
-        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new SettingsController(settingsRepositoryFactory(), broadcastSettings).HandlePut(request, h),
+        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => await new SettingsController(settingsRepositoryFactory(),
+            valuesRepositoryFactory(),
+            broadcastSettings).HandlePut(request, h),
     });
 
     server.route({
@@ -202,30 +207,32 @@ const startSlave = async function () {
         handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new EventsController(valuesRepositoryFactory()).HandleGet(request, h),
     });
 
-    let alarmValue = 0;
+    server.route({
+        method: 'GET',
+        path: '/api/alarms',
+        handler: (request: Hapi.Request, h: Hapi.ResponseToolkit) => new AlarmsController(valuesRepositoryFactory()).HandleGet(request, h),
+    });
+
     server.route({
         method: 'PUT',
         path: '/api/alarms',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-            // todo: create get call to get latest alarm so we can only publish on changing value
-            server.publish('/api/alarms', request.payload);
             const newAlarmValue = parseInt((<any>request.payload).value);
+            const alarm = {
+                data: {
+                    value: newAlarmValue,
+                },
+                type: 'alarm',
+                reset: false,
+                loggedAt: new Date(),
+            };
 
-            if (newAlarmValue !== alarmValue) {
-                try {
-                    const valuesRepository = valuesRepositoryFactory();
-                    valuesRepository.InsertValue('events', {
-                        data: {
-                            value: newAlarmValue,
-                        },
-                        type: 'alarm',
-                        reset: false,
-                        loggedAt: new Date(),
-                    });
-                } catch (exception) {}
+            server.publish('/api/alarms', alarm);
 
-                alarmValue = newAlarmValue;
-            }
+            try {
+                const valuesRepository = valuesRepositoryFactory();
+                valuesRepository.InsertValue('events', alarm);
+            } catch (exception) {}
 
             return {
                 result: true,
@@ -268,7 +275,7 @@ const startSlave = async function () {
         const valuesRepository = valuesRepositoryFactory();
 
         setInterval(async () => {
-            const newValues = await valuesRepository.ReadValues('measured_values', lastDateTime, new Date());
+            const newValues = await valuesRepository.ReadValues('measured_values', lastDateTime, new Date(), {});
 
             if (newValues.length > 0) {
                 server.publish('/api/measured_values', newValues);

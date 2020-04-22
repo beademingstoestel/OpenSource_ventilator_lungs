@@ -19,16 +19,29 @@ export class MongoValuesRepository implements IValuesRepository {
         }
     }
 
-    async ReadValues(collection: string, since: Date, until: Date = new Date()): Promise<TimeStampedValue[]> {
+    async UpdateMany(collection: string, filter: any, update: any): Promise<void> {
         try {
             const db: Db = this.mongoClient.db('beademing');
 
-            return db.collection(collection).find({
+            await db.collection(collection).updateMany(filter, { $set: update });
+        } catch (exception) {
+            // todo: log exception
+            console.error(exception);
+        }
+    }
+
+    async ReadValues(collection: string, since: Date, until: Date = new Date(), filter: any = {}): Promise<TimeStampedValue[]> {
+        try {
+            const db: Db = this.mongoClient.db('beademing');
+
+            const dateFilter = {
                 loggedAt: {
                     $gte: since,
                     $lte: until,
                 },
-            }).toArray();
+            };
+
+            return db.collection(collection).find({ ...dateFilter, ...filter }).toArray();
         } catch (exception) {
             // todo: log exception
             console.error(exception);

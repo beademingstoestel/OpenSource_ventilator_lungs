@@ -15,12 +15,12 @@ import HistoryIcon from './icons/history';
 const MainSidebar = ({ className, ...other }) => {
     const { pathname: currentPath } = useRouter();
 
-    const [currentAlarm, setCurrentAlarm] = useState(0);
+    const [currentAlarms, setCurrentAlarms] = useState([]);
 
     async function resetAlarm(e) {
         try {
             const tosend = {};
-            tosend['RA'] = 1;
+            tosend.RA = 1;
 
             // returncomplete also makes sure the python code and controller only receive the changed values
             await fetch(`${getApiUrl()}/api/settings?returncomplete=false`, {
@@ -30,6 +30,8 @@ const MainSidebar = ({ className, ...other }) => {
                 },
                 body: JSON.stringify(tosend),
             });
+
+            setCurrentAlarms([]);
         } catch (e) {
             // todo: show error to the user
             console.log(e);
@@ -78,7 +80,7 @@ const MainSidebar = ({ className, ...other }) => {
 
         for (let i = 0; i < 32; i++) {
             if ((shiftAlarm & 1) > 0 && alarmTexts[i].ignore !== true) {
-                messages.push(<div>{alarmTexts[i].message}</div>);
+                messages.push(<li>{alarmTexts[i].message}</li>);
             }
 
             shiftAlarm = shiftAlarm >> 1;
@@ -90,10 +92,25 @@ const MainSidebar = ({ className, ...other }) => {
     useEffect(() => {
         const client = new Client(`${getWsUrl()}`);
         const subscribeAlarm = async () => {
+            // get the historical alarms
             await client.connect();
 
+            try {
+                const alarms = await client.request('/api/alarms?since=0');
+
+                console.log(alarms);
+
+                if (alarms && alarms.statusCode === 200) {
+                    setCurrentAlarms(alarms.payload);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+
             client.subscribe('/api/alarms', (alarm) => {
-                setCurrentAlarm(parseInt(alarm.value));
+                const allAlarms = [...currentAlarms];
+                allAlarms.unshift(alarm);
+                setCurrentAlarms(allAlarms);
             });
         };
 
@@ -116,10 +133,19 @@ const MainSidebar = ({ className, ...other }) => {
 
     return (
         <nav className={cx('main-sidebar', className)} {...other}>
-            {parseInt(currentAlarm) > 0 &&
+            {currentAlarms.length > 0 &&
                 <div className="main-sidebar__alert alert alert--danger">
                     <button onClick={(e) => resetAlarm(e)}>Reset alarm</button>
-                    {getAlarmTexts(currentAlarm)}
+                    {currentAlarms.map(currentAlarm => {
+                        return (<div className="main-sidebar__alert__entry">
+                            <div className="main-sidebar__alert__entry__date">
+                                {new Date(currentAlarm.loggedAt).toLocaleTimeString()}
+                            </div>
+                            <ul className="main-sidebar__alert__entry__values">
+                                {getAlarmTexts(currentAlarm.data.value)}
+                            </ul>
+                        </div>);
+                    })}
                 </div>
             }
             <ul className="main-sidebar__menu">
