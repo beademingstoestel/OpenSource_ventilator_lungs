@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import cx from 'classnames';
 import Link from 'next/link';
 import GaugeIcon from './icons/gauge';
@@ -11,10 +11,12 @@ import NetworkIcon from './icons/network';
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 import { Client } from '@hapi/nes/lib/client';
 import HistoryIcon from './icons/history';
+import { createEmitAndSemanticDiagnosticsBuilderProgram } from 'typescript';
 
 const MainSidebar = ({ className, ...other }) => {
     const { pathname: currentPath } = useRouter();
-
+    
+    const currentAlarmsRef = useRef([]);
     const [currentAlarms, setCurrentAlarms] = useState([]);
 
     async function resetAlarm(e) {
@@ -89,6 +91,17 @@ const MainSidebar = ({ className, ...other }) => {
         return messages;
     }
 
+    function addAlarm(newAlarm) {
+        const allAlarms = [...currentAlarmsRef.current];
+        allAlarms.unshift(newAlarm);
+        setCurrentAlarms(allAlarms);
+        console.log(allAlarms);
+    }
+
+    useEffect(() => {
+        currentAlarmsRef.current = currentAlarms;
+    }, [currentAlarms]);
+
     useEffect(() => {
         const client = new Client(`${getWsUrl()}`);
         const subscribeAlarm = async () => {
@@ -108,10 +121,7 @@ const MainSidebar = ({ className, ...other }) => {
             }
 
             client.subscribe('/api/alarms', (alarm) => {
-                const allAlarms = [...currentAlarms];
-                allAlarms.unshift(alarm);
-                setCurrentAlarms(allAlarms);
-                console.log(allAlarms);
+                addAlarm(alarm);
             });
         };
 
@@ -140,7 +150,7 @@ const MainSidebar = ({ className, ...other }) => {
                     {currentAlarms.map(currentAlarm => {
                         return (<div className="main-sidebar__alert__entry">
                             <div className="main-sidebar__alert__entry__date">
-                                {new Date(currentAlarm.loggedAt).toLocaleTimeString()} {currentAlarm.data.value}
+                                {new Date(currentAlarm.loggedAt).toLocaleTimeString()}
                             </div>
                             <ul className="main-sidebar__alert__entry__values">
                                 {getAlarmTexts(currentAlarm.data.value)}
