@@ -60,12 +60,15 @@ export default class Dashboard extends React.Component {
         bpm: 0.0,
     };
 
+    mutedAt = new Date();
+
     saving = false;
 
     constructor(props) {
         super(props);
 
         this.state = {
+            muteCountDown: 60,
             pressureDataPlots: [],
             flowDataPlots: [],
             volumeValues: [],
@@ -92,7 +95,7 @@ export default class Dashboard extends React.Component {
                 TP: 0,
                 IE: 0.5,
                 PP: 10,
-                TI: 6, // 6 because IE = 0.5 and RR = 20
+                TI: 1.5, // 1.5 because IE = 0.5 and RR = 20
                 PS: 35,
                 RP: 0.5,
                 ADPK: 10,
@@ -633,6 +636,7 @@ export default class Dashboard extends React.Component {
             }
 
             self.setState({
+                muteCountDown: 60 - Math.min(60, Math.floor((now - this.mutedAt.getTime()) / 1000)),
                 pressureDataPlots: newPressureDataPlots,
                 flowDataPlots: newFlowDataPlots,
                 volumeValues: [
@@ -712,6 +716,7 @@ export default class Dashboard extends React.Component {
 
     toggleMute(e) {
         this.saveSetting('MT', e.target.checked ? 0 : 1);
+        this.mutedAt = new Date();
     }
 
     render() {
@@ -1004,7 +1009,7 @@ export default class Dashboard extends React.Component {
                                         <div className="option-toggle option-toggle--danger">
                                             <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e)} />
                                             <label htmlFor="alarm">
-                                                <BellIcon size="md" />
+                                                <BellIcon size="md" /> {this.state.settings.MT === 1 && this.state.muteCountDown}
                                             </label>
                                         </div>
                                     </div>
