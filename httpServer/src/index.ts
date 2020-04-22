@@ -110,7 +110,7 @@ const getServer = async function () {
         require('@hapi/nes'),
         require('hapijs-status-monitor'),
         {
-            plugin: require('./plugins/LoginPlugin'),
+            plugin: require('./plugins/LoggingPlugin'),
             options: {
                 logsRepository: logsRepositoryFactory(),
             },
