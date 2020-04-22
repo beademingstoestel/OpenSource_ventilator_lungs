@@ -104,6 +104,10 @@ const MainSidebar = ({ className, ...other }) => {
 
     useEffect(() => {
         const client = new Client(`${getWsUrl()}`);
+        let isConnected = false;
+
+        client.onConnect = () => { isConnected = true; };
+
         const subscribeAlarm = async () => {
             // get the historical alarms
             await client.connect();
@@ -129,7 +133,9 @@ const MainSidebar = ({ className, ...other }) => {
 
         return function cleanUp() {
             try {
-                client.disconnect();
+                if (isConnected) {
+                    client.disconnect();
+                }
             } catch (exception) { console.log(exception); }
         };
     }, []);
