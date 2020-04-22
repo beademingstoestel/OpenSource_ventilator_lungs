@@ -46,11 +46,23 @@ export class SettingsController {
             type: 'setting',
             loggedAt: new Date(),
         };
-        this.valuesRepository.InsertValue('events', settingChange);
+
+        // do we have a setting change in the last 5 seconds
+        const now = new Date();
+        const past = new Date(now.getTime() - 5000);
+        const previousSettingsChanges = await this.valuesRepository.ReadValues('events', past, now, { type: 'setting' });
+
+        if (previousSettingsChanges.length > 0) {
+            const previousSettingsChange = previousSettingsChanges[0];
+
+            await this.valuesRepository.UpdateMany('events', { _id: previousSettingsChange._id }, { data: { ...previousSettingsChange.data, ...settings } });
+        } else {
+            await this.valuesRepository.InsertValue('events', settingChange);
+        }
 
         if (settings && settings.RA && settings.RA === 1) {
             // reset all the alarms
-            this.valuesRepository.UpdateMany('events', { reset: false }, { reset: true });
+            await this.valuesRepository.UpdateMany('events', { reset: false }, { reset: true });
         }
 
         return {

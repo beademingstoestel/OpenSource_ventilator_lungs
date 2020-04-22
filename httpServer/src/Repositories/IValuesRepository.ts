@@ -2,7 +2,7 @@
 import { TimeStampedValue } from '../Models/TimeStampedValue';
 
 export interface IValuesRepository {
-    ReadValues(collection: string, since: Date, until: Date, filter: any): Promise<Array<TimeStampedValue>>;
+    ReadValues(collection: string, since: Date, until: Date, filter: any): Promise<Array<TimeStampedValue>|Array<any>>;
     InsertValue(collection: string, data: any): Promise<void>;
 
     UpdateMany(collection: string, filter: any, update: any): Promise<void>;
