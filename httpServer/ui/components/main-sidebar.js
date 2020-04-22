@@ -111,6 +111,7 @@ const MainSidebar = ({ className, ...other }) => {
                 const allAlarms = [...currentAlarms];
                 allAlarms.unshift(alarm);
                 setCurrentAlarms(allAlarms);
+                console.log(allAlarms);
             });
         };
 
@@ -139,7 +140,7 @@ const MainSidebar = ({ className, ...other }) => {
                     {currentAlarms.map(currentAlarm => {
                         return (<div className="main-sidebar__alert__entry">
                             <div className="main-sidebar__alert__entry__date">
-                                {new Date(currentAlarm.loggedAt).toLocaleTimeString()}
+                                {new Date(currentAlarm.loggedAt).toLocaleTimeString()} {currentAlarm.data.value}
                             </div>
                             <ul className="main-sidebar__alert__entry__values">
                                 {getAlarmTexts(currentAlarm.data.value)}

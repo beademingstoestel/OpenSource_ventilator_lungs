@@ -1,6 +1,7 @@
 import DataPlot from '../components/data-plot';
 import cx from 'classnames';
 import BellIcon from '../components/icons/bell';
+import GearIcon from '../components/icons/gear';
 
 import { getApiUrl } from '../helpers/api-urls';
 
@@ -130,7 +131,14 @@ export default class HistoryOverview extends React.Component {
                                     this.jumpToEvent(event);
                                     e.preventDefault();
                                 }}>
-                                <BellIcon></BellIcon><div>{new Date(event.loggedAt).toLocaleString()}</div>
+
+                                { event.type === 'alarm' &&
+                                    [<BellIcon></BellIcon>, <div>{new Date(event.loggedAt).toLocaleString()}</div>]
+                                }
+
+                                { event.type === 'setting' &&
+                                    [<GearIcon></GearIcon>, <div>{new Date(event.loggedAt).toLocaleString()}</div>]
+                                }
                             </div>
                         </div>);
                     })}
