@@ -21,9 +21,9 @@ const isInputInRange = (minValue, maxValue, actualValue) => {
 
 const toIERatio = (value) => {
     if (value <= 0.50) {
-        return '1:' + toFixedSafe((1 - value) / value, 2);
+        return '1:' + toFixedSafe((1 - value) / value, 1);
     } else {
-        return toFixedSafe(value / (1 - value), 2) + ':1';
+        return toFixedSafe(value / (1 - value), 1) + ':1';
     }
 };
 

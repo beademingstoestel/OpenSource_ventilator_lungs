@@ -48,7 +48,9 @@ const MainSidebar = ({ className, ...other }) => {
 
         for (let i = 0; i < 32; i++) {
             if ((shiftAlarm & 1) > 0 && AlarmBitDefinitions[i].ignore !== true) {
-                messages.push(<li className={'main-sidebar__alert__entry__values__alarm ' + type}>{AlarmBitDefinitions[i].message}</li>);
+                const message = type === 'raised' ? AlarmBitDefinitions[i].message : AlarmBitDefinitions[i].positiveMessage;
+
+                messages.push(<li className={'main-sidebar__alert__entry__values__alarm ' + type}>{message}</li>);
             }
 
             shiftAlarm = shiftAlarm >> 1;
