@@ -73,13 +73,19 @@ const valuesRepositoryFactory = function (): IValuesRepository {
 };
 
 const testSettingsRepository = new TestSettingsRepository();
+let mongoSettingsRepository = null;
 const settingsRepositoryFactory = function (): ISettingsRepository {
     let repository: ISettingsRepository = null;
 
     if (environment.RepositoryMode === 'test') {
         repository = testSettingsRepository;
     } else {
-        repository = new MongoSettingsRepository(mongoClient);
+        // we buffer settings, so make sure to always return the same instance
+        if (mongoSettingsRepository === null) {
+            mongoSettingsRepository = new MongoSettingsRepository(mongoClient);
+        }
+
+        repository = mongoSettingsRepository;
     }
 
     return repository;

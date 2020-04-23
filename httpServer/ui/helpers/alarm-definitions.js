@@ -7,7 +7,7 @@ const AlarmBitDefinitions = {
     5: { message: 'Pressure not within thresholds', positiveMessage: 'Pressure is within thresholds' },
     6: { message: 'Volume not within thresholds', positiveMessage: 'Volume is within thresholds' },
     7: { message: 'Residual volume is not zero', positiveMessage: 'Residual volume is close to zero' },
-    8: { message: 'Arduino not found' },
+    8: { message: 'Arduino not found', positiveMessage: 'Connection with arduino established' },
     9: { message: 'Alarm not defined' },
     10: { message: 'Alarm not defined' },
     11: { message: 'Alarm not defined' },

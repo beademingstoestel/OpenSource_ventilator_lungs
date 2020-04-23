@@ -4,6 +4,9 @@ import { ISettingsRepository } from './ISettingsRepository';
 import { MongoClient, Db } from 'mongodb';
 
 export class MongoSettingsRepository implements ISettingsRepository {
+    private settingsBuffer: any = {};
+    private updateSettingsTimeout: any = {};
+
     constructor(private mongoClient: MongoClient) {}
 
     async GetSettings(type: string): Promise<any> {
@@ -27,20 +30,32 @@ export class MongoSettingsRepository implements ISettingsRepository {
     }
 
     async SaveSettings(type: string, settings: any): Promise<any> {
-        try {
-            const oldSettings = await this.GetSettings(type);
-            const newSettings = { ...oldSettings, ...settings };
-
-            newSettings.type = type;
-
-            const db: Db = this.mongoClient.db('beademing');
-
-            await db.collection('settings').replaceOne({ type }, newSettings, { upsert: true });
-
-            return newSettings;
-        } catch (exception) {
-            // todo: log exception
-            console.error(exception);
+        // this code acts more or less like a lock, making /api/settings can be called asynchronously from other programs
+        // and still save all the settings correctly
+        if (!this.settingsBuffer[type]) {
+            this.settingsBuffer[type] = {};
         }
+        this.settingsBuffer[type] = { ...this.settingsBuffer[type], ...settings };
+
+        if (this.updateSettingsTimeout[type] !== null) {
+            // we were already going to save, reset this timeout
+            clearTimeout(this.updateSettingsTimeout[type]);
+        }
+
+        this.updateSettingsTimeout[type] = setTimeout(async (type) => {
+            try {
+                const newSettings = { ...this.settingsBuffer[type] };
+                newSettings.type = type;
+
+                const db: Db = this.mongoClient.db('beademing');
+
+                await db.collection('settings').updateOne({ type }, { $set: { ...newSettings } }, { upsert: true });
+
+                return newSettings;
+            } catch (exception) {
+                // todo: log exception
+                console.error(exception);
+            }
+        }, 500, type);
     }
 };
