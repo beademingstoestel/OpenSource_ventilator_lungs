@@ -28,14 +28,13 @@ export class MongoSettingsRepository implements ISettingsRepository {
 
     async SaveSettings(type: string, settings: any): Promise<any> {
         try {
-            const oldSettings = await this.GetSettings(type);
-            const newSettings = { ...oldSettings, ...settings };
+            const newSettings = { ...settings };
 
             newSettings.type = type;
 
             const db: Db = this.mongoClient.db('beademing');
 
-            await db.collection('settings').replaceOne({ type }, newSettings, { upsert: true });
+            await db.collection('settings').updateOne({ type }, { $set: { newSettings } }, { upsert: true });
 
             return newSettings;
         } catch (exception) {

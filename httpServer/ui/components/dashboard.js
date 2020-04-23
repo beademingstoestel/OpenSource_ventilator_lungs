@@ -610,12 +610,6 @@ export default class Dashboard extends React.Component {
         }
     }
 
-    setSliderValue(ev) {
-        this.setState({
-            xLengthMs: ev.target.value,
-        });
-    }
-
     askActiveStateChange() {
         console.log('ask to change active state');
         // if we are in active mode, show the dialog box to confirm deactivation
