@@ -39,10 +39,8 @@ export default class HistoryOverview extends React.Component {
     }
 
     async jumpToEvent(event) {
-        if (event.type === 'alarm') {
-            const startTime = new Date(event.loggedAt).getTime() - 15000;
-            this.getData(startTime, 30000);
-        }
+        const startTime = new Date(event.loggedAt).getTime() - 15000;
+        this.getData(startTime, 30000);
     }
 
     async moveGraph(milliseconds) {

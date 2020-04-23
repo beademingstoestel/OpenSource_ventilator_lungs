@@ -808,7 +808,7 @@ export default class Dashboard extends React.Component {
                                                 settingKey={'IE'}
                                                 displayFunction={'toIERatio'}
                                                 decimal={2}
-                                                step={0.01}
+                                                step={0.015}
                                                 minValue={minimumIE}
                                                 maxValue={maximumIE}
                                                 updateValue={this.state.updateSetting}
