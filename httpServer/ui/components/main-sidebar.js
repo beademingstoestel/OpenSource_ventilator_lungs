@@ -12,10 +12,11 @@ import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 import { Client } from '@hapi/nes/lib/client';
 import HistoryIcon from './icons/history';
 import { createEmitAndSemanticDiagnosticsBuilderProgram } from 'typescript';
+import { AlarmBitDefinitions } from '../helpers/alarm-definitions';
 
 const MainSidebar = ({ className, ...other }) => {
     const { pathname: currentPath } = useRouter();
-    
+
     const currentAlarmsRef = useRef([]);
     const [currentAlarms, setCurrentAlarms] = useState([]);
 
@@ -40,49 +41,14 @@ const MainSidebar = ({ className, ...other }) => {
         }
     }
 
-    function getAlarmTexts(alarmValue) {
-        const alarmTexts = {
-            0: { message: 'BPM too low' },
-            1: { message: 'Alarm not defined' },
-            2: { message: 'Alarm not defined' },
-            3: { message: 'Alarm not defined' },
-            4: { message: 'Peep not within thresholds' },
-            5: { message: 'Pressure not within thresholds' },
-            6: { message: 'Volume not within thresholds' },
-            7: { message: 'Residual volume is not zero' },
-            8: { message: 'Arduino not found' },
-            9: { message: 'Alarm not defined' },
-            10: { message: 'Alarm not defined' },
-            11: { message: 'Alarm not defined' },
-            12: { message: 'Alarm not defined' },
-            13: { message: 'Alarm not defined' },
-            14: { message: 'Alarm not defined' },
-            15: { message: 'Alarm not defined' },
-            16: { message: 'Alarm not defined' },
-            17: { message: 'Pressure not within thresholds (arduino)', redundantWith: 5 },
-            18: { message: 'Volume not within thresholds (arduino)', redundantWith: 6, ignore: true },
-            19: { message: 'Peep not within thresholds (arduino)', ignore: true },
-            20: { message: 'Pressure sensor error' },
-            21: { message: 'Machine is overheating' },
-            22: { message: 'Flow sensor error' },
-            23: { message: 'Pressure sensor calibration failed' },
-            24: { message: 'Flow sensor calibration failed' },
-            25: { message: 'Limit switch sensor error' },
-            26: { message: 'HALL sensor error' },
-            27: { message: 'No external power, switch to battery' },
-            28: { message: 'Battery low' },
-            29: { message: 'Battery critical' },
-            30: { message: 'Fan not operational' },
-            31: { message: 'GUI not found' },
-        };
-
+    function getAlarmTexts(alarmValue, type) {
         const messages = [];
 
         let shiftAlarm = alarmValue;
 
         for (let i = 0; i < 32; i++) {
-            if ((shiftAlarm & 1) > 0 && alarmTexts[i].ignore !== true) {
-                messages.push(<li>{alarmTexts[i].message}</li>);
+            if ((shiftAlarm & 1) > 0 && AlarmBitDefinitions[i].ignore !== true) {
+                messages.push(<li className={'main-sidebar__alert__entry__values__alarm ' + type}>{AlarmBitDefinitions[i].message}</li>);
             }
 
             shiftAlarm = shiftAlarm >> 1;
@@ -159,7 +125,8 @@ const MainSidebar = ({ className, ...other }) => {
                                 {new Date(currentAlarm.loggedAt).toLocaleTimeString()}
                             </div>
                             <ul className="main-sidebar__alert__entry__values">
-                                {getAlarmTexts(currentAlarm.data.value)}
+                                {getAlarmTexts(currentAlarm.data.resolvedAlarms, 'resolved')}
+                                {getAlarmTexts(currentAlarm.data.raisedAlarms, 'raised')}
                             </ul>
                         </div>);
                     })}

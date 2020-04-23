@@ -217,11 +217,9 @@ const startSlave = async function () {
         method: 'PUT',
         path: '/api/alarms',
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-            const newAlarmValue = parseInt((<any>request.payload).value);
+            const newAlarmValue = request.payload;
             const alarm = {
-                data: {
-                    value: newAlarmValue,
-                },
+                data: newAlarmValue,
                 type: 'alarm',
                 reset: false,
                 loggedAt: new Date(),

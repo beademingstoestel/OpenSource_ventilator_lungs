@@ -1,4 +1,6 @@
 export interface TimeStampedValue {
-    value: number;
+    _id: any;
+    data: any;
+    value: any;
     loggedAt: Date;
 }

@@ -19,7 +19,7 @@ $b: 'main-sidebar';
         left: -1rem;
         border-right: 1px solid get-brand-color();
 
-        div {
+        &__entry {
             margin-top: 0.25rem;
             color: darkred;
 
@@ -27,7 +27,34 @@ $b: 'main-sidebar';
                 border-bottom: 1px solid darkred;
                 padding-bottom: 0.25;
             }
-        }
+
+            &__date {
+                border-bottom: 1px solid darkred;
+            }
+
+            &__values {
+                padding-left: 1rem;
+
+                &__alarm {
+                    list-style-type: none;  
+                    
+                    &.resolved {
+                        &::before {
+                            content: '✔';
+                            margin-right: 0.25rem;
+                            color: darkgreen;
+                        }
+                    }
+
+                    &.raised {
+                        &::before {
+                            content: '✖';
+                            margin-right: 0.25rem;
+                        }
+                    }
+                }
+            }
+        }        
 
         button {
             flex-grow: 0;

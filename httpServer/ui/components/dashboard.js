@@ -44,11 +44,7 @@ const debugBreathingCycle = true;
 
 export default class Dashboard extends React.Component {
     currentGraphTime = new Date().getTime();
-    rawPressureValues = [];
-    rawVolumeValues = [];
-    rawFlowValues = [];
-    rawTriggerValues = [];
-    rawTargetPressureValues = [];
+    rawMeasurementsValues = [];
     animationInterval = 0;
     client = null;
     dirtySettings = {};
@@ -243,62 +239,17 @@ export default class Dashboard extends React.Component {
     }
 
     processIncomingPoints(newPoints) {
-        var cutoffTime = new Date().getTime() - this.state.xLengthMs;
-
-        const toArrays = [
-            this.rawFlowValues,
-            this.rawVolumeValues,
-            this.rawPressureValues,
-            this.rawTargetPressureValues,
-            this.rawTriggerValues,
-        ];
-
-        // shift old values
-        toArrays.forEach((toArray) => {
-            let removeSplicePoint = 0;
-            for (let i = 0; i < toArray.length; i++) {
-                if (toArray[i].loggedAt > cutoffTime + 200) {
-                    removeSplicePoint = i;
-                    break;
-                }
-            }
-
-            if (removeSplicePoint > 0) {
-                toArray.splice(0, removeSplicePoint);
-            }
-        });
-
         newPoints.forEach((newPoint) => {
             const localTime = new Date(newPoint.loggedAt).getTime() - serverTimeCorrection;
 
-            this.rawFlowValues.push({
+            this.rawMeasurementsValues.push({
                 loggedAt: localTime,
                 x: localTime - this.currentGraphTime,
-                y: newPoint.value.flow,
-            });
-
-            this.rawTriggerValues.push({
-                loggedAt: localTime,
-                x: localTime - this.currentGraphTime,
-                y: newPoint.value.trigger,
-            });
-
-            this.rawPressureValues.push({
-                loggedAt: localTime,
-                x: localTime - this.currentGraphTime,
-                y: newPoint.value.pressure,
-            });
-
-            this.rawTargetPressureValues.push({
-                loggedAt: localTime,
-                x: localTime - this.currentGraphTime,
-                y: newPoint.value.targetPressure,
-            });
-
-            this.rawVolumeValues.push({
-                loggedAt: localTime,
-                x: localTime - this.currentGraphTime,
-                y: newPoint.value.volume,
+                flowy: newPoint.value.flow,
+                triggery: newPoint.value.trigger,
+                pressurey: newPoint.value.pressure,
+                targetpressurey: newPoint.value.targetPressure,
+                volumey: newPoint.value.volume,
             });
         });
     }
@@ -460,6 +411,21 @@ export default class Dashboard extends React.Component {
         this.animationInterval = setInterval(() => {
             const now = new Date().getTime();
 
+            var cutoffTime = new Date().getTime() - this.state.xLengthMs - serverTimeCorrection;
+
+            // shift old values
+            let removeSplicePoint = 0;
+            for (let i = 0; i < this.rawMeasurementsValues.length; i++) {
+                if (this.rawMeasurementsValues[i].loggedAt > cutoffTime + 200) {
+                    removeSplicePoint = i;
+                    break;
+                }
+            }
+
+            if (removeSplicePoint > 0) {
+                this.rawMeasurementsValues.splice(0, removeSplicePoint);
+            }
+
             if (this.currentGraphTime + this.state.xLengthMs < now) {
                 this.currentGraphTime = now;
             }
@@ -475,92 +441,62 @@ export default class Dashboard extends React.Component {
             const newTargetPressureValues = [];
             const oldTargetPressureValues = [];
 
-            this.rawPressureValues.forEach((point) => {
+            this.rawMeasurementsValues.forEach((point) => {
                 if (point.loggedAt >= this.currentGraphTime) {
                     if (point.x >= 0 && point.x < this.state.xLengthMs) {
                         newPressureValues.push({
-                            y: point.y / integerPrecision,
+                            y: point.pressurey / integerPrecision,
                             x: point.x / 1000,
+                        });
+
+                        if (debugBreathingCycle) {
+                            newTargetPressureValues.push({
+                                y: point.targetpressurey / integerPrecision,
+                                x: point.x / 1000,
+                            });
+                        }
+
+                        newVolumeValues.push({
+                            y: point.volumey / integerPrecision,
+                            x: point.x / 1000.0,
+                        });
+
+                        newTriggerValues.push({
+                            y: point.triggery * 40,
+                            x: point.x / 1000.0,
+                        });
+
+                        newFlowValues.push({
+                            y: point.flowy,
+                            x: point.x / 1000.0,
                         });
                     }
                 } else {
                     if (point.x >= 0 && point.x < this.state.xLengthMs) {
                         oldPressureValues.push({
-                            y: point.y / integerPrecision,
+                            y: point.pressurey / integerPrecision,
                             x: point.x / 1000,
                         });
-                    }
-                }
-            });
 
-            if (debugBreathingCycle) {
-                this.rawTargetPressureValues.forEach((point) => {
-                    if (point.loggedAt >= this.currentGraphTime) {
-                        if (point.x >= 0 && point.x < this.state.xLengthMs) {
-                            newTargetPressureValues.push({
-                                y: point.y / integerPrecision,
-                                x: point.x / 1000,
-                            });
-                        }
-                    } else {
-                        if (point.x >= 0 && point.x < this.state.xLengthMs) {
+                        if (debugBreathingCycle) {
                             oldTargetPressureValues.push({
-                                y: point.y / integerPrecision,
+                                y: point.targetpressurey / integerPrecision,
                                 x: point.x / 1000,
                             });
                         }
-                    }
-                });
-            }
 
-            this.rawVolumeValues.forEach((point) => {
-                if (point.loggedAt >= this.currentGraphTime) {
-                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
-                        newVolumeValues.push({
-                            y: point.y / integerPrecision,
-                            x: point.x / 1000.0,
-                        });
-                    }
-                } else {
-                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
                         oldVolumeValues.push({
-                            y: point.y / integerPrecision,
+                            y: point.volumey / integerPrecision,
                             x: point.x / 1000,
                         });
-                    }
-                }
-            });
 
-            this.rawTriggerValues.forEach((point) => {
-                if (point.loggedAt >= this.currentGraphTime) {
-                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
-                        newTriggerValues.push({
-                            y: point.y * 40,
-                            x: point.x / 1000.0,
-                        });
-                    }
-                } else {
-                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
                         oldTriggerValues.push({
-                            y: point.y * 40,
+                            y: point.triggery * 40,
                             x: point.x / 1000,
                         });
-                    }
-                }
-            });
 
-            this.rawFlowValues.forEach((point) => {
-                if (point.loggedAt >= this.currentGraphTime) {
-                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
-                        newFlowValues.push({
-                            y: point.y,
-                            x: point.x / 1000.0,
-                        });
-                    }
-                } else {
-                    if (point.x >= 0 && point.x < this.state.xLengthMs) {
                         oldFlowValues.push({
-                            y: point.y / integerPrecision,
+                            y: point.flowy / integerPrecision,
                             x: point.x / 1000,
                         });
                     }
