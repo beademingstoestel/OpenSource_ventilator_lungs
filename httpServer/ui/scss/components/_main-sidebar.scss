@@ -6,7 +6,7 @@ $b: 'main-sidebar';
     padding: 1rem;
     position: relative;
     overflow: hidden;
-    min-width: 15rem;
+    width: 10rem;
 
     &__alert {
         padding: 0.5rem;
@@ -91,25 +91,72 @@ $b: 'main-sidebar';
     }
 
     &__menu-item {
+        $menu-item: &;
         padding: 0.5rem 0;
-        opacity: 0.75;
 
         &.is-active {
-            font-weight: $font-weight-bold;
-            opacity: 1;
+            color: get-brand-color('secondary');
         }
-    }
 
-    &__link {
-        color: inherit;
-        text-decoration: none;
-
-        &:hover, &:focus {
+        &__link {
+            display: flex;
+            flex-flow: column;
             color: inherit;
-        }
+            text-decoration: none;
+            text-align: center;
+            align-items: center;
+            font-size: 1.2rem;
+            border: 0;
+            padding: 0.5rem;
+            background-color: get-brand-color('primary', 'lighter-10');
+            position: relative;
 
-        .icon {
-            margin-right: 0.5rem;
+            &::before {
+                display: block;
+                position: absolute;
+                height: 100%;
+                width: 8px;
+                background-color: get-brand-color('primary', 'lighter-15');
+                content: '';
+                top: 4px;
+                left: -8px;
+                transform: skewY(-45deg);
+            }
+
+            &::after {
+                display: block;
+                position: absolute;
+                width: 100%;
+                height: 8px;
+                background-color: get-brand-color('primary', 'lighter-20');;
+                content: '';
+                top: 100%;
+                left: -4px;
+                transform: skewX(-45deg);
+            }       
+
+            &:hover, &:focus, &.is-active {
+                transform: translate(-4px, 4px);
+                color: inherit;
+
+                &::before {
+                    top: 2px;
+                    left: -4px;
+                    width: 4px;
+                }
+
+                &::after {                    
+                    height: 4px;
+                    left: -2px;
+                }
+            }
+
+            .icon {
+                display: block;
+                width: 3rem;
+                height: 3rem;
+                margin-bottom: 0.5rem;
+            }
         }
     }
 }

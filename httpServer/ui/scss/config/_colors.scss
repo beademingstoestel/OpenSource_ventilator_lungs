@@ -5,7 +5,12 @@ $colors-brand: map-merge(
     (
         primary: (
             base: #003399,
-            dark: darken(#003399, 10%)
+            dark: darken(#003399, 10%),
+            light: lighten(#003399, 10%),
+            lighter-10: lighten(#003399, 10%),
+            lighter-15: lighten(#003399, 15%),
+            lighter-20: lighten(#003399, 20%),
+            lighter-2: lighten(#003399, 2%)
         ),
         secondary: (
             base: #ff6600,
@@ -22,6 +27,7 @@ $colors-gray: map-merge(
             lighter: #eee,
             light: #999,
             base: #666,
+            darker: #444,
             dark: #333
         )
     ),
@@ -33,6 +39,8 @@ $colors-status: map-merge(
     (
         success: (
             light: #dff0d8,
+            lighter-10: lighten(#1cc88a, 10%),
+            lighter-2: lighten(#1cc88a, 2%),
             base: #1cc88a,
         ),
         info: (
@@ -45,7 +53,10 @@ $colors-status: map-merge(
         ),
         danger: (
             light: #f2dede,
+            lighter-10: lighten(#e74a3b, 10%),
+            lighter-2: lighten(#e74a3b, 2%),
             base: #e74a3b,
+            darker: darken(#e74a3b, 5%),
         )
     ),
     $colors-status
