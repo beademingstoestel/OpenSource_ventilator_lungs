@@ -4,6 +4,7 @@ import Link from 'next/link';
 import GaugeIcon from './icons/gauge';
 import TerminalIcon from './icons/terminal';
 import GearIcon from './icons/gear';
+import BellIcon from './icons/bell';
 import PersonIcon from './icons/person';
 import { useRouter } from 'next/router';
 import NetworkIcon from './icons/network';
@@ -110,10 +111,15 @@ const MainSidebar = ({ className, ...other }) => {
 
     const menuItems = [
         { path: '/', label: 'Dashboard', icon: <GaugeIcon /> },
-        { path: '/patient-information', label: 'Patient information', icon: <PersonIcon /> },
+        { path: '/patient-information', label: 'Patient', icon: <PersonIcon /> },
         { path: '/history', label: 'History', icon: <HistoryIcon viewboxWidth={1024} viewboxHeight={1024} /> },
-        { path: '/network-settings', label: 'Network settings', icon: <NetworkIcon /> },
-        { path: '/logs', label: 'System logs', icon: <TerminalIcon /> },
+        { path: '/network-settings', label: 'Network', icon: <NetworkIcon /> },
+        { path: '/logs', label: 'Logs', icon: <TerminalIcon /> },
+    ];
+
+    const settingsMenuItems = [
+        { label: 'Alarms', icon: <BellIcon />, isActive: false },
+        { label: 'Settings', icon: <GearIcon />, isActive: false },
     ];
 
     return (
@@ -134,13 +140,30 @@ const MainSidebar = ({ className, ...other }) => {
                     })}
                 </div>
             }
+            {currentPath === '/' &&
+                <ul className="main-sidebar__menu main-sidebar__settings-menu">
+                    {
+                        settingsMenuItems.map(({ label, icon, isActive }, index) => {
+                            return (
+                                <li className={cx('main-sidebar__menu-item', { 'is-active': isActive })} key={index}>
+                                    <Link href={'#'}>
+                                        <a className="main-sidebar__menu-item__link">
+                                            {icon} <span className="u-d-none-xs u-d-inline-xxl">{label}</span>
+                                        </a>
+                                    </Link>
+                                </li>
+                            );
+                        })
+                    }
+                </ul>
+            }
             <ul className="main-sidebar__menu">
                 {
                     menuItems.map(({ path, label, icon }, index) => {
                         return (
                             <li className={cx('main-sidebar__menu-item', { 'is-active': currentPath === path })} key={index}>
                                 <Link href={path}>
-                                    <a className="main-sidebar__link">
+                                    <a className={cx('main-sidebar__menu-item__link', { 'is-active': currentPath === path })}>
                                         {icon} <span className="u-d-none-xs u-d-inline-xxl">{label}</span>
                                     </a>
                                 </Link>

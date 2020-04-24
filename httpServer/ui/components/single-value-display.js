@@ -19,15 +19,15 @@ const isInputInRange = (minValue, maxValue, actualValue) => {
     return ((actualValue >= minValue) && (actualValue <= maxValue));
 };
 
-const toIERatio = (value) => {
+const toIERatio = (value, decimal) => {
     if (value === 0) {
         return '-';
     }
 
     if (value <= 0.50) {
-        return '1:' + toFixedSafe((1 - value) / value, 1);
+        return '1:' + toFixedSafe((1 - value) / value, decimal);
     } else {
-        return toFixedSafe(value / (1 - value), 1) + ':1';
+        return toFixedSafe(value / (1 - value), decimal) + ':1';
     }
 };
 
@@ -38,7 +38,7 @@ const display = (displayFunction, value, decimal) => {
         if (displayFunction === 'toFixedSafe') {
             return toFixedSafe(value, decimal);
         } else if (displayFunction === 'toIERatio') {
-            return toIERatio(value);
+            return toIERatio(value, decimal);
         }
     }
 };
@@ -73,52 +73,40 @@ const SingleValueDisplaySettings = ({
 
     return (
         <div className="single-value-display-settings">
-            <div className="single-value-display-settings__name" >{name}</div>
-            <NumPad.Number
-                onChange={(newValue) => {
-                    if (isInputInRange(minValue, maxValue, newValue)) {
-                        // only update the value if input is in range
-                        updateValue(settingKey, newValue);
+            <div className="single-value-display-settings__value">
+                <div className="single-value-display-settings__value__name">{name}</div>
+                <NumPad.Number
+                    onChange={(newValue) => {
+                        if (isInputInRange(minValue, maxValue, newValue)) {
+                            // only update the value if input is in range
+                            updateValue(settingKey, newValue);
 
-                        if ((warningThreshold !== 0) && (newValue >= warningThreshold)) {
-                            toast.warn('Warning: ' + newValue + ' is close to the maximum of ' + maxValue, {
-                                position: toast.POSITION.BOTTOM_LEFT,
-                            });
+                            if ((warningThreshold !== 0) && (newValue >= warningThreshold)) {
+                                toast.warn('Warning: ' + newValue + ' is close to the maximum of ' + maxValue, {
+                                    position: toast.POSITION.BOTTOM_LEFT,
+                                });
+                            } else {
+                                toast.success(name + ' updated to: ' + newValue, {
+                                    position: toast.POSITION.BOTTOM_LEFT,
+                                });
+                            }
                         } else {
-                            toast.success(name + ' updated to: ' + newValue, {
+                            toast.error('Value ' + newValue + ' is out of range. Min: ' + minValue + ' Max: ' + maxValue, {
                                 position: toast.POSITION.BOTTOM_LEFT,
                             });
                         }
-                    } else {
-                        toast.error('Value ' + newValue + ' is out of range. Min: ' + minValue + ' Max: ' + maxValue, {
-                            position: toast.POSITION.BOTTOM_LEFT,
-                        });
-                    }
-                }}
-                decimal={decimal}
-                negative={false}
-                position="center"
-                value={toFixedSafe(value, decimal)}
-                theme="hello"
-            >
-                <span className="single-value-display-settings__value">{display(displayFunction, value, decimal)}</span>
-                <span className="single-value-display-settings__unit">{unit}</span>
-            </NumPad.Number>
-            <div className="single-value-display-settings__controls">
-                <button
-                    className="single-value-display-settings__control"
-                    onClick={(ev) => {
-                        if (reverseButtons) {
-                            incrementWithStep();
-                        } else {
-                            decrementWithStep();
-                        }
-
-                        ev.preventDefault();
                     }}
+                    decimal={decimal}
+                    negative={false}
+                    position="center"
+                    value={toFixedSafe(value, decimal)}
+                    theme="hello"
                 >
-                    <CaretIcon direction="down" size="md" />
-                </button>
+                    <div className="single-value-display-settings__value__value">{display(displayFunction, value, decimal)}</div>
+                    <div className="single-value-display-settings__value__unit">{unit}</div>
+                </NumPad.Number>
+            </div>
+            <div className="single-value-display-settings__controls">
                 <button
                     className="single-value-display-settings__control"
                     onClick={(ev) => {
@@ -132,6 +120,20 @@ const SingleValueDisplaySettings = ({
                     }}
                 >
                     <CaretIcon direction="up" size="md" />
+                </button>
+                <button
+                    className="single-value-display-settings__control"
+                    onClick={(ev) => {
+                        if (reverseButtons) {
+                            incrementWithStep();
+                        } else {
+                            decrementWithStep();
+                        }
+
+                        ev.preventDefault();
+                    }}
+                >
+                    <CaretIcon direction="down" size="md" />
                 </button>
             </div>
         </div>

@@ -669,7 +669,7 @@ export default class Dashboard extends React.Component {
                     <div className="page-dashboard__machine-info">
                         <button className={'btn ' + (parseInt(this.state.settings.ACTIVE) === 2 ? 'running' : 'inactive')}
                             onClick={() => this.askActiveStateChange()}>
-                            <OnOffIcon size="md" /><span>{parseInt(this.state.settings.ACTIVE) === 2 ? 'Stop ventilator' : 'Start ventilator'}</span>
+                            <OnOffIcon size="md" /><span>{parseInt(this.state.settings.ACTIVE) === 2 ? 'Stop' : 'Start'}</span>
                         </button>
 
                         <Dialog open={this.state.showShutdownConfirmationDialog}
@@ -723,7 +723,7 @@ export default class Dashboard extends React.Component {
                                     <SingleValueDisplaySettingsOnly>
                                         <div>
                                             <SingleValueDisplaySettings
-                                                name="Peak pressure (PK)"
+                                                name="Peak pressure"
                                                 value={this.state.settings.PK}
                                                 unit="cmH2O"
                                                 settingKey={'PK'}
@@ -735,7 +735,7 @@ export default class Dashboard extends React.Component {
                                                 updateValue={this.state.updateSetting}
                                             />
                                             <SingleValueDisplaySettings
-                                                name="PEEP level"
+                                                name="PEEP"
                                                 value={this.state.settings.PP}
                                                 settingKey={'PP'}
                                                 unit="cmH2O"
@@ -745,48 +745,8 @@ export default class Dashboard extends React.Component {
                                                 maxValue={20}
                                                 updateValue={this.state.updateSetting}
                                             />
-                                        </div>
-                                        <div className={'single-value-display-settings__alarm'}>
                                             <SingleValueDisplaySettings
-                                                name="Alarm limits PK"
-                                                value={this.state.settings.ADPK}
-                                                unit="cmH2O"
-                                                settingKey={'ADPK'}
-                                                decimal={false}
-                                                step={1}
-                                                minValue={0}
-                                                maxValue={35}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            <SingleValueDisplaySettings
-                                                name="Alarm limits PEEP"
-                                                value={this.state.settings.ADPP}
-                                                settingKey={'ADPP'}
-                                                unit="cmH2O"
-                                                decimal={false}
-                                                step={1}
-                                                minValue={0}
-                                                maxValue={100}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                        </div>
-                                    </SingleValueDisplaySettingsOnly>
-                                    <div>
-                                        <div className={'single-value-display-settings__header'}>
-                                            <Switch label={'Use triggers'}
-                                                switched={this.triggersEnabled()}
-                                                switchChanged={this.toggleTriggersEnabled.bind(this)}>></Switch>
-                                            {this.triggersEnabled() &&
-                                                <OptionSwitch labelOption1={'Flow'}
-                                                    labelOption2={'Pressure'}
-                                                    switched={this.state.settings.MODE === 1}
-                                                    switchChanged={this.toggleMode.bind(this)}>
-                                                </OptionSwitch>
-                                            }
-                                        </div>
-                                        <SingleValueDisplaySettingsOnly>
-                                            <SingleValueDisplaySettings
-                                                name="Set RR value"
+                                                name="RR"
                                                 value={this.state.settings.RR}
                                                 settingKey={'RR'}
                                                 unit="bpm"
@@ -801,135 +761,24 @@ export default class Dashboard extends React.Component {
                                                 value={this.state.settings.IE}
                                                 settingKey={'IE'}
                                                 displayFunction={'toIERatio'}
-                                                decimal={2}
-                                                step={0.015}
+                                                decimal={1}
+                                                options={[
+                                                    0.250,
+                                                    0.250,
+                                                    0.333,
+                                                    0.500,
+                                                ]}
                                                 minValue={minimumIE}
                                                 maxValue={maximumIE}
                                                 updateValue={this.state.updateSetting}
                                             />
-                                            <SingleValueDisplaySettings
-                                                name="Set T/inhale"
-                                                value={this.state.settings.TI}
-                                                settingKey={'TI'}
-                                                unit="sec"
-                                                decimal={1}
-                                                step={0.1}
-                                                minValue={this.state.minTInhale}
-                                                maxValue={this.state.maxTInhale}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            <SingleValueDisplaySettings
-                                                name="Ramp"
-                                                value={this.state.settings.RP}
-                                                settingKey={'RP'}
-                                                unit="sec"
-                                                decimal={1}
-                                                step={0.1}
-                                                minValue={0.3}
-                                                maxValue={1.0}
-                                                updateValue={this.state.updateSetting}
-                                            />
-                                            { this.triggersEnabled() && this.state.settings.MODE === 0 &&
-                                                <SingleValueDisplaySettings
-                                                    name="Trigger sens."
-                                                    value={this.state.settings.TS}
-                                                    settingKey={'TS'}
-                                                    decimal={2}
-                                                    unit='L/min'
-                                                    step={0.1}
-                                                    minValue={0}
-                                                    maxValue={10}
-                                                    updateValue={this.state.updateSetting}
-                                                />
-                                            }
-                                            { this.triggersEnabled() && this.state.settings.MODE === 1 &&
-                                                <SingleValueDisplaySettings
-                                                    name="Trigger sens."
-                                                    value={this.state.settings.TP}
-                                                    displayFunction={(value, decimal) => (this.state.settings.PP - this.state.settings.TP).toFixed(decimal)}
-                                                    reverseButtons={true}
-                                                    settingKey={'TP'}
-                                                    decimal={2}
-                                                    unit='cmH2O'
-                                                    step={0.1}
-                                                    minValue={-20}
-                                                    maxValue={this.state.settings.PP}
-                                                    updateValue={this.state.updateSetting}
-                                                />
-                                            }
-                                            { this.triggersEnabled() &&
-                                                <SingleValueDisplaySettings
-                                                    name="Psupport"
-                                                    value={this.state.settings.PS}
-                                                    settingKey={'PS'}
-                                                    unit="cmH2O"
-                                                    decimal={false}
-                                                    step={1}
-                                                    minValue={10}
-                                                    maxValue={this.state.maxPSupport}
-                                                    updateValue={this.state.updateSetting}
-                                                />
-                                            }
-                                        </SingleValueDisplaySettingsOnly>
-                                    </div>
-                                    <div>
-                                        <div className={'single-value-display-settings__header'}>
-                                            <Switch label={'Use volume control'}
-                                                switched={this.volumeLimitingEnabled()}
-                                                switchChanged={this.toggleVolumeLimitingEnabled.bind(this)}
-                                            ></Switch>
                                         </div>
-                                        <SingleValueDisplaySettingsOnly>
-                                            <div>
-                                                {this.volumeLimitingEnabled() &&
-                                                    <SingleValueDisplaySettings
-                                                        name="Tidal volume (TV)"
-                                                        value={this.state.settings.VT}
-                                                        settingKey={'VT'}
-                                                        unit="mL"
-                                                        step={50}
-                                                        minValue={250}
-                                                        maxValue={800}
-                                                        decimal={false}
-                                                        updateValue={this.state.updateSetting}
-                                                    />
-                                                }
-                                            </div>
-                                            <div className={'single-value-display-settings__alarm'}>
-                                                {this.volumeLimitingEnabled() &&
-                                                    <SingleValueDisplaySettings
-                                                        name="Alarm limits TV"
-                                                        value={this.state.settings.ADVT}
-                                                        settingKey={'ADVT'}
-                                                        unit="mL"
-                                                        step={10}
-                                                        minValue={0}
-                                                        maxValue={200}
-                                                        decimal={false}
-                                                        updateValue={this.state.updateSetting}
-                                                    />
-                                                }
-                                                {!this.volumeLimitingEnabled() &&
-                                                    <SingleValueDisplaySettings
-                                                        name="Minimum TV alarm"
-                                                        value={10000 - this.state.settings.ADVT}
-                                                        settingKey={'ADVT'}
-                                                        unit="mL"
-                                                        step={10}
-                                                        minValue={50}
-                                                        maxValue={800}
-                                                        decimal={false}
-                                                        updateValue={this.updateMinimumADTV.bind(this)}
-                                                    />
-                                                }
-                                            </div>
-                                        </SingleValueDisplaySettingsOnly>
-                                    </div>
+                                    </SingleValueDisplaySettingsOnly>
 
                                     <button className={'save-button'}
                                         onClick={(e) => this.saveSettings(e)}
                                         disabled={!this.state.hasDirtySettings}>
-                                        Confirm settings
+                                        Confirm
                                     </button>
                                 </div>
                             </div>
