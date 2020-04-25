@@ -4,7 +4,6 @@ $b: 'single-value-display';
     padding: 1rem;
     text-transform: uppercase;
     font-size: $font-size-small;
-    border-radius: $border-radius-base;
     overflow: hidden;
     display: flex;
     flex-wrap: wrap;
@@ -35,7 +34,8 @@ $b: 'single-value-display';
     }
 
     &--settings-only {
-        padding: 0;
+        margin-top: -4px;
+        padding: 8px 8px 0px 0px;
         align-items: flex-start;
         flex-wrap: wrap;
 
@@ -51,8 +51,8 @@ $b: 'single-value-display';
     flex-flow: row nowrap;
     align-items: center;
 
-    &:first {
-        margin-top: 0px;
+    &:first-child {
+        margin-top: 0rem;
     }
 
     &__controls {
@@ -69,13 +69,13 @@ $b: 'single-value-display';
         width: 4rem;
         height: 4rem;
         line-height: 4rem;
-        margin: 0.5rem;
+        margin-bottom: 1rem;
     }
 
     &__value {
         flex-grow: 1;
         text-align: end;
-        margin-right: 1rem;
+        margin-right: 2rem;
 
         &__name {
             margin-bottom: 0;
@@ -105,7 +105,6 @@ $b: 'single-value-display';
     padding: 0.5rem;
     text-transform: uppercase;
     font-size: $font-size-base;
-    border-radius: $border-radius-base;
     overflow: hidden;
     display: flex;
     flex-wrap: wrap;

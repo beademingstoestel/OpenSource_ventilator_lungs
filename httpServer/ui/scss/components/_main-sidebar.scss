@@ -8,66 +8,6 @@ $b: 'main-sidebar';
     overflow: hidden;
     width: 10rem;
 
-    &__alert {
-        padding: 0.5rem;
-        z-index: 999;
-        overflow-y: auto;
-        max-height: 350px;
-        position: relative;
-        width: calc(100% + 2rem);
-        top: -1rem;
-        left: -1rem;
-        border-right: 1px solid get-brand-color();
-
-        &__entry {
-            margin-top: 0.25rem;
-            color: darkred;
-
-            &:not(:last-child) {
-                border-bottom: 1px solid darkred;
-                padding-bottom: 0.25;
-            }
-
-            &__date {
-                border-bottom: 1px solid darkred;
-            }
-
-            &__values {
-                padding-left: 1rem;
-
-                &__alarm {
-                    list-style-type: none;  
-                    
-                    &.resolved {
-                        &::before {
-                            content: '✔';
-                            margin-right: 0.25rem;
-                            color: darkgreen;
-                        }
-                    }
-
-                    &.raised {
-                        &::before {
-                            content: '✖';
-                            margin-right: 0.25rem;
-                        }
-                    }
-                }
-            }
-        }        
-
-        button {
-            flex-grow: 0;
-            color: white;
-            border: 1px solid darkred;
-            background-color: darkred;
-            border-radius: 4px;
-            padding: 0.5rem;
-            vertical-align: middle;
-            width: 100%;
-        }
-    }
-
     &__menu {
         display: flex;
         flex-direction: column;

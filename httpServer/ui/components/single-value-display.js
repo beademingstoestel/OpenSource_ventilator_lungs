@@ -108,7 +108,7 @@ const SingleValueDisplaySettings = ({
             </div>
             <div className="single-value-display-settings__controls">
                 <button
-                    className="single-value-display-settings__control threed-btn base"
+                    className="single-value-display-settings__control threed-btn base offset-effect-x offset-effect-y"
                     onClick={(ev) => {
                         if (reverseButtons) {
                             decrementWithStep();
@@ -122,7 +122,7 @@ const SingleValueDisplaySettings = ({
                     <CaretIcon direction="up" size="md" />
                 </button>
                 <button
-                    className="single-value-display-settings__control threed-btn base"
+                    className="single-value-display-settings__control threed-btn base offset-effect-x offset-effect-y"
                     onClick={(ev) => {
                         if (reverseButtons) {
                             incrementWithStep();

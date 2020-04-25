@@ -21,6 +21,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
 import { toast } from 'react-toastify';
+import AlarmOverview from './alarm-overview';
 
 // eslint-disable-next-line no-unused-vars
 const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
@@ -50,10 +51,12 @@ export default class Dashboard extends React.Component {
     dirtySettings = {};
     previousSettings = {};
     calculatedValues = {
-        volumePerMinute: 0.0,
-        pressurePlateau: 0.0,
-        tidalVolume: 0.0,
-        bpm: 0.0,
+        volumePerMinute: 0,
+        pressurePlateau: 0,
+        tidalVolume: 0,
+        bpm: 0,
+        respatoryRate: 0,
+        IE: 0,
     };
 
     mutedAt = new Date();
@@ -101,15 +104,16 @@ export default class Dashboard extends React.Component {
                 ACTIVE: 0,
                 MT: 0,
                 RA: 0,
+                FIO2: 0.2,
             },
             calculatedValues: {
-                IE: 0.0,
-                volumePerMinute: 0.0,
-                respatoryRate: 0.0,
-                pressurePlateau: 0.0,
+                IE: 0,
+                volumePerMinute: 0,
+                respatoryRate: 0,
+                pressurePlateau: 0,
                 breathingCycleStart: null,
                 exhaleMoment: null,
-                tidalVolume: 0.0,
+                tidalVolume: 0,
                 breathingCycleEnd: null,
             },
             hasDirtySettings: false,
@@ -659,14 +663,12 @@ export default class Dashboard extends React.Component {
                         <li>{this.state.patientInfo}</li>
                     </ul>
                     <div className="page-dashboard__timing-info">
-                        <div>
-                            T {new Date().toLocaleTimeString()}
-                        </div>
-                        <div>
-                            Mode: {this.state.settings.MODE === 0 ? 'Flow' : 'Pressure'}
-                        </div>
+                        {new Date().toLocaleTimeString()}
                     </div>
                     <div className="page-dashboard__machine-info">
+                        <button className={'threed-btn base'} onClick={() => this.askActiveStateChange()}>
+                            <GearIcon size="md" /><span>PC-VL-PT</span>
+                        </button>
                         <button className={'threed-btn ' + (parseInt(this.state.settings.ACTIVE) === 2 ? 'danger' : 'success')}
                             onClick={() => this.askActiveStateChange()}>
                             <OnOffIcon size="md" /><span>{parseInt(this.state.settings.ACTIVE) === 2 ? 'Stop' : 'Start'}</span>
@@ -778,23 +780,33 @@ export default class Dashboard extends React.Component {
                                     <button className={'threed-btn save-button success'}
                                         onClick={(e) => this.saveSettings(e)}
                                         disabled={!this.state.hasDirtySettings}>
-                                        <BellIcon></BellIcon> Confirm
+                                        <SaveIcon></SaveIcon><span>Confirm</span>
                                     </button>
                                 </div>
                             </div>
                             <div className="page-dashboard__layout__body__measurements__graphs">
-                                <form className="form form--horizontal-xs">
-                                    <div className="form__group form__group--shrink">
-                                        <div className="option-toggle option-toggle--danger">
-                                            <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e)} />
-                                            <label htmlFor="alarm">
-                                                <BellIcon size="md" />
-                                                {this.state.settings.MT === 0 && 'MUTE'}
-                                                {this.state.settings.MT === 1 && 'MUTED FOR ' + this.state.muteCountDown + 's'}
-                                            </label>
+                                <div className="page-dashboard__layout__body__measurements__graphs__alarm-bar">
+                                    <form className="form form--horizontal-xs">
+                                        <div className="form__group form__group--shrink">
+                                            <div className={cx('option-toggle',
+                                                'threed-btn',
+                                                'offset-effect-x',
+                                                {
+                                                    pressed: parseInt(this.state.settings.MT) === 1,
+                                                    danger: parseInt(this.state.settings.MT) === 0,
+                                                    disabled: parseInt(this.state.settings.MT) === 1,
+                                                })}>
+                                                <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e)} />
+                                                <label htmlFor="alarm">
+                                                    <BellIcon size="md" />
+                                                    {this.state.settings.MT === 0 && 'MUTE'}
+                                                    {this.state.settings.MT === 1 && 'MUTED FOR ' + this.state.muteCountDown + 's'}
+                                                </label>
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                    <AlarmOverview></AlarmOverview>
+                                </div>
                                 <div className="box u-mt-1">
                                     <div className="box__body">
                                         <DataPlot title='Pressure (cmH2O)'
@@ -857,7 +869,7 @@ export default class Dashboard extends React.Component {
                                 name="I/E"
                                 value={this.state.calculatedValues.IE}
                                 displayFunction={'toIERatio'}
-                                decimal={2}
+                                decimal={1}
                                 status={'normal'}>
                             </SingleValueDisplay>
                         </div>

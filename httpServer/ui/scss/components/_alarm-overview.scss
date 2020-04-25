@@ -1,0 +1,118 @@
+$b: 'alarm-overview';
+
+.#{$b} {
+    text-align: center;
+    position: relative;
+
+    &__buttons {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        position: relative;
+        height: 100%;
+
+        button, a {
+            display: flex;
+            padding: 0rem 1rem;
+            align-items: center;
+
+            svg {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+        }
+
+        &__highlighted-alarm {
+            text-align: center;
+            padding: 0rem 1rem;
+            text-transform: uppercase;
+            vertical-align: middle;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 25rem;
+            cursor: pointer;
+        }
+    }
+
+    &__popout {
+        position: absolute;
+        width: 100%;
+        top: calc(100% + 9px);
+        left: -8px;
+        max-height: 25rem;
+        text-align: left;
+
+        background-color: white;
+        border: 1px solid get-status-color('danger', 'lighter-2');
+
+        overflow-y: auto;
+
+        &__entry {
+            $entry_selector: &;
+            padding-bottom: 0;
+
+            &__title {
+                color: white;
+                padding: 0.5rem;
+                font-size: 1rem;
+                text-transform: uppercase;
+            }
+
+            &.danger {
+                background-color: white;
+
+                &>#{$entry_selector}__title {
+                    background-color: get-status-color('danger');
+                    border-bottom: 1px solid get-status-color('danger', 'light');
+                } 
+            }
+
+            &.danger:not(:first-child) {
+                &>#{$entry_selector}__title {
+                    border-top: 1px solid get-status-color('danger', 'light');
+                } 
+            }
+
+            &.warning {
+                background-color: white;
+
+                &>#{$entry_selector}__title {
+                    background-color: get-status-color('warning');
+                    border-bottom: 1px solid get-status-color('warning', 'light');
+                } 
+            }
+
+            &.warning:not(:first-child) {
+                &>#{$entry_selector}__title {
+                    border-top: 1px solid get-status-color('warning', 'light');
+                } 
+            }
+
+            ul {
+                padding-left: 1rem;
+
+                li {
+                    list-style-type: none;  
+                    
+                    &::before {
+                        margin-right: 0.25rem;
+                    }
+                    
+                    &.resolved {
+                        &::before {
+                            content: '✔';
+                            color: darkgreen;
+                        }
+                    }
+
+                    &.raised {
+                        &::before {
+                            content: '✖';
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
