@@ -9,19 +9,20 @@ $b: 'page-dashboard';
     &__header {
         box-shadow: 0 1px 5px rgba(#000, 0.25);
         padding: 1rem;
-        color: get-gray-color('light');
+        color: get-gray-color('dark');
         position: relative;
         z-index: 1;
         display: flex;
         justify-content: space-between;
         align-items: center;
+
+        font-size: 1.5rem;
+        line-height: 1.5rem;
     }
 
     &__timing-info {
         margin-left: auto;
         margin-right: 3rem;
-        font-weight: $font-weight-bold;
-        line-height: 1.1;
         cursor: pointer;
     }
 
@@ -29,7 +30,7 @@ $b: 'page-dashboard';
         button {
             height: 3.2rem;
             line-height: 1.5rem;
-            font-size: 1.5em;
+            font-size: 1.5rem;
             margin: 0rem;
             padding: 0 1rem 0 0.5rem;
 
@@ -69,7 +70,22 @@ $b: 'page-dashboard';
 
                 &__graphs {
                     flex-grow: 1;
-                    margin-left: 1rem;
+                    margin-left: 1rem;                    
+
+                    &__alarm-bar {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: center;
+
+                        .form {
+                            flex-grow: 1;
+                        }
+
+
+                        .alarm-overview {
+                            flex-grow: 0;
+                        }
+                    }
                 }
 
                 &__settings {
@@ -80,14 +96,16 @@ $b: 'page-dashboard';
                         color: white;
                         height: 3.2rem;
                         line-height: 1.5rem;
-                        font-size: 1.5em;
+                        font-size: 1.5rem;
                         margin: 0rem;
                         padding: 0 1rem 0 0.5rem;
-                        width: 100%;            
+                        width: 100%;   
+                        vertical-align: middle;         
             
                         svg {
                             display: inline-block;
-                            height: 1em;
+                            height: 1.75rem;
+                            width: 1.75rem;
                             vertical-align: middle;
                         }
             

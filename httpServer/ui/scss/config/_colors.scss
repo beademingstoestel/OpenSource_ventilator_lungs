@@ -49,7 +49,10 @@ $colors-status: map-merge(
         ),
         warning: (
             light: #fcf8e3,
+            lighter-10: lighten(#f6c23e, 10%),
+            lighter-2: lighten(#f6c23e, 2%),
             base: #f6c23e,
+            darker: darken(#f6c23e, 5%),
         ),
         danger: (
             light: #f2dede,

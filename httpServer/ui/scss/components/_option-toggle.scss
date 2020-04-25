@@ -10,29 +10,19 @@ $b: 'option-toggle';
 
         + label {
             display: block;
-            color: $form-label-color;
+            color: #fff;
             padding: 0.5rem;
             line-height: 1;
-            border: 1px solid;
             cursor: pointer;
-            border-radius: $border-radius-base;
+
+            svg {
+                margin-right: 0.5rem;
+            }
         }
 
         &:checked {
             + label {
-                background-color: get-status-color('info');
                 color: #fff;
-            }
-        }
-    }
-
-    &--danger {
-        input[type='checkbox'] {
-            &:checked {
-                + label {
-                    background-color: get-status-color('danger');
-                    color: #fff;
-                }
             }
         }
     }
