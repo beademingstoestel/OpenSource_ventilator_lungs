@@ -68,18 +68,6 @@ $b: 'main-sidebar';
         }
     }
 
-    &::after {
-        content: '';
-        display: block;
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        bottom: -50%;
-        left: 0;
-        background: linear-gradient(69.25deg, get-brand-color('secondary'), get-brand-color('secondary') 50%, transparent 50.25%, transparent 100%);
-        z-index: 1;
-    }
-
     &__menu {
         display: flex;
         flex-direction: column;
@@ -106,49 +94,10 @@ $b: 'main-sidebar';
             text-align: center;
             align-items: center;
             font-size: 1.2rem;
-            border: 0;
             padding: 0.5rem;
-            background-color: get-brand-color('primary', 'lighter-10');
-            position: relative;
-
-            &::before {
-                display: block;
-                position: absolute;
-                height: 100%;
-                width: 8px;
-                background-color: get-brand-color('primary', 'lighter-15');
-                content: '';
-                top: 4px;
-                left: -8px;
-                transform: skewY(-45deg);
-            }
-
-            &::after {
-                display: block;
-                position: absolute;
-                width: 100%;
-                height: 8px;
-                background-color: get-brand-color('primary', 'lighter-20');;
-                content: '';
-                top: 100%;
-                left: -4px;
-                transform: skewX(-45deg);
-            }       
-
-            &:hover, &:focus, &.is-active {
-                transform: translate(-4px, 4px);
+            
+            &.pressed {
                 color: inherit;
-
-                &::before {
-                    top: 2px;
-                    left: -4px;
-                    width: 4px;
-                }
-
-                &::after {                    
-                    height: 4px;
-                    left: -2px;
-                }
             }
 
             .icon {

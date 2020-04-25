@@ -1,0 +1,102 @@
+$b: 'threed-btn';
+$threedsize: 8;
+
+.#{$b} {    
+    border-radius: 0;
+    border: 0;
+    position: relative;
+
+    &::before {
+        display: block;
+        position: absolute;
+        height: 100%;
+        width: #{$threedsize}px;
+        background-color: white;
+        content: '';
+        top: #{$threedsize/2}px;
+        left: -#{$threedsize}px;
+        transform: skewY(-45deg);
+    }
+
+    &::after {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: #{$threedsize}px;
+        background-color: white;
+        content: '';
+        top: 100%;
+        left: -#{$threedsize/2}px;
+        transform: skewX(-45deg);
+    }
+
+    &:hover, &.pressed {
+        transform: translate(-#{$threedsize/2}px, #{$threedsize/2}px);
+
+        &::before {
+            top: #{$threedsize/4}px;
+            left: -#{$threedsize/2}px;
+            width: #{$threedsize/2}px;
+        }
+
+        &::after {                    
+            height: #{$threedsize/2}px;
+            left: -#{$threedsize/4}px;
+        }
+    }
+
+    &.base {
+        color: white;
+        background-color: get-brand-color('primary', 'lighter-10');
+
+        &::before {
+            background-color: get-brand-color('primary', 'lighter-15');
+        }
+
+        &::after {
+            background-color: get-brand-color('primary', 'lighter-20');
+        }
+    }
+    
+    &.danger {
+        color: white;
+        background-color: get-status-color('danger');
+        text-shadow: 0px -1px 0px get-status-color('danger', 'light');
+
+        &::before {
+            background-color: get-status-color('danger', 'lighter-2');
+        }
+
+        &::after {
+            background-color: get-status-color('danger', 'lighter-10');
+        }
+    }
+
+    &.success {
+        color: white;
+        background-color: get-status-color('success');
+        text-shadow: 0px -1px 0px get-status-color('success', 'light');
+
+        &::before {
+            background-color: get-status-color('success', 'lighter-2');
+        }
+
+        &::after {
+            background-color: get-status-color('success', 'lighter-10');
+        }
+    }
+
+    &.disabled, &:disabled {
+        background-color: get-gray-color('base');
+        text-shadow: 0px -1px 0px get-gray-color('light');
+        color: white;
+
+        &::before {
+            background-color: get-gray-color('darker');
+        }
+
+        &::after {
+            background-color: get-gray-color('light');
+        }
+    }
+}

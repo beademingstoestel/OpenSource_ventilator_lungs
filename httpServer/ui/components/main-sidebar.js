@@ -147,7 +147,7 @@ const MainSidebar = ({ className, ...other }) => {
                             return (
                                 <li className={cx('main-sidebar__menu-item', { 'is-active': isActive })} key={index}>
                                     <Link href={'#'}>
-                                        <a className="main-sidebar__menu-item__link">
+                                        <a className={cx('main-sidebar__menu-item__link', 'threed-btn', 'base', { pressed: false })}>
                                             {icon} <span className="u-d-none-xs u-d-inline-xxl">{label}</span>
                                         </a>
                                     </Link>
@@ -163,7 +163,7 @@ const MainSidebar = ({ className, ...other }) => {
                         return (
                             <li className={cx('main-sidebar__menu-item', { 'is-active': currentPath === path })} key={index}>
                                 <Link href={path}>
-                                    <a className={cx('main-sidebar__menu-item__link', { 'is-active': currentPath === path })}>
+                                    <a className={cx('main-sidebar__menu-item__link', 'threed-btn', 'base', { pressed: currentPath === path })}>
                                         {icon} <span className="u-d-none-xs u-d-inline-xxl">{label}</span>
                                     </a>
                                 </Link>
