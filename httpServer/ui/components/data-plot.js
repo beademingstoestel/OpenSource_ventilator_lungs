@@ -179,14 +179,7 @@ export default class DataPlot extends React.Component {
                 }],
             },
             legend: {
-                display: this.props.peak | this.props.threshold,
-                position: 'bottom',
-                onClick: () => { }, // Disable hiding of the data when clicking on it.
-                labels: {
-                    filter: (legendItem, chartData) => {
-                        return !legendItem.text.includes('dataset');
-                    },
-                },
+                display: false,
             },
             tooltips: {
                 enabled: false,

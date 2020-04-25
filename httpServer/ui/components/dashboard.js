@@ -667,7 +667,7 @@ export default class Dashboard extends React.Component {
                         </div>
                     </div>
                     <div className="page-dashboard__machine-info">
-                        <button className={'btn ' + (parseInt(this.state.settings.ACTIVE) === 2 ? 'running' : 'inactive')}
+                        <button className={'threed-btn ' + (parseInt(this.state.settings.ACTIVE) === 2 ? 'danger' : 'success')}
                             onClick={() => this.askActiveStateChange()}>
                             <OnOffIcon size="md" /><span>{parseInt(this.state.settings.ACTIVE) === 2 ? 'Stop' : 'Start'}</span>
                         </button>
@@ -775,10 +775,10 @@ export default class Dashboard extends React.Component {
                                         </div>
                                     </SingleValueDisplaySettingsOnly>
 
-                                    <button className={'save-button'}
+                                    <button className={'threed-btn save-button success'}
                                         onClick={(e) => this.saveSettings(e)}
                                         disabled={!this.state.hasDirtySettings}>
-                                        Confirm
+                                        <BellIcon></BellIcon> Confirm
                                     </button>
                                 </div>
                             </div>
@@ -788,7 +788,9 @@ export default class Dashboard extends React.Component {
                                         <div className="option-toggle option-toggle--danger">
                                             <input type="checkbox" id="alarm" checked={parseInt(this.state.settings.MT) === 0} onChange={(e) => this.toggleMute(e)} />
                                             <label htmlFor="alarm">
-                                                <BellIcon size="md" /> {this.state.settings.MT === 1 && this.state.muteCountDown}
+                                                <BellIcon size="md" />
+                                                {this.state.settings.MT === 0 && 'MUTE'}
+                                                {this.state.settings.MT === 1 && 'MUTED FOR ' + this.state.muteCountDown + 's'}
                                             </label>
                                         </div>
                                     </div>
