@@ -28,9 +28,9 @@ const AlarmOverview = ({ className, ...other }) => {
                 body: JSON.stringify(tosend),
             });
 
-            setCurrentAlarms({});
             setAlarmCount(0);
             setAlarmLevel('warning');
+            setCurrentAlarms({});
         } catch (e) {
             // todo: show error to the user
             console.log(e);
