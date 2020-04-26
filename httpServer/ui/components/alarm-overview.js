@@ -6,11 +6,13 @@ import { AlarmBitDefinitions, formatAlarmMessage } from '../helpers/alarm-defini
 import HistoryIcon from './icons/history';
 
 const AlarmOverview = ({ className, ...other }) => {
-    const currentAlarmsRef = useRef([]);
+    const currentAlarmsRef = useRef({});
+    const alarmCountRef = useRef(0);
+    const alarmLevelRef = useRef('warning');
     const [currentAlarms, setCurrentAlarms] = useState([]);
-    const [alarmLevel, setAlarmLevel] = useState('danger');
+    const [alarmLevel, setAlarmLevel] = useState('warning');
     const [showPopout, setShowPopout] = useState(false);
-    const [alarmCount, setAlarmCount] = useState(2);
+    const [alarmCount, setAlarmCount] = useState(0);
 
     async function resetAlarm(e) {
         try {
@@ -26,42 +28,128 @@ const AlarmOverview = ({ className, ...other }) => {
                 body: JSON.stringify(tosend),
             });
 
-            setCurrentAlarms([]);
+            setCurrentAlarms({});
             setAlarmCount(0);
+            setAlarmLevel('warning');
         } catch (e) {
             // todo: show error to the user
             console.log(e);
         }
     }
 
-    function getAlarmTexts(alarmValue, type) {
-        const messages = [];
+    function addAlarm(newAlarm) {
+        const currentAlarms = [...currentAlarmsRef.current];
 
-        let shiftAlarm = alarmValue;
+        let newAlarmCount = alarmCountRef.current;
+        let shiftAlarm = newAlarm.data.raisedAlarms;
+        let shiftResolvedAlarm = newAlarm.data.resolvedAlarms;
+
+        let alarmLevel = alarmLevelRef.current;
 
         for (let i = 0; i < 32; i++) {
-            if ((shiftAlarm & 1) > 0 && AlarmBitDefinitions[i].ignore !== true) {
-                const message = type === 'raised' ? AlarmBitDefinitions[i].message : AlarmBitDefinitions[i].positiveMessage;
+            let useBit = i;
+            if (AlarmBitDefinitions[i].redundantWith) {
+                useBit = AlarmBitDefinitions[i].redundantWith;
+            }
+            const existingAlarm = currentAlarms.filter((alarm) => alarm.alarmBit === useBit);
 
-                messages.push(<li className={'main-sidebar__alert__entry__values__alarm ' + type}>{message}</li>);
+            if ((shiftAlarm & 1) > 0 && AlarmBitDefinitions[i].ignore !== true) {
+                newAlarmCount++;
+
+                if (AlarmBitDefinitions[useBit].level === 'danger') {
+                    alarmLevel = 'danger';
+                }
+
+                if (existingAlarm.length > 0) {
+                    existingAlarm[0].messages.unshift({
+                        time: new Date(newAlarm.loggedAt),
+                        status: 'raised',
+                        message: formatAlarmMessage(useBit, true, newAlarm.data),
+                    });
+                    existingAlarm[0].status = 'raised';
+                } else {
+                    currentAlarms.push({
+                        messages: [{
+                            time: new Date(newAlarm.loggedAt),
+                            status: 'raised',
+                            message: formatAlarmMessage(useBit, true, newAlarm.data),
+                        }],
+                        alarmBit: useBit,
+                        status: 'raised',
+                        level: AlarmBitDefinitions[useBit].level,
+                        headerMessage: AlarmBitDefinitions[useBit].message,
+                    });
+                }
+            }
+
+            if ((shiftResolvedAlarm & 1) > 0 && AlarmBitDefinitions[i].ignore !== true) {
+                if (existingAlarm.length > 0) {
+                    existingAlarm[0].messages.unshift({
+                        time: new Date(newAlarm.loggedAt),
+                        status: 'resolved',
+                        message: formatAlarmMessage(useBit, false, newAlarm.data),
+                    });
+                    existingAlarm[0].status = 'resolved';
+                } else {
+                    currentAlarms.push({
+                        messages: [{
+                            time: new Date(newAlarm.loggedAt),
+                            status: 'resolved',
+                            message: formatAlarmMessage(useBit, false, newAlarm.data),
+                        }],
+                        alarmBit: useBit,
+                        status: 'resolved',
+                        level: AlarmBitDefinitions[useBit].level,
+                        headerMessage: AlarmBitDefinitions[useBit].message,
+                    });
+                }
             }
 
             shiftAlarm = shiftAlarm >> 1;
+            shiftResolvedAlarm = shiftResolvedAlarm >> 1;
         }
 
-        return messages;
-    }
+        setCurrentAlarms(currentAlarms.sort((a, b) => {
+            if (a.level === 'warning' && b.level === 'danger') {
+                return 1;
+            }
 
-    function addAlarm(newAlarm) {
-        const allAlarms = [...currentAlarmsRef.current];
-        allAlarms.unshift(newAlarm);
-        setCurrentAlarms(allAlarms);
-        console.log(allAlarms);
+            if (b.level === 'warning' && a.level === 'danger') {
+                return -1;
+            }
+
+            const aRaisedMessages = a.messages.filter(m => m.status === 'raised');
+            const bRaisedMessages = b.messages.filter(m => m.status === 'raised');
+
+            if (aRaisedMessages.length === 0) {
+                return -1;
+            }
+
+            if (bRaisedMessages.length > 0) {
+                if (bRaisedMessages[0].time < aRaisedMessages[0].time) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+
+            return 0;
+        }));
+        setAlarmCount(newAlarmCount);
+        setAlarmLevel(alarmLevel);
     }
 
     useEffect(() => {
         currentAlarmsRef.current = currentAlarms;
     }, [currentAlarms]);
+
+    useEffect(() => {
+        alarmCountRef.current = alarmCount;
+    }, [alarmCount]);
+
+    useEffect(() => {
+        alarmLevelRef.current = alarmLevel;
+    }, [alarmLevel]);
 
     useEffect(() => {
         const client = new Client(`${getWsUrl()}`);
@@ -76,11 +164,9 @@ const AlarmOverview = ({ className, ...other }) => {
             try {
                 const alarms = await client.request('/api/alarms?since=0');
 
-                console.log(alarms);
-
-                if (alarms && alarms.statusCode === 200) {
-                    setCurrentAlarms(alarms.payload);
-                }
+                alarms.payload.reverse().forEach((alarm) => {
+                    addAlarm(alarm);
+                });
             } catch (e) {
                 console.log(e);
             }
@@ -101,6 +187,31 @@ const AlarmOverview = ({ className, ...other }) => {
         };
     }, []);
 
+    function renderAlarms() {
+        const elements = [];
+        console.log('render alarms');
+
+        currentAlarms.forEach((alarm) => {
+            elements.push(
+                <div className={'alarm-overview__popout__entry ' + alarm.level} key={'alarm-' + alarm.alarmBit}>
+                    <div className={'alarm-overview__popout__entry__title'}>
+                        { alarm.headerMessage }
+                    </div>
+                    <ul>
+                        { alarm.messages.map((message) => {
+                            return (
+                                <li className={message.status} key={'alarm-' + alarm.alarmBit + '-' + message.time}>
+                                    <strong>{message.time.toLocaleTimeString()}</strong>: {message.message}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>);
+        });
+
+        return elements;
+    }
+
     return (
         alarmCount > 0 &&
         <div className={'alarm-overview threed-btn--horizontal-group'}>
@@ -108,7 +219,7 @@ const AlarmOverview = ({ className, ...other }) => {
                 <button className={cx('threed-btn', alarmLevel, 'button-1')} onClick={() => resetAlarm()}>RESET {alarmCount} ALARMS</button>
                 <div className={cx('alarm-overview__buttons__highlighted-alarm', 'threed-btn', alarmLevel, 'button-2', { pressed: showPopout })}
                     onClick={(e) => setShowPopout(!showPopout)}>
-                    <span>PRESSURE NOT WITHIN LIMITS</span>
+                    <span>{ currentAlarms[0].headerMessage }</span>
                 </div>
                 <a className={cx('threed-btn', alarmLevel, 'button-3')} href="/history">
                     <HistoryIcon></HistoryIcon>
@@ -117,41 +228,7 @@ const AlarmOverview = ({ className, ...other }) => {
 
             {showPopout &&
                 <div className="alarm-overview__popout">
-                    <div className={'alarm-overview__popout__entry warning'}>
-                        <div className={'alarm-overview__popout__entry__title'}>
-                            No external power
-                        </div>
-                        <ul>
-                            <li className={'raised'}>
-                                <strong>16:56:22</strong>: {formatAlarmMessage(27, true, { settings: { RR: 20 }, calculatedValues: { BreathsPerMinute: 22 } })}
-                            </li>
-                        </ul>
-                    </div>
-                    <div className={'alarm-overview__popout__entry danger'}>
-                        <div className={'alarm-overview__popout__entry__title'}>
-                            Pressure not within thresholds
-                        </div>
-                        <ul>
-                            <li className={'resolved'}>
-                                <strong>17:01:22</strong>: Peak pressure at 42 cmH2O
-                            </li>
-                            <li className={'raised'}>
-                                <strong>16:56:22</strong>: {formatAlarmMessage(6, true, {
-                                    settings: {
-                                        PK: 30,
-                                        ADPK: 10,
-                                        VT: 250,
-                                        ADVT: 50,
-                                    },
-                                    calculatedValues: {
-                                        peakPressure: 42,
-                                        pressurePlateau: 18,
-                                        tidalVolume: 380,
-                                    },
-                                })}
-                            </li>
-                        </ul>
-                    </div>
+                    { renderAlarms() }
                 </div>
             }
         </div>
