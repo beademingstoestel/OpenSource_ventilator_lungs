@@ -56,19 +56,54 @@ const SingleValueDisplaySettings = ({
     warningThreshold = 0,
     displayFunction = 'toFixedSafe',
     reverseButtons = false,
+    options = null,
 }) => {
-    function incrementWithStep(ev) {
-        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) + step);
+    function closestOption() {
+        let diff = 1e6;
+        let index = -1;
+        options.forEach((element, i) => {
+            const newDiff = Math.abs(element - value);
+            if (newDiff < diff) {
+                index = i;
+                diff = newDiff;
+            }
+        });
 
-        newValue = Math.min(newValue, maxValue);
-        updateValue(settingKey, newValue);
+        return index;
+    }
+
+    function incrementWithStep(ev) {
+        if (!options) {
+            var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) + step);
+
+            newValue = Math.min(newValue, maxValue);
+            updateValue(settingKey, newValue);
+        } else {
+            // find closest index in options array
+            const closestIndex = closestOption();
+
+            if (closestIndex < options.length - 1) {
+                newValue = options[closestIndex + 1];
+                updateValue(settingKey, newValue);
+            }
+        }
     }
 
     function decrementWithStep(ev) {
-        var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) - step);
+        if (!options) {
+            var newValue = ((decimal === false ? parseInt(value) : parseFloat(value)) - step);
 
-        newValue = Math.max(newValue, minValue);
-        updateValue(settingKey, newValue);
+            newValue = Math.max(newValue, minValue);
+            updateValue(settingKey, newValue);
+        } else {
+            // find closest index in options array
+            const closestIndex = closestOption();
+
+            if (closestIndex > 0) {
+                newValue = options[closestIndex - 1];
+                updateValue(settingKey, newValue);
+            }
+        }
     }
 
     return (
@@ -100,7 +135,6 @@ const SingleValueDisplaySettings = ({
                     negative={false}
                     position="center"
                     value={toFixedSafe(value, decimal)}
-                    theme="hello"
                 >
                     <div className="single-value-display-settings__value__value">{display(displayFunction, value, decimal)}</div>
                     <div className="single-value-display-settings__value__unit">{unit}</div>
