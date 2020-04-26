@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import cx from 'classnames';
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 import { Client } from '@hapi/nes/lib/client';
-import { AlarmBitDefinitions } from '../helpers/alarm-definitions';
+import { AlarmBitDefinitions, formatAlarmMessage } from '../helpers/alarm-definitions';
 import HistoryIcon from './icons/history';
 
 const AlarmOverview = ({ className, ...other }) => {
@@ -103,46 +103,58 @@ const AlarmOverview = ({ className, ...other }) => {
 
     return (
         alarmCount > 0 &&
-            <div className={'alarm-overview threed-btn--horizontal-group'}>
-                <div className={'alarm-overview__buttons threed-btn--horizontal-group'}>
-                    <button className={cx('threed-btn', alarmLevel, 'button-1')} onClick={() => resetAlarm()}>RESET {alarmCount} ALARMS</button>
-                    <div className={cx('alarm-overview__buttons__highlighted-alarm', 'threed-btn', alarmLevel, 'button-2', { pressed: showPopout })}
-                        onClick={(e) => setShowPopout(!showPopout) }>
-                        <span>PRESSURE NOT WITHIN LIMITS</span>
-                    </div>
-                    <a className={cx('threed-btn', alarmLevel, 'button-3')} href="/history">
-                        <HistoryIcon></HistoryIcon>
-                    </a>
+        <div className={'alarm-overview threed-btn--horizontal-group'}>
+            <div className={'alarm-overview__buttons threed-btn--horizontal-group'}>
+                <button className={cx('threed-btn', alarmLevel, 'button-1')} onClick={() => resetAlarm()}>RESET {alarmCount} ALARMS</button>
+                <div className={cx('alarm-overview__buttons__highlighted-alarm', 'threed-btn', alarmLevel, 'button-2', { pressed: showPopout })}
+                    onClick={(e) => setShowPopout(!showPopout)}>
+                    <span>PRESSURE NOT WITHIN LIMITS</span>
                 </div>
-
-                {showPopout &&
-                    <div className="alarm-overview__popout">
-                        <div className={'alarm-overview__popout__entry warning'}>
-                            <div className={'alarm-overview__popout__entry__title'}>
-                                No external power
-                            </div>
-                            <ul>
-                                <li className={'raised'}>
-                                    <strong>16:56:22</strong>: Loss of external power detected
-                                </li>
-                            </ul>
-                        </div>
-                        <div className={'alarm-overview__popout__entry danger'}>
-                            <div className={'alarm-overview__popout__entry__title'}>
-                                Pressure not within thresholds
-                            </div>
-                            <ul>
-                                <li className={'resolved'}>
-                                    <strong>17:01:22</strong>: Peak pressure at 42 cmH2O
-                                </li>
-                                <li className={'raised'}>
-                                    <strong>16:56:22</strong>: Peak pressure 8 cmH2O above upper limit of 45 cmH2O
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                }
+                <a className={cx('threed-btn', alarmLevel, 'button-3')} href="/history">
+                    <HistoryIcon></HistoryIcon>
+                </a>
             </div>
+
+            {showPopout &&
+                <div className="alarm-overview__popout">
+                    <div className={'alarm-overview__popout__entry warning'}>
+                        <div className={'alarm-overview__popout__entry__title'}>
+                            No external power
+                        </div>
+                        <ul>
+                            <li className={'raised'}>
+                                <strong>16:56:22</strong>: {formatAlarmMessage(27, true, { settings: { RR: 20 }, calculatedValues: { BreathsPerMinute: 22 } })}
+                            </li>
+                        </ul>
+                    </div>
+                    <div className={'alarm-overview__popout__entry danger'}>
+                        <div className={'alarm-overview__popout__entry__title'}>
+                            Pressure not within thresholds
+                        </div>
+                        <ul>
+                            <li className={'resolved'}>
+                                <strong>17:01:22</strong>: Peak pressure at 42 cmH2O
+                            </li>
+                            <li className={'raised'}>
+                                <strong>16:56:22</strong>: {formatAlarmMessage(6, true, {
+                                    settings: {
+                                        PK: 30,
+                                        ADPK: 10,
+                                        VT: 250,
+                                        ADVT: 50,
+                                    },
+                                    calculatedValues: {
+                                        peakPressure: 42,
+                                        pressurePlateau: 18,
+                                        tidalVolume: 380,
+                                    },
+                                })}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
     );
 };
 
