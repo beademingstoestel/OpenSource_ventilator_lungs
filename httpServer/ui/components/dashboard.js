@@ -765,7 +765,7 @@ export default class Dashboard extends React.Component {
                                                 displayFunction={'toIERatio'}
                                                 decimal={1}
                                                 options={[
-                                                    0.250,
+                                                    0.200,
                                                     0.250,
                                                     0.333,
                                                     0.500,
@@ -773,6 +773,7 @@ export default class Dashboard extends React.Component {
                                                 minValue={minimumIE}
                                                 maxValue={maximumIE}
                                                 updateValue={this.state.updateSetting}
+                                                reverseButtons={true}
                                             />
                                         </div>
                                     </SingleValueDisplaySettingsOnly>
