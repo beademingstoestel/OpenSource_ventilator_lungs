@@ -129,6 +129,14 @@ $threedsize: 8;
                     border-right: 1px solid get-status-color('danger', 'lighter-10');
                 }
             }
+
+            &.warning {
+                border-right: 1px solid get-status-color('warning', 'lighter-10');
+                
+                &::after {
+                    border-right: 1px solid get-status-color('warning', 'lighter-10');
+                }
+            }
         }
     }
 
@@ -139,6 +147,14 @@ $threedsize: 8;
                 
                 &::after {
                     border-left: 1px solid get-status-color('danger', 'lighter-10');
+                }
+            }
+
+            &.warning {
+                border-left: 1px solid get-status-color('warning', 'lighter-10');
+                
+                &::after {
+                    border-left: 1px solid get-status-color('warning', 'lighter-10');
                 }
             }
         }
