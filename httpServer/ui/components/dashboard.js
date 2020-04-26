@@ -17,6 +17,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { modeToAbbreviation } from '../helpers/modes';
 
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
@@ -667,7 +668,7 @@ export default class Dashboard extends React.Component {
                     </div>
                     <div className="page-dashboard__machine-info">
                         <button className={'threed-btn base'} onClick={() => this.askActiveStateChange()}>
-                            <GearIcon size="md" /><span>PC-VL-PT</span>
+                            <GearIcon size="md" /><span>{ modeToAbbreviation(this.state.settings.MODE) }</span>
                         </button>
                         <button className={'threed-btn ' + (parseInt(this.state.settings.ACTIVE) === 2 ? 'danger' : 'success')}
                             onClick={() => this.askActiveStateChange()}>
