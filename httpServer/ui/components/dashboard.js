@@ -766,8 +766,11 @@ export default class Dashboard extends React.Component {
                                                 decimal={1}
                                                 options={[
                                                     0.200,
+                                                    0.222,
                                                     0.250,
+                                                    0.285,
                                                     0.333,
+                                                    0.400,
                                                     0.500,
                                                 ]}
                                                 minValue={minimumIE}
