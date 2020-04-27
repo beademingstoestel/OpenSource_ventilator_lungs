@@ -49,6 +49,10 @@ $threedsize: 8;
         }
     }
 
+    &.pressed.light-up {
+        color: get-brand-color('secondary');
+    }
+
     &.base {
         color: white;
         background-color: get-brand-color('primary', 'lighter-10');

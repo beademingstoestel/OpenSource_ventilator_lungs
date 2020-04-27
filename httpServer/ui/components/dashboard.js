@@ -10,7 +10,6 @@ import SaveIcon from '../components/icons/save';
 import GearIcon from '../components/icons/gear';
 import CaretIcon from '../components/icons/caret';
 import OnOffIcon from '../components/icons/onoff';
-import { Switch, OptionSwitch } from '../components/switch';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -23,6 +22,8 @@ import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
 import { toast } from 'react-toastify';
 import AlarmOverview from './alarm-overview';
+import Settings from './settings';
+import MessagingCenter from '../helpers/messaging';
 
 // eslint-disable-next-line no-unused-vars
 const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
@@ -87,6 +88,8 @@ export default class Dashboard extends React.Component {
             minTInhale: minimumTInhale,
             maxTInhale: maximumTInhale,
             maxPSupport: 35,
+            showSettings: false,
+            showAlarmSettings: false,
             settings: {
                 RR: 20,
                 VT: 400,
@@ -209,24 +212,6 @@ export default class Dashboard extends React.Component {
         } else {
             this.state.updateSetting('MODE', 0);
         }
-    }
-
-    triggersEnabled() {
-        return (this.state.settings.TS < 10000 && this.state.settings.TP < 10000);
-    }
-
-    async toggleTriggersEnabled(triggersEnabled) {
-        if (!triggersEnabled) {
-            await this.state.updateSetting('TS', 10000);
-            await this.state.updateSetting('TP', 10000);
-        } else {
-            await this.state.updateSetting('TS', 2.0);
-            await this.state.updateSetting('TP', 1.0);
-        }
-    }
-
-    volumeLimitingEnabled() {
-        return (this.state.settings.VT < 10000);
     }
 
     async toggleVolumeLimitingEnabled(volumeLimitingEnabled) {
@@ -601,12 +586,32 @@ export default class Dashboard extends React.Component {
                 lastVolume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
             });
         }, refreshRate);
+
+        MessagingCenter.subscribe('ShowAlarmSettings', this.alarmsShowSubscription.bind(this));
+        MessagingCenter.subscribe('ShowSettings', this.settingsShowSubscription.bind(this));
+    }
+
+    alarmsShowSubscription(show) {
+        this.setState({
+            showAlarmSettings: show,
+            showSettings: false,
+        });
+    }
+
+    settingsShowSubscription(show) {
+        this.setState({
+            showSettings: show,
+            showAlarmSettings: false,
+        });
     }
 
     async componentWillUnmount() {
         if (this.animationInterval) {
             clearInterval(this.animationInterval);
         }
+
+        MessagingCenter.unsubscribe('ShowAlarmSettings', this.alarmsShowSubscription.bind(this));
+        MessagingCenter.unsubscribe('ShowSettings', this.settingsShowSubscription.bind(this));
 
         try {
             await this.client.disconnect();
@@ -667,7 +672,7 @@ export default class Dashboard extends React.Component {
                         {new Date().toLocaleTimeString()}
                     </div>
                     <div className="page-dashboard__machine-info">
-                        <button className={'threed-btn base'} onClick={() => this.askActiveStateChange()}>
+                        <button className={cx('threed-btn base', 'light-up', { pressed: this.state.showSettings })} onClick={() => this.askActiveStateChange()}>
                             <GearIcon size="md" /><span>{ modeToAbbreviation(this.state.settings.MODE) }</span>
                         </button>
                         <button className={'threed-btn ' + (parseInt(this.state.settings.ACTIVE) === 2 ? 'danger' : 'success')}
@@ -720,6 +725,15 @@ export default class Dashboard extends React.Component {
 
                 <div className="page-dashboard__layout">
                     <div className="page-dashboard__layout__body">
+                        <div className={cx('page-dashboard__layout__body__full-settings', { 'popped-out': this.state.showSettings })}>
+                            <Settings
+                                settings={this.state.settings}
+                                updateSetting={this.state.updateSetting}
+                                minTInhale={this.state.minTInhale}
+                                maxTInhale={this.state.maxTInhale}
+                                maxPSupport={this.state.maxPSupport}>
+                            </Settings>
+                        </div>
                         <div className="page-dashboard__layout__body__measurements">
                             <div className="page-dashboard__layout__body__measurements__settings">
                                 <div>
