@@ -18,6 +18,7 @@ $b: 'page-dashboard';
 
         font-size: 1.5rem;
         line-height: 1.5rem;
+        z-index: 3;
     }
 
     &__timing-info {
@@ -61,12 +62,36 @@ $b: 'page-dashboard';
         &__body {
             display: flex;
             flex-direction: column;
-            padding: 1rem;
             flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+
+            &__full-settings {
+                height: 100%;
+                background-color: get-gray-color('lighter');
+                position: absolute;
+                z-index: 2;
+                padding: 1rem;
+                width: 60rem;
+                border-right: 1px solid get-gray-color('light');
+
+                box-shadow: 1px 0px 5px rgba(#000, 0.25);
+                left: -60rem;
+                transition: left 0.5s;
+                transition-timing-function: ease-in-out;
+
+                &.popped-out {
+                    left: 0rem;
+                }
+            }
 
             &__measurements {
                 display: flex;
                 flex-direction: row;
+                position: relative;
+                overflow: hidden;
+                padding: 1rem;
+                z-index: 1;
 
                 &__graphs {
                     flex-grow: 1;

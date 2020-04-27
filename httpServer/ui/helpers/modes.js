@@ -27,23 +27,15 @@ const booleansToMode = (isFlowTriggered, isPatientTriggered, isVolumeLimited) =>
 const modeToAbbreviation = (mode) => {
     const booleans = modeToBooleans(mode);
 
-    let abbreviation = 'PC';
-
     if (booleans.isVolumeLimited) {
-        abbreviation += '-VL';
+        return 'PRVC';
     }
 
-    if (!booleans.isPatientTriggered) {
-        abbreviation += '-NT';
-    } else {
-        if (booleans.isFlowTriggered) {
-            abbreviation += '-FT';
-        } else {
-            abbreviation += '-PT';
-        }
+    if (booleans.isPatientTriggered) {
+        return 'SIMV-PC';
     }
 
-    return abbreviation;
+    return 'PC';
 };
 
 const modeToString = (mode) => {

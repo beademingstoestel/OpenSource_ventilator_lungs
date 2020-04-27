@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import cx from 'classnames';
 import Link from 'next/link';
 import GaugeIcon from './icons/gauge';
@@ -12,8 +12,13 @@ import NetworkIcon from './icons/network';
 
 import HistoryIcon from './icons/history';
 
+import MessagingCenter from '../helpers/messaging';
+
 const MainSidebar = ({ className, ...other }) => {
     const { pathname: currentPath } = useRouter();
+
+    const [alarmsSelected, setAlarmsSelected] = useState(false);
+    const [settingsSelected, setSettingsSelected] = useState(false);
 
     const menuItems = [
         { path: '/', label: 'Dashboard', icon: <GraphIcon /> },
@@ -23,9 +28,37 @@ const MainSidebar = ({ className, ...other }) => {
         { path: '/logs', label: 'Logs', icon: <TerminalIcon /> },
     ];
 
+    useEffect(() => {
+        const alarmsShowSubscription = (show) => {
+            setAlarmsSelected(show);
+            setSettingsSelected(false);
+        };
+
+        const settingsShowSubscription = (show) => {
+            setAlarmsSelected(false);
+            setSettingsSelected(show);
+        };
+
+        MessagingCenter.subscribe('ShowAlarmSettings', alarmsShowSubscription);
+        MessagingCenter.subscribe('ShowSettings', settingsShowSubscription);
+
+        return () => {
+            MessagingCenter.unsubscribe('ShowAlarmSettings', alarmsShowSubscription);
+            MessagingCenter.unsubscribe('ShowSettings', settingsShowSubscription);
+        };
+    });
+
+    function toggleButton(label, currentValue) {
+        if (label === 'Alarms') {
+            MessagingCenter.send('ShowAlarmSettings', !currentValue);
+        } else {
+            MessagingCenter.send('ShowSettings', !currentValue);
+        }
+    }
+
     const settingsMenuItems = [
-        { label: 'Alarms', icon: <BellIcon />, isActive: false },
-        { label: 'Settings', icon: <GearIcon />, isActive: false },
+        { label: 'Alarms', icon: <BellIcon />, isActive: alarmsSelected, click: toggleButton },
+        { label: 'Settings', icon: <GearIcon />, isActive: settingsSelected, click: toggleButton },
     ];
 
     return (
@@ -33,14 +66,12 @@ const MainSidebar = ({ className, ...other }) => {
             {currentPath === '/' &&
                 <ul className="main-sidebar__menu main-sidebar__settings-menu">
                     {
-                        settingsMenuItems.map(({ label, icon, isActive }, index) => {
+                        settingsMenuItems.map(({ label, icon, isActive, click }, index) => {
                             return (
                                 <li className={cx('main-sidebar__menu-item', { 'is-active': isActive })} key={index}>
-                                    <Link href={'#'}>
-                                        <a className={cx('main-sidebar__menu-item__link', 'threed-btn', 'base', { pressed: false })}>
-                                            {icon} <span className="u-d-none-xs u-d-inline-xxl">{label}</span>
-                                        </a>
-                                    </Link>
+                                    <a className={cx('main-sidebar__menu-item__link', 'threed-btn', 'light-up', 'base', { pressed: isActive })} href="#" onClick={(e) => { e.preventDefault(); click(label, isActive); }}>
+                                        {icon} <span className="u-d-none-xs u-d-inline-xxl">{label}</span>
+                                    </a>
                                 </li>
                             );
                         })
@@ -53,7 +84,7 @@ const MainSidebar = ({ className, ...other }) => {
                         return (
                             <li className={cx('main-sidebar__menu-item', { 'is-active': currentPath === path })} key={index}>
                                 <Link href={path}>
-                                    <a className={cx('main-sidebar__menu-item__link', 'threed-btn', 'base', { pressed: currentPath === path })}>
+                                    <a className={cx('main-sidebar__menu-item__link', 'threed-btn', 'light-up', 'base', { pressed: currentPath === path })}>
                                         {icon} <span className="u-d-none-xs u-d-inline-xxl">{label}</span>
                                     </a>
                                 </Link>

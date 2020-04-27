@@ -128,9 +128,9 @@ export default class DataPlot extends React.Component {
             if (upperThreshold < this.props.maxY * 4) {
                 chartData.datasets.push({
                     label: 'upper threshold',
-                    borderColor: '#f6c23e',
+                    borderColor: '#e74a3b',
                     borderDash: [5, 5],
-                    borderWidth: 2,
+                    borderWidth: 3,
                     borderJoinStyle: 'round',
                     pointRadius: 0,
                     pointBorderWidth: 1,
@@ -143,9 +143,9 @@ export default class DataPlot extends React.Component {
 
             chartData.datasets.push({
                 label: 'lower threshold',
-                borderColor: '#f6c23e',
+                borderColor: '#e74a3b',
                 borderDash: [5, 5],
-                borderWidth: 2,
+                borderWidth: 3,
                 borderJoinStyle: 'round',
                 pointRadius: 0,
                 pointBorderWidth: 1,
