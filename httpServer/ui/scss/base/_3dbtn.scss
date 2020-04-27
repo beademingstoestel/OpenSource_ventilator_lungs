@@ -161,6 +161,14 @@ $threedsize: 8;
                     border-left: 1px solid get-status-color('warning', 'lighter-10');
                 }
             }
+
+            &.base {
+                border-left: 2px solid get-brand-color('base', 'lighter-10');
+                
+                &::after {
+                    border-left: 1px solid get-brand-color('base', 'lighter-10');
+                }
+            }
         }
     }
 

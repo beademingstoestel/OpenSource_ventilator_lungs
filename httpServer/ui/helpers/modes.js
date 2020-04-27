@@ -1,8 +1,8 @@
 const modeToBooleans = (mode) => {
     return {
         isFlowTriggered: (mode & 1) === 1,
-        isPatientTriggered: (mode & 2) === 1,
-        isVolumeLimited: (mode & 4) === 1,
+        isPatientTriggered: (mode & 2) === 2,
+        isVolumeLimited: (mode & 4) === 4,
     };
 };
 

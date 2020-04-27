@@ -605,6 +605,10 @@ export default class Dashboard extends React.Component {
         });
     }
 
+    showSettings(currentSettingsState) {
+        MessagingCenter.send('ShowSettings', !currentSettingsState);
+    }
+
     async componentWillUnmount() {
         if (this.animationInterval) {
             clearInterval(this.animationInterval);
@@ -672,7 +676,10 @@ export default class Dashboard extends React.Component {
                         {new Date().toLocaleTimeString()}
                     </div>
                     <div className="page-dashboard__machine-info">
-                        <button className={cx('threed-btn base', 'light-up', { pressed: this.state.showSettings })} onClick={() => this.askActiveStateChange()}>
+                        <button className={cx('threed-btn base', 'light-up', { pressed: this.state.showSettings })} onClick={(e) => {
+                            this.showSettings(this.state.showSettings);
+                            e.preventDefault();
+                        }}>
                             <GearIcon size="md" /><span>{ modeToAbbreviation(this.state.settings.MODE) }</span>
                         </button>
                         <button className={'threed-btn ' + (parseInt(this.state.settings.ACTIVE) === 2 ? 'danger' : 'success')}
@@ -731,7 +738,9 @@ export default class Dashboard extends React.Component {
                                 updateSetting={this.state.updateSetting}
                                 minTInhale={this.state.minTInhale}
                                 maxTInhale={this.state.maxTInhale}
-                                maxPSupport={this.state.maxPSupport}>
+                                maxPSupport={this.state.maxPSupport}
+                                hasDirtySettings={this.state.hasDirtySettings}
+                                saveSettings={this.saveSettings.bind(this)}>
                             </Settings>
                         </div>
                         <div className="page-dashboard__layout__body__measurements">
