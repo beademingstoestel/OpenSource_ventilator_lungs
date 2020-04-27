@@ -51,10 +51,6 @@ $b: 'single-value-display';
     flex-flow: row nowrap;
     align-items: center;
 
-    &:first-child {
-        margin-top: 0rem;
-    }
-
     &__controls {
         font-family: monospace;
         display: flex;
