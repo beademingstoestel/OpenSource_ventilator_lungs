@@ -56,7 +56,7 @@ const AlarmBitDefinitions = {
         level: 'danger',
     },
     6: {
-        message: 'Volume above upper limit',
+        message: 'Tidal volume above upper limit',
         negativeMessage: 'The tidal volume was at {0} ml which is {1} ml above the upper limit of {2} ml',
         positiveMessage: 'The tidal volume was within the limits at {0} ml',
         format: [
@@ -82,9 +82,39 @@ const AlarmBitDefinitions = {
         format: [],
         level: 'danger',
     },
-    9: { message: 'Alarm not defined' },
-    10: { message: 'Alarm not defined', ignore: true },
-    11: { message: 'Alarm not defined', ignore: true },
+    9: {
+        message: 'Tidal volume too low',
+        negativeMessage: 'The tidal volume was at {0} ml which is {1} ml below the limit of {2} ml',
+        positiveMessage: 'The tidal volume was within the limits at {0} ml',
+        format: [
+            math.compile('calculatedValues.tidalVolume'),
+            math.compile('settings.ADVT - calculatedValues.tidalVolume'),
+            math.compile('settings.ADVT'),
+        ],
+        level: 'danger',
+    },
+    10: {
+        message: 'FiO2 percentage below lower limit',
+        negativeMessage: 'The FiO2 percentage was at {0}% which is {1}% below the lower limit of {2}%',
+        positiveMessage: 'The FiO2 percentage was within the limits at {0}%',
+        format: [
+            math.compile('calculatedValues.fiO2 * 100'),
+            math.compile('((settings.FIO2 - settings.ADFIO2) - calculatedValues.fiO2) * 100'),
+            math.compile('(settings.FIO2 - settings.ADFIO2) * 100'),
+        ],
+        level: 'danger',
+    },
+    11: {
+        message: 'FiO2 percentage above upper limit',
+        negativeMessage: 'The FiO2 percentage was at {0}% which is {1}% above the upper limit of {2}%',
+        positiveMessage: 'The FiO2 percentage was within the limits at {0}%',
+        format: [
+            math.compile('calculatedValues.fiO2 * 100'),
+            math.compile('(calculatedValues.fiO2 - (settings.FIO2 + settings.ADFIO2)) * 100'),
+            math.compile('(settings.FIO2 + settings.ADFIO2) * 100'),
+        ],
+        level: 'danger',
+    },
     12: { message: 'Alarm not defined', ignore: true },
     13: { message: 'Alarm not defined', ignore: true },
     14: { message: 'Alarm not defined', ignore: true },
