@@ -16,7 +16,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { modeToAbbreviation } from '../helpers/modes';
+import { modeToAbbreviation, modeToBooleans } from '../helpers/modes';
 
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
@@ -24,6 +24,7 @@ import { toast } from 'react-toastify';
 import AlarmOverview from './alarm-overview';
 import Settings from './settings';
 import MessagingCenter from '../helpers/messaging';
+import Alarms from './alarms';
 
 // eslint-disable-next-line no-unused-vars
 const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
@@ -109,6 +110,7 @@ export default class Dashboard extends React.Component {
                 MT: 0,
                 RA: 0,
                 FIO2: 0.2,
+                ADFIO2: 0.1,
             },
             calculatedValues: {
                 IE: 0,
@@ -123,11 +125,25 @@ export default class Dashboard extends React.Component {
             hasDirtySettings: false,
             updateSetting: async (key, setting) => {
                 const settings = { ...this.state.settings };
+                const previousValue = settings[key];
                 settings[key] = setting;
                 this.dirtySettings[key] = setting;
 
                 // Special treatment for some of the items
-                if (key === 'PK') {
+                if (key === 'MODE') {
+                    const previousMode = modeToBooleans(previousValue);
+                    const currentMode = modeToBooleans(setting);
+
+                    if (currentMode.isVolumeLimited && !previousMode.isVolumeLimited) {
+                        // set the threshold thus that the minimum limit is the same as the minimum volume before
+                        settings.ADVT = Math.abs(settings.ADVT - settings.VT);
+                        this.dirtySettings.ADVT = settings.ADVT;
+                    } else if (!currentMode.isVolumeLimited && previousMode.isVolumeLimited) {
+                        // set the minimum volume equal to the previous lower limit
+                        settings.ADVT = Math.max(0, settings.VT - settings.ADVT);
+                        this.dirtySettings.ADVT = settings.ADVT;
+                    }
+                } else if (key === 'PK') {
                     // Peak pressure changed : adjust the psupport value if needed (must be <= to peak pressure)
                     if (settings.PS > settings.PK) {
                         settings.PS = settings.PK;
@@ -742,6 +758,17 @@ export default class Dashboard extends React.Component {
                                 hasDirtySettings={this.state.hasDirtySettings}
                                 saveSettings={this.saveSettings.bind(this)}>
                             </Settings>
+                        </div>
+                        <div className={cx('page-dashboard__layout__body__full-settings', { 'popped-out': this.state.showAlarmSettings })}>
+                            <Alarms
+                                settings={this.state.settings}
+                                updateSetting={this.state.updateSetting}
+                                minTInhale={this.state.minTInhale}
+                                maxTInhale={this.state.maxTInhale}
+                                maxPSupport={this.state.maxPSupport}
+                                hasDirtySettings={this.state.hasDirtySettings}
+                                saveSettings={this.saveSettings.bind(this)}>
+                            </Alarms>
                         </div>
                         <div className="page-dashboard__layout__body__measurements">
                             <div className="page-dashboard__layout__body__measurements__settings">
