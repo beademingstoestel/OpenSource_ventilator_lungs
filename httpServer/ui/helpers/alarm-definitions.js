@@ -9,7 +9,7 @@ const AlarmBitDefinitions = {
         negativeMessage: 'The RR value is at {0} breaths per minute instead of {1} breaths per minute',
         positiveMessage: 'The RR value is back to the normal {0} breaths per minute',
         format: [
-            math.compile('calculatedValues.BreathsPerMinute'),
+            math.compile('calculatedValues.respatoryRate'),
             math.compile('settings.RR'),
         ],
         level: 'danger',
@@ -39,7 +39,7 @@ const AlarmBitDefinitions = {
     3: { message: 'Alarm not defined', ignore: true },
     4: {
         message: 'Peep not within limits',
-        negativeeMessage: 'The PEEP value is not within the limits',
+        negativeMessage: 'The PEEP value is not within the limits',
         positiveMessage: 'The PEEP value is within the limits',
         format: [],
         level: 'danger',
@@ -216,7 +216,7 @@ const formatAlarmMessage = (alarmBit, isNegative, context) => {
 
     return message.replace(regex, (match, index) => {
         try {
-            return format[parseInt(index)].evaluate(context);
+            return format[parseInt(index)].evaluate(context).toFixed(2);
         } catch (e) {
             console.log(e);
             return match;
