@@ -215,7 +215,12 @@ const formatAlarmMessage = (alarmBit, isNegative, context) => {
     const format = AlarmBitDefinitions[alarmBit].format;
 
     return message.replace(regex, (match, index) => {
-        return format[parseInt(index)].evaluate(context);
+        try {
+            return format[parseInt(index)].evaluate(context);
+        } catch (e) {
+            console.log(e);
+            return match;
+        }
     });
 };
 

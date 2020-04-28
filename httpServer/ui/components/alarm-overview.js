@@ -31,7 +31,7 @@ const AlarmOverview = ({ className, ...other }) => {
 
             setAlarmCount(0);
             setAlarmLevel('warning');
-            setCurrentAlarms({});
+            setCurrentAlarms([]);
         } catch (e) {
             // todo: show error to the user
             console.log(e);
@@ -39,7 +39,7 @@ const AlarmOverview = ({ className, ...other }) => {
     }
 
     function addAlarm(newAlarm) {
-        const currentAlarms = currentAlarmsRef.current && isArray(currentAlarmsRef.current) ? [...currentAlarmsRef.current] : [];
+        const currentAlarms = [...currentAlarmsRef.current];
 
         let newAlarmCount = alarmCountRef.current;
         let shiftAlarm = newAlarm.data.raisedAlarms;
@@ -173,6 +173,7 @@ const AlarmOverview = ({ className, ...other }) => {
             }
 
             client.subscribe('/api/alarms', (alarm) => {
+                console.log(alarm);
                 addAlarm(alarm);
             });
         };
@@ -190,7 +191,6 @@ const AlarmOverview = ({ className, ...other }) => {
 
     function renderAlarms() {
         const elements = [];
-        console.log('render alarms');
 
         currentAlarms.forEach((alarm) => {
             elements.push(
