@@ -1,9 +1,9 @@
 FROM node:12
 
-ARG major_version=1
+ARG major_version=2
 ENV major_version=$major_version
 
-ARG minor_version=1
+ARG minor_version=0
 ENV minor_version=$minor_version
 
 ARG build_number=1
