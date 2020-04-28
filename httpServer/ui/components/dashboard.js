@@ -78,6 +78,7 @@ export default class Dashboard extends React.Component {
             lastPressure: 0,
             lastVolume: 0,
             lastBpmValue: 0,
+            lastFiO2Value: 0,
             pressureStatus: 'normal',
             volumeStatus: 'normal',
             bpmStatus: 'normal',
@@ -254,6 +255,7 @@ export default class Dashboard extends React.Component {
                 flowy: newPoint.value.flow,
                 triggery: newPoint.value.trigger,
                 pressurey: newPoint.value.pressure,
+                fiO2: newPoint.value.fiO2,
                 targetpressurey: newPoint.value.targetPressure,
                 volumey: newPoint.value.volume,
             });
@@ -598,6 +600,7 @@ export default class Dashboard extends React.Component {
                 volumeStatus: 'normal',
                 calculatedValues: { ...self.state.calculatedValues, ...self.calculatedValues },
                 lastBpmValue: 0,
+                lastFiO2Value: self.rawMeasurementsValues.length === 0 ? 0.2 : self.rawMeasurementsValues[self.rawMeasurementsValues.length - 1].fiO2,
                 lastPressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
                 lastVolume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
             });
@@ -924,9 +927,9 @@ export default class Dashboard extends React.Component {
                                 status={'normal'}>
                             </SingleValueDisplay>
                             <SingleValueDisplay
-                                name="I/E"
-                                value={this.state.calculatedValues.IE}
-                                displayFunction={'toIERatio'}
+                                name="FiO2"
+                                value={this.state.lastFiO2Value}
+                                displayFunction={(value, decimal) => (value * 100).toFixed(0) + '%'}
                                 decimal={1}
                                 status={'normal'}>
                             </SingleValueDisplay>
