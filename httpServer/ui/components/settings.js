@@ -44,17 +44,29 @@ const Settings = ({
                 <div className="threed-btn--horizontal-group">
                     <button className={cx('threed-btn', 'base', 'button-1', 'light-up', { pressed: !selectedModeSettings.isVolumeLimited && !selectedModeSettings.isPatientTriggered })}
                         onClick={() => setMode(selectedModeSettings.isFlowTriggered, false, false)}>
-                            PC
+                        PC
                     </button>
                     <button className={cx('threed-btn', 'base', 'button-2', 'light-up', { pressed: !selectedModeSettings.isVolumeLimited && selectedModeSettings.isPatientTriggered })}
                         onClick={() => setMode(selectedModeSettings.isFlowTriggered, true, false)}>
-                            SIMV-PC
+                        SIMV-PC
                     </button>
                     <button className={cx('threed-btn', 'base', 'button-3', 'light-up', { pressed: selectedModeSettings.isVolumeLimited })}
                         onClick={() => setMode(selectedModeSettings.isFlowTriggered, false, true)}>
-                            PRVC
+                        PRVC
                     </button>
                 </div>
+                {selectedModeSettings.isPatientTriggered &&
+                    <div className="threed-btn--horizontal-group">
+                        <button className={cx('threed-btn', 'base', 'button-1', 'light-up', { pressed: selectedModeSettings.isFlowTriggered })}
+                            onClick={() => setMode(true, true, false)}>
+                            flow
+                        </button>
+                        <button className={cx('threed-btn', 'base', 'button-2', 'light-up', { pressed: !selectedModeSettings.isFlowTriggered })}
+                            onClick={() => setMode(false, true, false)}>
+                            pressure
+                        </button>
+                    </div>
+                }
                 <button className={cx('threed-btn', 'save-button', 'success')}
                     onClick={(e) => saveSettings(e)}
                     disabled={!hasDirtySettings}>
@@ -86,17 +98,19 @@ const Settings = ({
                         maxValue={20}
                         updateValue={updateSetting}
                     />
-                    <SingleValueDisplaySettings
-                        name="Tidal volume (TV)"
-                        value={settings.VT}
-                        settingKey={'VT'}
-                        unit="mL"
-                        step={50}
-                        minValue={250}
-                        maxValue={800}
-                        decimal={false}
-                        updateValue={updateSetting}
-                    />
+                    {selectedModeSettings.isVolumeLimited &&
+                        <SingleValueDisplaySettings
+                            name="Tidal volume (TV)"
+                            value={settings.VT}
+                            settingKey={'VT'}
+                            unit="mL"
+                            step={50}
+                            minValue={250}
+                            maxValue={800}
+                            decimal={false}
+                            updateValue={updateSetting}
+                        />
+                    }
                     <SingleValueDisplaySettings
                         name="Set RR value"
                         value={settings.RR}
@@ -151,41 +165,63 @@ const Settings = ({
                         updateValue={updateSetting}
                     />
                     <SingleValueDisplaySettings
-                        name="Trigger sens."
-                        value={settings.TS}
-                        settingKey={'TS'}
+                        name="FiO2"
+                        value={settings.FIO2}
+                        settingKey={'FIO2'}
+                        displayFunction={(value, decimal) => (value * 100).toFixed(0) + '%'}
+                        unit="%oxygen"
                         decimal={2}
-                        unit='L/min'
                         step={0.1}
-                        minValue={0}
-                        maxValue={10}
-                        updateValue={updateSetting}
-                    />
-                    <SingleValueDisplaySettings
-                        name="Trigger sens."
-                        value={settings.TP}
-                        displayFunction={(value, decimal) => (settings.PP - settings.TP).toFixed(decimal)}
-                        reverseButtons={true}
-                        settingKey={'TP'}
-                        decimal={2}
-                        unit='cmH2O'
-                        step={0.1}
-                        minValue={-20}
-                        maxValue={settings.PP}
-                        updateValue={updateSetting}
-                    />
-                    <SingleValueDisplaySettings
-                        name="Psupport"
-                        value={settings.PS}
-                        settingKey={'PS'}
-                        unit="cmH2O"
-                        decimal={false}
-                        step={1}
-                        minValue={10}
-                        maxValue={maxPSupport}
+                        minValue={0.2}
+                        maxValue={1.0}
                         updateValue={updateSetting}
                     />
                 </SingleValueDisplaySettingsOnly>
+                {selectedModeSettings.isPatientTriggered &&
+                    <div>
+                        <SingleValueDisplaySettingsOnly>
+                            {selectedModeSettings.isFlowTriggered &&
+                                <SingleValueDisplaySettings
+                                    name="Trigger sens."
+                                    value={settings.TS}
+                                    settingKey={'TS'}
+                                    decimal={2}
+                                    unit='L/min'
+                                    step={0.1}
+                                    minValue={0}
+                                    maxValue={10}
+                                    updateValue={updateSetting}
+                                />
+                            }
+                            {!selectedModeSettings.isFlowTriggered &&
+                                <SingleValueDisplaySettings
+                                    name="Trigger sens."
+                                    value={settings.TP}
+                                    displayFunction={(value, decimal) => (settings.PP - settings.TP).toFixed(decimal)}
+                                    reverseButtons={true}
+                                    settingKey={'TP'}
+                                    decimal={2}
+                                    unit='cmH2O'
+                                    step={0.1}
+                                    minValue={-20}
+                                    maxValue={settings.PP}
+                                    updateValue={updateSetting}
+                                />
+                            }
+                            <SingleValueDisplaySettings
+                                name="Psupport"
+                                value={settings.PS}
+                                settingKey={'PS'}
+                                unit="cmH2O"
+                                decimal={false}
+                                step={1}
+                                minValue={10}
+                                maxValue={maxPSupport}
+                                updateValue={updateSetting}
+                            />
+                        </SingleValueDisplaySettingsOnly>
+                    </div>
+                }
             </div>
         </div>);
 };

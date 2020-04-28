@@ -37,10 +37,11 @@ $b: 'single-value-display';
         margin-top: -4px;
         padding: 8px 8px 0px 0px;
         align-items: flex-start;
+        justify-items: stretch;
         flex-wrap: wrap;
 
         > * {
-            flex: 1 1 calc(33% - 2rem);
+            flex: 0 1 calc(33% - 2rem);
         }
     }
 }
@@ -48,8 +49,9 @@ $b: 'single-value-display';
 .#{$b}-settings {
     margin: 1rem 0rem;
     display: flex;
-    flex-flow: row nowrap;
     align-items: center;
+
+    min-width: 33%;
 
     &__controls {
         font-family: monospace;
