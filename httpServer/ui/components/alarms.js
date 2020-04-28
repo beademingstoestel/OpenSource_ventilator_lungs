@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { Switch, OptionSwitch } from '../components/switch';
 import SaveIcon from './icons/save';
 import { modeToAbbreviation, modeToString, modeToBooleans, booleansToMode } from '../helpers/modes';
+import MessagingCenter from '../helpers/messaging';
 
 // eslint-disable-next-line no-unused-vars
 const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
@@ -33,11 +34,19 @@ const Alarms = ({
     return (
         <div className="settings">
             <div className="mode-select">
-                <button className={cx('threed-btn', 'save-button', 'success')}
-                    onClick={(e) => saveSettings(e)}
-                    disabled={!hasDirtySettings}>
-                    <SaveIcon /><span>Confirm</span>
-                </button>
+                {!hasDirtySettings &&
+                    <button className={cx('threed-btn', 'save-button', 'disabled')}
+                        onClick={(e) => { MessagingCenter.send('ShowSettings', false); }}>
+                        <span>Close</span>
+                    </button>
+                }
+                {hasDirtySettings &&
+                    <button className={cx('threed-btn', 'save-button', 'success')}
+                        onClick={(e) => { MessagingCenter.send('ShowSettings', false); saveSettings(e); }}
+                        disabled={!hasDirtySettings}>
+                        <SaveIcon /><span>Confirm</span>
+                    </button>
+                }
             </div>
             <div>
                 <SingleValueDisplaySettingsOnly>

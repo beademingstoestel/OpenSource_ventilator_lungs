@@ -56,6 +56,11 @@ const MainSidebar = ({ className, ...other }) => {
         }
     }
 
+    function hideSettingsAndAlarms() {
+        MessagingCenter.send('ShowAlarmSettings', false);
+        MessagingCenter.send('ShowSettings', false);
+    }
+
     const settingsMenuItems = [
         { label: 'Alarms', icon: <BellIcon />, isActive: alarmsSelected, click: toggleButton },
         { label: 'Settings', icon: <GearIcon />, isActive: settingsSelected, click: toggleButton },
@@ -84,7 +89,8 @@ const MainSidebar = ({ className, ...other }) => {
                         return (
                             <li className={cx('main-sidebar__menu-item', { 'is-active': currentPath === path })} key={index}>
                                 <Link href={path}>
-                                    <a className={cx('main-sidebar__menu-item__link', 'threed-btn', 'light-up', 'base', { pressed: currentPath === path })}>
+                                    <a className={cx('main-sidebar__menu-item__link', 'threed-btn', 'light-up', 'base', { pressed: currentPath === path })}
+                                        onClick={() => hideSettingsAndAlarms()}>
                                         {icon} <span className="u-d-none-xs u-d-inline-xxl">{label}</span>
                                     </a>
                                 </Link>
