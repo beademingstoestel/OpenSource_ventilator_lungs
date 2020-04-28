@@ -4,7 +4,8 @@ import cx from 'classnames';
 import dynamic from 'next/dynamic';
 import { Switch, OptionSwitch } from '../components/switch';
 import SaveIcon from './icons/save';
-import { modeToAbbreviation, modeToString, modeToBooleans, booleansToMode } from '../helpers/modes';
+import { modeToBooleans, booleansToMode } from '../helpers/modes';
+import MessagingCenter from '../helpers/messaging';
 
 // eslint-disable-next-line no-unused-vars
 const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
@@ -67,12 +68,65 @@ const Settings = ({
                         </button>
                     </div>
                 }
-                <button className={cx('threed-btn', 'save-button', 'success')}
-                    onClick={(e) => saveSettings(e)}
-                    disabled={!hasDirtySettings}>
-                    <SaveIcon /><span>Confirm</span>
-                </button>
+                {!hasDirtySettings &&
+                    <button className={cx('threed-btn', 'save-button', 'disabled')}
+                        onClick={(e) => { MessagingCenter.send('ShowSettings', false); } }>
+                        <span>Close</span>
+                    </button>
+                }
+                {hasDirtySettings &&
+                    <button className={cx('threed-btn', 'save-button', 'success')}
+                        onClick={(e) => { MessagingCenter.send('ShowSettings', false); saveSettings(e); } }
+                        disabled={!hasDirtySettings}>
+                        <SaveIcon /><span>Confirm</span>
+                    </button>
+                }
             </div>
+            {selectedModeSettings.isPatientTriggered &&
+                <div>
+                    <SingleValueDisplaySettingsOnly>
+                        {selectedModeSettings.isFlowTriggered &&
+                            <SingleValueDisplaySettings
+                                name="Trigger sens."
+                                value={settings.TS}
+                                settingKey={'TS'}
+                                decimal={2}
+                                unit='L/min'
+                                step={0.1}
+                                minValue={0}
+                                maxValue={10}
+                                updateValue={updateSetting}
+                            />
+                        }
+                        {!selectedModeSettings.isFlowTriggered &&
+                            <SingleValueDisplaySettings
+                                name="Trigger sens."
+                                value={settings.TP}
+                                displayFunction={(value, decimal) => (settings.PP - settings.TP).toFixed(decimal)}
+                                reverseButtons={true}
+                                settingKey={'TP'}
+                                decimal={2}
+                                unit='cmH2O'
+                                step={0.1}
+                                minValue={-20}
+                                maxValue={settings.PP}
+                                updateValue={updateSetting}
+                            />
+                        }
+                        <SingleValueDisplaySettings
+                            name="Psupport"
+                            value={settings.PS}
+                            settingKey={'PS'}
+                            unit="cmH2O"
+                            decimal={false}
+                            step={1}
+                            minValue={10}
+                            maxValue={maxPSupport}
+                            updateValue={updateSetting}
+                        />
+                    </SingleValueDisplaySettingsOnly>
+                </div>
+            }
             <div>
                 <SingleValueDisplaySettingsOnly>
                     <SingleValueDisplaySettings
@@ -177,51 +231,6 @@ const Settings = ({
                         updateValue={updateSetting}
                     />
                 </SingleValueDisplaySettingsOnly>
-                {selectedModeSettings.isPatientTriggered &&
-                    <div>
-                        <SingleValueDisplaySettingsOnly>
-                            {selectedModeSettings.isFlowTriggered &&
-                                <SingleValueDisplaySettings
-                                    name="Trigger sens."
-                                    value={settings.TS}
-                                    settingKey={'TS'}
-                                    decimal={2}
-                                    unit='L/min'
-                                    step={0.1}
-                                    minValue={0}
-                                    maxValue={10}
-                                    updateValue={updateSetting}
-                                />
-                            }
-                            {!selectedModeSettings.isFlowTriggered &&
-                                <SingleValueDisplaySettings
-                                    name="Trigger sens."
-                                    value={settings.TP}
-                                    displayFunction={(value, decimal) => (settings.PP - settings.TP).toFixed(decimal)}
-                                    reverseButtons={true}
-                                    settingKey={'TP'}
-                                    decimal={2}
-                                    unit='cmH2O'
-                                    step={0.1}
-                                    minValue={-20}
-                                    maxValue={settings.PP}
-                                    updateValue={updateSetting}
-                                />
-                            }
-                            <SingleValueDisplaySettings
-                                name="Psupport"
-                                value={settings.PS}
-                                settingKey={'PS'}
-                                unit="cmH2O"
-                                decimal={false}
-                                step={1}
-                                minValue={10}
-                                maxValue={maxPSupport}
-                                updateValue={updateSetting}
-                            />
-                        </SingleValueDisplaySettingsOnly>
-                    </div>
-                }
             </div>
         </div>);
 };
