@@ -874,13 +874,15 @@ export default class Dashboard extends React.Component {
                                             minY={-5}
                                             maxY={40}
                                             peak={this.state.settings.PK}
-                                            threshold={this.state.settings.ADPK} />
+                                            threshold={this.state.settings.ADPK}
+                                            onlyLowerLimit={false} />
                                         <DataPlot title='Flow (L/min)'
                                             data={this.state.flowDataPlots}
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
                                             minY={-100}
-                                            maxY={100} />
+                                            maxY={100} 
+                                            onlyLowerLimit={false} />
                                         <DataPlot title='Volume (mL)'
                                             data={this.state.volumeValues}
                                             multipleDatasets={true}
@@ -888,7 +890,8 @@ export default class Dashboard extends React.Component {
                                             minY={-50}
                                             maxY={800}
                                             peak={this.state.settings.VT}
-                                            threshold={this.state.settings.ADVT} />
+                                            threshold={this.state.settings.ADVT}
+                                            onlyLowerLimit={!modeToBooleans(this.state.settings.MODE).isVolumeLimited} />
                                     </div>
                                 </div>
                             </div>

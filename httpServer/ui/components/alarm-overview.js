@@ -4,9 +4,10 @@ import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 import { Client } from '@hapi/nes/lib/client';
 import { AlarmBitDefinitions, formatAlarmMessage } from '../helpers/alarm-definitions';
 import HistoryIcon from './icons/history';
+import { isArray } from 'util';
 
 const AlarmOverview = ({ className, ...other }) => {
-    const currentAlarmsRef = useRef({});
+    const currentAlarmsRef = useRef([]);
     const alarmCountRef = useRef(0);
     const alarmLevelRef = useRef('warning');
     const [currentAlarms, setCurrentAlarms] = useState([]);
@@ -38,7 +39,7 @@ const AlarmOverview = ({ className, ...other }) => {
     }
 
     function addAlarm(newAlarm) {
-        const currentAlarms = [...currentAlarmsRef.current];
+        const currentAlarms = currentAlarmsRef.current && isArray(currentAlarmsRef.current) ? [...currentAlarmsRef.current] : [];
 
         let newAlarmCount = alarmCountRef.current;
         let shiftAlarm = newAlarm.data.raisedAlarms;
