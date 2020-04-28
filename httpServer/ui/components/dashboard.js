@@ -551,7 +551,7 @@ export default class Dashboard extends React.Component {
             ];
 
             // show the trigger in the right graph depending on the mode
-            if (this.state.settings.MODE === 1) {
+            if ((this.state.settings.MODE & 1) === 0) {
                 newPressureDataPlots.push(
                     {
                         data: newTriggerValues,

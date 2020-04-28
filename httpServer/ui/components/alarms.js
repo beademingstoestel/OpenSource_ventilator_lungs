@@ -79,7 +79,7 @@ const Alarms = ({
                         unit="mL"
                         step={10}
                         minValue={0}
-                        maxValue={200}
+                        maxValue={800}
                         decimal={false}
                         updateValue={updateSetting}
                     />
