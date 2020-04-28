@@ -57,23 +57,20 @@ export default class DataPlot extends React.Component {
             }
         }
 
-        if (this.props.peak) {
-            // when setting the peaks to ridiculous values (for example no volume control) don't show it on the graph
-            if (this.props.peak < this.props.maxY * 4) {
-                chartData.datasets.push({
-                    label: 'set value',
-                    borderColor: '#1cc88a',
-                    borderDash: [10, 5],
-                    borderWidth: 2,
-                    borderJoinStyle: 'round',
-                    pointRadius: 0,
-                    pointBorderWidth: 1,
-                    lineTension: 0,
-                    data: [{ x: 0, y: this.props.peak }, { x: this.props.timeScale, y: this.props.peak }],
-                    showLine: true,
-                    fill: false,
-                });
-            }
+        if (this.props.peak && !this.props.onlyLowerLimit) {
+            chartData.datasets.push({
+                label: 'set value',
+                borderColor: '#1cc88a',
+                borderDash: [10, 5],
+                borderWidth: 2,
+                borderJoinStyle: 'round',
+                pointRadius: 0,
+                pointBorderWidth: 1,
+                lineTension: 0,
+                data: [{ x: 0, y: this.props.peak }, { x: this.props.timeScale, y: this.props.peak }],
+                showLine: true,
+                fill: false,
+            });
         }
 
         if (this.props.breathingCycleStart) {
@@ -122,23 +119,28 @@ export default class DataPlot extends React.Component {
         }
 
         if (this.props.threshold) {
-            const upperThreshold = parseInt(this.props.peak) + parseInt(this.props.threshold);
-            const lowerThreshold = parseInt(this.props.peak) - parseInt(this.props.threshold);
+            let lowerThreshold = parseInt(this.props.peak) - parseInt(this.props.threshold);
+            if (this.props.onlyLowerLimit) {
+                lowerThreshold = parseInt(this.props.threshold);
+            }
 
-            if (upperThreshold < this.props.maxY * 4) {
-                chartData.datasets.push({
-                    label: 'upper threshold',
-                    borderColor: '#e74a3b',
-                    borderDash: [5, 5],
-                    borderWidth: 3,
-                    borderJoinStyle: 'round',
-                    pointRadius: 0,
-                    pointBorderWidth: 1,
-                    lineTension: 0,
-                    data: [{ x: 0, y: upperThreshold }, { x: this.props.timeScale, y: upperThreshold }],
-                    showLine: true,
-                    fill: false,
-                });
+            if (!this.props.onlyLowerLimit) {
+                const upperThreshold = parseInt(this.props.peak) + parseInt(this.props.threshold);
+                if (upperThreshold < this.props.maxY * 4) {
+                    chartData.datasets.push({
+                        label: 'upper threshold',
+                        borderColor: '#e74a3b',
+                        borderDash: [5, 5],
+                        borderWidth: 3,
+                        borderJoinStyle: 'round',
+                        pointRadius: 0,
+                        pointBorderWidth: 1,
+                        lineTension: 0,
+                        data: [{ x: 0, y: upperThreshold }, { x: this.props.timeScale, y: upperThreshold }],
+                        showLine: true,
+                        fill: false,
+                    });
+                }
             }
 
             chartData.datasets.push({

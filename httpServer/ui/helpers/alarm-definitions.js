@@ -119,7 +119,7 @@ const AlarmBitDefinitions = {
     13: { message: 'Alarm not defined', ignore: true },
     14: { message: 'Alarm not defined', ignore: true },
     15: { message: 'Alarm not defined', ignore: true },
-    16: { message: 'Alarm not defined', ignore: true },
+    16: { message: 'FIO2 not within bounds (arduino)', redundantWith: 11 },
     17: { message: 'Pressure not within thresholds (arduino)', redundantWith: 5 },
     18: { message: 'Volume not within thresholds (arduino)', redundantWith: 6, ignore: true },
     19: { message: 'alarm not defined', ignore: true },
