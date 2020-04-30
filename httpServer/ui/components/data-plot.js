@@ -57,7 +57,7 @@ export default class DataPlot extends React.Component {
             }
         }
 
-        if (this.props.peak && !this.props.onlyLowerLimit) {
+        if (this.props.peak) {
             chartData.datasets.push({
                 label: 'set value',
                 borderColor: '#1cc88a',
@@ -118,31 +118,7 @@ export default class DataPlot extends React.Component {
             });
         }
 
-        if (this.props.threshold) {
-            let lowerThreshold = parseInt(this.props.peak) - parseInt(this.props.threshold);
-            if (this.props.onlyLowerLimit) {
-                lowerThreshold = parseInt(this.props.threshold);
-            }
-
-            if (!this.props.onlyLowerLimit) {
-                const upperThreshold = parseInt(this.props.peak) + parseInt(this.props.threshold);
-                if (upperThreshold < this.props.maxY * 4) {
-                    chartData.datasets.push({
-                        label: 'upper threshold',
-                        borderColor: '#e74a3b',
-                        borderDash: [5, 5],
-                        borderWidth: 3,
-                        borderJoinStyle: 'round',
-                        pointRadius: 0,
-                        pointBorderWidth: 1,
-                        lineTension: 0,
-                        data: [{ x: 0, y: upperThreshold }, { x: this.props.timeScale, y: upperThreshold }],
-                        showLine: true,
-                        fill: false,
-                    });
-                }
-            }
-
+        if (this.props.thresholdLow) {
             chartData.datasets.push({
                 label: 'lower threshold',
                 borderColor: '#e74a3b',
@@ -152,7 +128,23 @@ export default class DataPlot extends React.Component {
                 pointRadius: 0,
                 pointBorderWidth: 1,
                 lineTension: 0,
-                data: [{ x: 0, y: lowerThreshold }, { x: this.props.timeScale, y: lowerThreshold }],
+                data: [{ x: 0, y: this.props.thresholdLow }, { x: this.props.timeScale, y: this.props.thresholdLow }],
+                showLine: true,
+                fill: false,
+            });
+        }
+
+        if (this.props.thresholdHigh) {
+            chartData.datasets.push({
+                label: 'uppder threshold',
+                borderColor: '#e74a3b',
+                borderDash: [5, 5],
+                borderWidth: 3,
+                borderJoinStyle: 'round',
+                pointRadius: 0,
+                pointBorderWidth: 1,
+                lineTension: 0,
+                data: [{ x: 0, y: this.props.thresholdHigh }, { x: this.props.timeScale, y: this.props.thresholdHigh }],
                 showLine: true,
                 fill: false,
             });

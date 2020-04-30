@@ -6,8 +6,8 @@ const math = create(all, config);
 const AlarmBitDefinitions = {
     0: {
         message: 'RR too low',
-        negativeMessage: 'The RR value is at {0} breaths per minute instead of {1} breaths per minute',
-        positiveMessage: 'The RR value is back to the normal {0} breaths per minute',
+        negativeMessage: 'The respiratory rate is at {0} breaths per minute instead of {1} breaths per minute',
+        positiveMessage: 'The respiratory rate is back to the normal {0} breaths per minute',
         format: [
             math.compile('calculatedValues.respatoryRate'),
             math.compile('settings.RR'),
@@ -20,8 +20,8 @@ const AlarmBitDefinitions = {
         positiveMessage: 'The pressure was within the limits at {0} cmH2O',
         format: [
             math.compile('min(calculatedValues.peakPressure, calculatedValues.pressurePlateau)'),
-            math.compile('(settings.PK - settings.ADPK) - min(calculatedValues.peakPressure, calculatedValues.pressurePlateau)'),
-            math.compile('(settings.PK - settings.ADPK)'),
+            math.compile('settings.PKLOWLIMIT - min(calculatedValues.peakPressure, calculatedValues.pressurePlateau)'),
+            math.compile('settings.PKLOWLIMIT'),
         ],
         level: 'danger',
     },
@@ -50,8 +50,8 @@ const AlarmBitDefinitions = {
         positiveMessage: 'The pressure was within the limits at {0} cmH2O',
         format: [
             math.compile('max(calculatedValues.peakPressure, calculatedValues.pressurePlateau)'),
-            math.compile('max(calculatedValues.peakPressure, calculatedValues.pressurePlateau) - (settings.PK + settings.ADPK)'),
-            math.compile('(settings.PK + settings.ADPK)'),
+            math.compile('max(calculatedValues.peakPressure, calculatedValues.pressurePlateau) - settings.PKHIGHLIMIT'),
+            math.compile('settings.PKHIGHLIMIT'),
         ],
         level: 'danger',
     },
@@ -115,7 +115,16 @@ const AlarmBitDefinitions = {
         ],
         level: 'danger',
     },
-    12: { message: 'Alarm not defined', ignore: true },
+    12: {
+        message: 'Respiratory rate too high',
+        negativeMessage: 'The respiratory rate is at {0} breaths per minute instead which is above the upper limit of {1} breaths per minute',
+        positiveMessage: 'The respiratory rate is back to the normal {0} breaths per minute',
+        format: [
+            math.compile('calculatedValues.respatoryRate'),
+            math.compile('settings.RRHIGHLIMIT'),
+        ],
+        level: 'danger',
+    },
     13: { message: 'Alarm not defined', ignore: true },
     14: { message: 'Alarm not defined', ignore: true },
     15: { message: 'Alarm not defined', ignore: true },

@@ -94,6 +94,7 @@ export default class Dashboard extends React.Component {
             showAlarmSettings: false,
             settings: {
                 RR: 20,
+                RRHIGHLIMIT: 30,
                 VT: 400,
                 PK: 35,
                 TS: 0,
@@ -104,6 +105,8 @@ export default class Dashboard extends React.Component {
                 PS: 35,
                 RP: 0.5,
                 ADPK: 10,
+                PKHIGHLIMIT: 40,
+                PKLOWLIMIT: 20,
                 ADVT: 0,
                 ADPP: 0,
                 MODE: 0,
@@ -118,6 +121,8 @@ export default class Dashboard extends React.Component {
                 volumePerMinute: 0,
                 respatoryRate: 0,
                 pressurePlateau: 0,
+                lungCompliance: 0,
+                lungResistance: 0,
                 breathingCycleStart: null,
                 exhaleMoment: null,
                 tidalVolume: 0,
@@ -151,7 +156,23 @@ export default class Dashboard extends React.Component {
                         this.dirtySettings.PS = settings.PS;
                     }
 
+                    if (settings.PKLOWLIMIT > settings.PK - 5) {
+                        settings.PKLOWLIMIT = settings.PK - 5;
+                        this.dirtySettings.PKLOWLIMIT = settings.PKLOWLIMIT;
+                    }
+
+                    if (settings.PKHIGHLIMIT < settings.PK + 5) {
+                        settings.PKHIGHLIMIT = settings.PK + 5;
+                        this.dirtySettings.PKHIGHLIMIT = settings.PKHIGHLIMIT;
+                    }
+
+                    settings.ADPK = settings.PKHIGHLIMIT - settings.PK;
+                    this.dirtySettings.ADPK = settings.ADPK;
+
                     this.setState({ maxPSupport: settings.PK }); // adjust the maximum allowed in any case
+                } else if (key === 'PKHIGHLIMIT') {
+                    settings.ADPK = settings.PKHIGHLIMIT - settings.PK;
+                    this.dirtySettings.ADPK = settings.ADPK;
                 } else if (key === 'RR') {
                     // Respiratory rate changed : keep I/E, but change T/Inhale
                     settings.TI = this.computeTInhale(settings.RR, settings.IE);
@@ -161,6 +182,11 @@ export default class Dashboard extends React.Component {
                         maxTInhale: Math.min(maximumTInhale, this.computeTInhale(settings.RR, maximumIE)),
                         minTInhale: Math.max(minimumTInhale, this.computeTInhale(settings.RR, minimumIE)),
                     });
+
+                    if (settings.RRHIGHLIMIT < settings.RR) {
+                        settings.RRHIGHLIMIT = settings.RR;
+                        this.dirtySettings.RRHIGHLIMIT = settings.RRHIGHLIMIT;
+                    }
 
                     // console.log("RR Changed to " + settings["RR"] + ", TI adjusted to " + settings["TI"]);
                 } else if (key === 'IE') {
@@ -877,24 +903,23 @@ export default class Dashboard extends React.Component {
                                             minY={-5}
                                             maxY={40}
                                             peak={this.state.settings.PK}
-                                            threshold={this.state.settings.ADPK}
-                                            onlyLowerLimit={false} />
+                                            thresholdLow={this.state.settings.PKLOWLIMIT}
+                                            thresholdHigh={this.state.settings.PKHIGHLIMIT} />
                                         <DataPlot title='Flow (L/min)'
                                             data={this.state.flowDataPlots}
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
                                             minY={-100}
-                                            maxY={100} 
-                                            onlyLowerLimit={false} />
+                                            maxY={100} />
                                         <DataPlot title='Volume (mL)'
                                             data={this.state.volumeValues}
                                             multipleDatasets={true}
                                             timeScale={this.state.xLengthMs / 1000.0}
                                             minY={-50}
                                             maxY={800}
-                                            peak={this.state.settings.VT}
-                                            threshold={this.state.settings.ADVT}
-                                            onlyLowerLimit={!modeToBooleans(this.state.settings.MODE).isVolumeLimited} />
+                                            peak={modeToBooleans(this.state.settings.MODE).isVolumeLimited ? this.state.settings.VT : null}
+                                            thresholdLow={modeToBooleans(this.state.settings.MODE).isVolumeLimited ? this.state.settings.VT - this.state.settings.ADVT : this.state.settings.ADVT}
+                                            thresholdHigh={modeToBooleans(this.state.settings.MODE).isVolumeLimited ? this.state.settings.VT + this.state.settings.ADVT : null} />
                                     </div>
                                 </div>
                             </div>

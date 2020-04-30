@@ -51,14 +51,14 @@ const Alarms = ({
             <div>
                 <SingleValueDisplaySettingsOnly>
                     <SingleValueDisplaySettings
-                        name="Alarm limits PK"
-                        value={settings.ADPK}
+                        name="Upper limit PK"
+                        value={settings.PKHIGHLIMIT}
                         unit="cmH2O"
-                        settingKey={'ADPK'}
+                        settingKey={'PKHIGHLIMIT'}
                         decimal={false}
                         step={1}
-                        minValue={0}
-                        maxValue={35}
+                        minValue={settings.PK + 5}
+                        maxValue={90}
                         updateValue={updateSetting}
                     />
                     <SingleValueDisplaySettings
@@ -84,6 +84,17 @@ const Alarms = ({
                         updateValue={updateSetting}
                     />
                     <SingleValueDisplaySettings
+                        name="Lower limit PK"
+                        value={settings.PKLOWLIMIT}
+                        unit="cmH2O"
+                        settingKey={'PKLOWLIMIT'}
+                        decimal={false}
+                        step={1}
+                        minValue={0}
+                        maxValue={settings.PK - 5}
+                        updateValue={updateSetting}
+                    />
+                    <SingleValueDisplaySettings
                         name="Alarm limits FiO2"
                         value={settings.ADFIO2}
                         settingKey={'ADFIO2'}
@@ -93,6 +104,17 @@ const Alarms = ({
                         step={0.1}
                         minValue={0.1}
                         maxValue={0.5}
+                        updateValue={updateSetting}
+                    />
+                    <SingleValueDisplaySettings
+                        name="Hyperventilation limit"
+                        value={settings.RRHIGHLIMIT}
+                        settingKey={'RRHIGHLIMIT'}
+                        unit="bpm"
+                        decimal={false}
+                        step={1}
+                        minValue={settings.RR}
+                        maxValue={60}
                         updateValue={updateSetting}
                     />
                 </SingleValueDisplaySettingsOnly>
