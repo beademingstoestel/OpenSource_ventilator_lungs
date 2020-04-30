@@ -25,9 +25,7 @@ import AlarmOverview from './alarm-overview';
 import Settings from './settings';
 import MessagingCenter from '../helpers/messaging';
 import Alarms from './alarms';
-
-// eslint-disable-next-line no-unused-vars
-const SingleValueDisplay = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplay), { ssr: false });
+import CurrentValues from './current-values';
 
 // eslint-disable-next-line no-unused-vars
 const SingleValueDisplaySettings = dynamic(() => import('../components/single-value-display').then(mod => mod.SingleValueDisplaySettings), { ssr: false });
@@ -54,11 +52,10 @@ export default class Dashboard extends React.Component {
     dirtySettings = {};
     previousSettings = {};
     calculatedValues = {
-        volumePerMinute: 0,
-        pressurePlateau: 0,
-        tidalVolume: 0,
-        bpm: 0,
-        respatoryRate: 0,
+        volumePerMinute: 5,
+        pressurePlateau: 10,
+        tidalVolume: 2,
+        respatoryRate: 18,
         IE: 0,
     };
 
@@ -75,10 +72,12 @@ export default class Dashboard extends React.Component {
             flowDataPlots: [],
             volumeValues: [],
             xLengthMs: defaultXRange,
-            lastPressure: 0,
-            lastVolume: 0,
-            lastBpmValue: 0,
-            lastFiO2Value: 0,
+            currentValues: {
+                pressure: 10,
+                volume: 5,
+                bpmValue: 20,
+                fiO2Value: 0.21,
+            },
             pressureStatus: 'normal',
             volumeStatus: 'normal',
             bpmStatus: 'normal',
@@ -119,15 +118,15 @@ export default class Dashboard extends React.Component {
                 ADFIO2: 0.1,
             },
             calculatedValues: {
-                IE: 0,
-                volumePerMinute: 0,
-                respatoryRate: 0,
-                pressurePlateau: 0,
-                lungCompliance: 0,
-                lungResistance: 0,
+                IE: 20,
+                volumePerMinute: 10,
+                respatoryRate: 10,
+                pressurePlateau: 10,
+                lungCompliance: 10,
+                lungResistance: 10,
                 breathingCycleStart: null,
                 exhaleMoment: null,
-                tidalVolume: 0,
+                tidalVolume: 5,
                 breathingCycleEnd: null,
             },
             hasDirtySettings: false,
@@ -654,10 +653,12 @@ export default class Dashboard extends React.Component {
                 bpmStatus: 'normal',
                 volumeStatus: 'normal',
                 calculatedValues: { ...self.state.calculatedValues, ...self.calculatedValues },
-                lastBpmValue: 0,
-                lastFiO2Value: self.rawMeasurementsValues.length === 0 ? 0.2 : self.rawMeasurementsValues[self.rawMeasurementsValues.length - 1].fiO2,
-                lastPressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
-                lastVolume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
+                currentValues: {
+                    bpmValue: 0,
+                    fiO2Value: self.rawMeasurementsValues.length === 0 ? 0.2 : self.rawMeasurementsValues[self.rawMeasurementsValues.length - 1].fiO2,
+                    pressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
+                    volume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
+                },
             });
         }, refreshRate);
 
@@ -955,39 +956,8 @@ export default class Dashboard extends React.Component {
                         </div>
                     </div>
                     <div className="page-dashboard__layout__sidebar">
-                        <div>
-                            <SingleValueDisplay
-                                name="Pressure<br />Plat"
-                                value={this.state.calculatedValues.pressurePlateau}
-                                decimal={1}
-                                status={'normal'}
-                            ></SingleValueDisplay>
-                            <SingleValueDisplay
-                                name="Respiratory<br />rate"
-                                value={this.state.calculatedValues.respatoryRate}
-                                decimal={this.state.calculatedValues.respatoryRate < 10 ? 2 : 1}
-                                status={'normal'}
-                            ></SingleValueDisplay>
-                            <SingleValueDisplay
-                                name="Tidal<br />volume (mL)"
-                                value={this.state.calculatedValues.tidalVolume}
-                                decimal={false}
-                                status={'normal'}>
-                            </SingleValueDisplay>
-                            <SingleValueDisplay
-                                name="Delivered<br />volume (L/min)"
-                                value={this.state.calculatedValues.volumePerMinute}
-                                decimal={this.state.calculatedValues.volumePerMinute < 10 ? 2 : 1}
-                                status={'normal'}>
-                            </SingleValueDisplay>
-                            <SingleValueDisplay
-                                name="FiO2"
-                                value={this.state.lastFiO2Value}
-                                displayFunction={(value, decimal) => (value * 100).toFixed(0) + '%'}
-                                decimal={1}
-                                status={'normal'}>
-                            </SingleValueDisplay>
-                        </div>
+                        <CurrentValues calculatedValues={this.state.calculatedValues}
+                            currentValues={this.state.currentValues} />
                     </div>
                 </div>
             </div>
