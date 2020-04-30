@@ -218,7 +218,7 @@ const Settings = ({
                         unit="sec"
                         decimal={1}
                         step={0.1}
-                        minValue={0.3}
+                        minValue={0.0}
                         maxValue={1.0}
                         updateValue={updateSetting}
                     />
