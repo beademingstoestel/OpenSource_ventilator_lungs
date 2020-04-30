@@ -147,10 +147,10 @@ $b: 'page-dashboard';
         &__sidebar {
             position: relative;
             padding: 0;
+            background-color: get-gray-color('lighter');
             border-left: 1px solid get-gray-color('light');
             flex-grow: 0;
             width: 12rem;
-            overflow-x: hidden;
             text-align: end;
         }
     }

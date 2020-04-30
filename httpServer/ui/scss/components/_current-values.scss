@@ -1,0 +1,28 @@
+$b: 'current-values';
+
+.#{$b} {
+    position: relative;
+
+    &__values {
+        overflow-x: hidden;
+    }
+
+    &__toggle-button {
+        height: 3rem;
+        width: 3rem;
+        margin-right: 1rem;
+    }
+
+    &__settings {
+        background-color: get-gray-color('lighter');
+        position: absolute;
+        z-index: 2;
+        left: 100%;
+        top: 0px;        
+
+        &.visible {
+            
+            box-shadow: 1px 0px 5px rgba(#000, 0.25);
+        }
+    }
+}
