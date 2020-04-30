@@ -94,7 +94,7 @@ export default class Dashboard extends React.Component {
             showAlarmSettings: false,
             settings: {
                 RR: 20,
-                RRHIGHLIMIT: 30,
+                HRR: 30,
                 VT: 400,
                 PK: 35,
                 TS: 0,
@@ -105,8 +105,8 @@ export default class Dashboard extends React.Component {
                 PS: 35,
                 RP: 0.5,
                 ADPK: 10,
-                PKHIGHLIMIT: 40,
-                PKLOWLIMIT: 20,
+                HPK: 40,
+                LPK: 20,
                 ADVT: 0,
                 ADPP: 0,
                 MODE: 0,
@@ -156,22 +156,22 @@ export default class Dashboard extends React.Component {
                         this.dirtySettings.PS = settings.PS;
                     }
 
-                    if (settings.PKLOWLIMIT > settings.PK - 5) {
-                        settings.PKLOWLIMIT = settings.PK - 5;
-                        this.dirtySettings.PKLOWLIMIT = settings.PKLOWLIMIT;
+                    if (settings.LPK > settings.PK - 5) {
+                        settings.LPK = settings.PK - 5;
+                        this.dirtySettings.LPK = settings.LPK;
                     }
 
-                    if (settings.PKHIGHLIMIT < settings.PK + 5) {
-                        settings.PKHIGHLIMIT = settings.PK + 5;
-                        this.dirtySettings.PKHIGHLIMIT = settings.PKHIGHLIMIT;
+                    if (settings.HPK < settings.PK + 5) {
+                        settings.HPK = settings.PK + 5;
+                        this.dirtySettings.HPK = settings.HPK;
                     }
 
-                    settings.ADPK = settings.PKHIGHLIMIT - settings.PK;
+                    settings.ADPK = settings.HPK - settings.PK;
                     this.dirtySettings.ADPK = settings.ADPK;
 
                     this.setState({ maxPSupport: settings.PK }); // adjust the maximum allowed in any case
-                } else if (key === 'PKHIGHLIMIT') {
-                    settings.ADPK = settings.PKHIGHLIMIT - settings.PK;
+                } else if (key === 'HPK') {
+                    settings.ADPK = settings.HPK - settings.PK;
                     this.dirtySettings.ADPK = settings.ADPK;
                 } else if (key === 'RR') {
                     // Respiratory rate changed : keep I/E, but change T/Inhale
@@ -183,9 +183,9 @@ export default class Dashboard extends React.Component {
                         minTInhale: Math.max(minimumTInhale, this.computeTInhale(settings.RR, minimumIE)),
                     });
 
-                    if (settings.RRHIGHLIMIT < settings.RR) {
-                        settings.RRHIGHLIMIT = settings.RR;
-                        this.dirtySettings.RRHIGHLIMIT = settings.RRHIGHLIMIT;
+                    if (settings.HRR < settings.RR) {
+                        settings.HRR = settings.RR;
+                        this.dirtySettings.HRR = settings.HRR;
                     }
 
                     // console.log("RR Changed to " + settings["RR"] + ", TI adjusted to " + settings["TI"]);
@@ -903,8 +903,8 @@ export default class Dashboard extends React.Component {
                                             minY={-5}
                                             maxY={40}
                                             peak={this.state.settings.PK}
-                                            thresholdLow={this.state.settings.PKLOWLIMIT}
-                                            thresholdHigh={this.state.settings.PKHIGHLIMIT} />
+                                            thresholdLow={this.state.settings.LPK}
+                                            thresholdHigh={this.state.settings.HPK} />
                                         <DataPlot title='Flow (L/min)'
                                             data={this.state.flowDataPlots}
                                             multipleDatasets={true}

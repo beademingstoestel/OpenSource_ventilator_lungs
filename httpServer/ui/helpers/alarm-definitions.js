@@ -20,8 +20,8 @@ const AlarmBitDefinitions = {
         positiveMessage: 'The pressure was within the limits at {0} cmH2O',
         format: [
             math.compile('min(calculatedValues.peakPressure, calculatedValues.pressurePlateau)'),
-            math.compile('settings.PKLOWLIMIT - min(calculatedValues.peakPressure, calculatedValues.pressurePlateau)'),
-            math.compile('settings.PKLOWLIMIT'),
+            math.compile('settings.LPK - min(calculatedValues.peakPressure, calculatedValues.pressurePlateau)'),
+            math.compile('settings.LPK'),
         ],
         level: 'danger',
     },
@@ -50,8 +50,8 @@ const AlarmBitDefinitions = {
         positiveMessage: 'The pressure was within the limits at {0} cmH2O',
         format: [
             math.compile('max(calculatedValues.peakPressure, calculatedValues.pressurePlateau)'),
-            math.compile('max(calculatedValues.peakPressure, calculatedValues.pressurePlateau) - settings.PKHIGHLIMIT'),
-            math.compile('settings.PKHIGHLIMIT'),
+            math.compile('max(calculatedValues.peakPressure, calculatedValues.pressurePlateau) - settings.HPK'),
+            math.compile('settings.HPK'),
         ],
         level: 'danger',
     },
@@ -121,7 +121,7 @@ const AlarmBitDefinitions = {
         positiveMessage: 'The respiratory rate is back to the normal {0} breaths per minute',
         format: [
             math.compile('calculatedValues.respatoryRate'),
-            math.compile('settings.RRHIGHLIMIT'),
+            math.compile('settings.HRR'),
         ],
         level: 'danger',
     },

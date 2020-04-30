@@ -52,9 +52,9 @@ const Alarms = ({
                 <SingleValueDisplaySettingsOnly>
                     <SingleValueDisplaySettings
                         name="Upper limit PK"
-                        value={settings.PKHIGHLIMIT}
+                        value={settings.HPK}
                         unit="cmH2O"
-                        settingKey={'PKHIGHLIMIT'}
+                        settingKey={'HPK'}
                         decimal={false}
                         step={1}
                         minValue={settings.PK + 5}
@@ -85,9 +85,9 @@ const Alarms = ({
                     />
                     <SingleValueDisplaySettings
                         name="Lower limit PK"
-                        value={settings.PKLOWLIMIT}
+                        value={settings.LPK}
                         unit="cmH2O"
-                        settingKey={'PKLOWLIMIT'}
+                        settingKey={'LPK'}
                         decimal={false}
                         step={1}
                         minValue={0}
@@ -108,8 +108,8 @@ const Alarms = ({
                     />
                     <SingleValueDisplaySettings
                         name="Hyperventilation limit"
-                        value={settings.RRHIGHLIMIT}
-                        settingKey={'RRHIGHLIMIT'}
+                        value={settings.HRR}
+                        settingKey={'HRR'}
                         unit="bpm"
                         decimal={false}
                         step={1}
