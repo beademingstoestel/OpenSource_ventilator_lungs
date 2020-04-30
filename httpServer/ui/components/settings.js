@@ -70,13 +70,13 @@ const Settings = ({
                 }
                 {!hasDirtySettings &&
                     <button className={cx('threed-btn', 'save-button', 'disabled')}
-                        onClick={(e) => { MessagingCenter.send('ShowSettings', false); } }>
+                        onClick={(e) => { MessagingCenter.send('ShowSettings', false); }}>
                         <span>Close</span>
                     </button>
                 }
                 {hasDirtySettings &&
                     <button className={cx('threed-btn', 'save-button', 'success')}
-                        onClick={(e) => { MessagingCenter.send('ShowSettings', false); saveSettings(e); } }
+                        onClick={(e) => { MessagingCenter.send('ShowSettings', false); saveSettings(e); }}
                         disabled={!hasDirtySettings}>
                         <SaveIcon /><span>Confirm</span>
                     </button>
@@ -127,6 +127,23 @@ const Settings = ({
                     </SingleValueDisplaySettingsOnly>
                 </div>
             }
+            {selectedModeSettings.isVolumeLimited &&
+                <div>
+                    <SingleValueDisplaySettingsOnly>
+                        <SingleValueDisplaySettings
+                            name="Tidal volume (TV)"
+                            value={settings.VT}
+                            settingKey={'VT'}
+                            unit="mL"
+                            step={50}
+                            minValue={250}
+                            maxValue={800}
+                            decimal={false}
+                            updateValue={updateSetting}
+                        />
+                    </SingleValueDisplaySettingsOnly>
+                </div>
+            }
             <div>
                 <SingleValueDisplaySettingsOnly>
                     <SingleValueDisplaySettings
@@ -147,24 +164,11 @@ const Settings = ({
                         settingKey={'PP'}
                         unit="cmH2O"
                         decimal={false}
-                        step={5}
+                        step={1}
                         minValue={0}
                         maxValue={20}
                         updateValue={updateSetting}
                     />
-                    {selectedModeSettings.isVolumeLimited &&
-                        <SingleValueDisplaySettings
-                            name="Tidal volume (TV)"
-                            value={settings.VT}
-                            settingKey={'VT'}
-                            unit="mL"
-                            step={50}
-                            minValue={250}
-                            maxValue={800}
-                            decimal={false}
-                            updateValue={updateSetting}
-                        />
-                    }
                     <SingleValueDisplaySettings
                         name="Set RR value"
                         value={settings.RR}
