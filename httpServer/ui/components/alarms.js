@@ -95,6 +95,17 @@ const Alarms = ({
                         updateValue={updateSetting}
                     />
                     <SingleValueDisplaySettings
+                        name="Max. residual volume"
+                        value={settings.RVOL}
+                        settingKey={'RVOL'}
+                        unit="mL"
+                        step={10}
+                        minValue={0}
+                        maxValue={800}
+                        decimal={false}
+                        updateValue={updateSetting}
+                    />
+                    <SingleValueDisplaySettings
                         name="Alarm limits FiO2"
                         value={settings.ADFIO2}
                         settingKey={'ADFIO2'}
@@ -104,6 +115,17 @@ const Alarms = ({
                         step={0.1}
                         minValue={0.1}
                         maxValue={0.5}
+                        updateValue={updateSetting}
+                    />
+                    <SingleValueDisplaySettings
+                        name="Min. respiratory limit"
+                        value={settings.LRR}
+                        settingKey={'LRR'}
+                        unit="bpm"
+                        decimal={false}
+                        step={1}
+                        minValue={0}
+                        maxValue={settings.RR - 1}
                         updateValue={updateSetting}
                     />
                     <SingleValueDisplaySettings
