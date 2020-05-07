@@ -95,6 +95,8 @@ export default class Dashboard extends React.Component {
             settings: {
                 RR: 20,
                 HRR: 30,
+                LRR: 19,
+                RVOL: 50,
                 VT: 400,
                 PK: 35,
                 TS: 0,
@@ -186,6 +188,11 @@ export default class Dashboard extends React.Component {
                     if (settings.HRR < settings.RR) {
                         settings.HRR = settings.RR;
                         this.dirtySettings.HRR = settings.HRR;
+                    }
+
+                    if (settings.LRR >= settings.RR) {
+                        settings.LRR = settings.RR - 1;
+                        this.dirtySettings.LRR = settings.LRR;
                     }
 
                     // console.log("RR Changed to " + settings["RR"] + ", TI adjusted to " + settings["TI"]);
