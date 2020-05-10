@@ -33,6 +33,7 @@ stages:
           $(tag)
           latest
     - task: Docker@2
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       displayName: push interface image
       inputs:
         containerRegistry: 'DockerHubConnection'
@@ -42,6 +43,7 @@ stages:
           $(tag)
           latest
     - task: Docker@2
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       displayName: Build mongo image
       inputs:
         containerRegistry: 'DockerHubConnection'
