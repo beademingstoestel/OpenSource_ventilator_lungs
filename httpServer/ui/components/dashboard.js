@@ -195,6 +195,11 @@ export default class Dashboard extends React.Component {
                         this.dirtySettings.LRR = settings.LRR;
                     }
 
+                    if (settings.RP + 0.1 >= settings.TI) {
+                        settings.RP = settings.TI - 0.1;
+                        this.dirtySettings.RP = settings.RP;
+                    }
+
                     // console.log("RR Changed to " + settings["RR"] + ", TI adjusted to " + settings["TI"]);
                 } else if (key === 'IE') {
                     // I/E changed : keep Respiratory Rate, but change T/Inhale
@@ -205,6 +210,11 @@ export default class Dashboard extends React.Component {
                         maxTInhale: Math.min(maximumTInhale, this.computeTInhale(settings.RR, maximumIE)),
                         minTInhale: Math.max(minimumTInhale, this.computeTInhale(settings.RR, minimumIE)),
                     });
+
+                    if (settings.RP + 0.1 >= settings.TI) {
+                        settings.RP = settings.TI - 0.1;
+                        this.dirtySettings.RP = settings.RP;
+                    }
 
                     // console.log("IE Changed to " + settings["IE"] + ", TI adjusted to " + settings["TI"]);
                 } else if (key === 'TI') {
@@ -222,6 +232,11 @@ export default class Dashboard extends React.Component {
                         // .. then keep the TI to the acceptable value at 0.5
                         settings.TI = this.computeTInhale(settings.RR, maximumIE);
                         this.dirtySettings.TI = settings.TI;
+                    }
+
+                    if (settings.RP + 0.1 >= settings.TI) {
+                        settings.RP = settings.TI - 0.1;
+                        this.dirtySettings.RP = settings.RP;
                     }
 
                     // recalculte the IE in any case, know that we know that the TI is kept with range, this also clears rounding errors
@@ -432,6 +447,7 @@ export default class Dashboard extends React.Component {
         });
 
         this.client.subscribe('/api/settings', (newSettings) => {
+            // settings for debug purposes only
             if (newSettings.breathingCycleStart) {
                 return;
             }
@@ -444,8 +460,14 @@ export default class Dashboard extends React.Component {
                 return;
             }
 
+            const oldSetttings = { ...self.state.settings };
+            // update the t-inhale value
+            if (newSettings.RR || newSettings.IE) {
+                newSettings.TI = this.computeTInhale(oldSetttings.RR, oldSetttings.IE);
+            }
+
             self.setState({
-                settings: { ...self.state.settings, ...newSettings },
+                settings: { ...oldSetttings, ...newSettings },
             });
         });
 
