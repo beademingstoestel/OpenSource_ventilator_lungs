@@ -219,7 +219,7 @@ const Settings = ({
                         decimal={1}
                         step={0.1}
                         minValue={0.0}
-                        maxValue={1.0}
+                        maxValue={settings.TI - 0.1}
                         updateValue={updateSetting}
                     />
                     <SingleValueDisplaySettings
