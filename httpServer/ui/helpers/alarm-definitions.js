@@ -175,11 +175,12 @@ const AlarmBitDefinitions = {
         level: 'danger',
     },
     26: {
-        message: 'HALL sensor error',
-        negativeMessage: 'HALL sensor NOK',
-        positiveMessage: 'HALL sensor OK',
+        message: 'Calibration sensor error',
+        negativeMessage: 'Calibration sensor NOK',
+        positiveMessage: 'Calibration sensor OK',
         format: [],
         level: 'danger',
+        ignore: true,
     },
     27: {
         message: 'No external power connected',
