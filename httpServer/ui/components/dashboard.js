@@ -86,6 +86,7 @@ export default class Dashboard extends React.Component {
             patientName: '',
             patientAdmittanceDate: new Date(),
             patientInfo: '',
+            showCalibrationDialog: false,
             showShutdownConfirmationDialog: false,
             showBeepConfirmationDialog: false,
             minTInhale: minimumTInhale,
@@ -295,8 +296,6 @@ export default class Dashboard extends React.Component {
     }
 
     processIncomingPoints(newPoints) {
-
-        console.log(newPoints);
         newPoints.forEach((newPoint) => {
             const localTime = new Date(newPoint.loggedAt).getTime() - serverTimeCorrection;
 
@@ -463,6 +462,12 @@ export default class Dashboard extends React.Component {
 
             if (newSettings.exhaleMoment) {
                 return;
+            }
+
+            if (newSettings.ACTIVE) {
+                if (newSettings.ACTIVE === 0) {
+                    self.setState({ showCalibrationDialog: false });
+                }
             }
 
             const oldSetttings = { ...self.state.settings };
@@ -710,7 +715,7 @@ export default class Dashboard extends React.Component {
     askActiveStateChange() {
         console.log('ask to change active state');
         // if we are in active mode, show the dialog box to confirm deactivation
-        if (parseInt(this.state.settings.ACTIVE) === 3) {
+        if (parseInt(this.state.settings.ACTIVE) > 0) {
             this.setState({ showShutdownConfirmationDialog: true });
         } else {
             // go to active state 1 -> sounds beep
@@ -727,6 +732,28 @@ export default class Dashboard extends React.Component {
         if (validateClose) {
             this.saveSetting('ACTIVE', 0);
         }
+    }
+
+    handleCalibrationDialogClose(ev) {
+        this.setState({ showCalibrationDialog: false });
+    }
+
+    startCalibrationProcess(ev) {
+        this.saveSetting('ACTIVE', -3);
+    }
+
+    startFioCalibrationProcess(ev) {
+        this.saveSetting('ACTIVE', -1);
+    }
+
+    startCalibrationSteps(ev) {
+        this.saveSetting('ACTIVE', -4);
+        this.setState({ showCalibrationDialog: true });
+    }
+
+    endCalibrationSteps(ev) {
+        this.saveSetting('ACTIVE', 0);
+        this.setState({ showCalibrationDialog: false });
     }
 
     // Handle the closing of the beep heard dialog box
@@ -765,10 +792,20 @@ export default class Dashboard extends React.Component {
                         }}>
                             <GearIcon size="md" /><span>{ modeToAbbreviation(this.state.settings.MODE) }</span>
                         </button>
-                        <button className={'threed-btn ' + (parseInt(this.state.settings.ACTIVE) === 2 ? 'danger' : 'success')}
-                            onClick={() => this.askActiveStateChange()}>
-                            <OnOffIcon size="md" /><span>{parseInt(this.state.settings.ACTIVE) === 2 ? 'Stop' : 'Start'}</span>
-                        </button>
+                        { 'test: ' + this.state.settings.ACTIVE }
+                        { this.state.settings.ACTIVE > -1 &&
+                            <button className={'threed-btn ' + (parseInt(this.state.settings.ACTIVE) === 3 ? 'danger' : 'success')}
+                                onClick={() => this.askActiveStateChange()}>
+                                <OnOffIcon size="md" /><span>{parseInt(this.state.settings.ACTIVE) === 3 ? 'Stop' : 'Start'}</span>
+                            </button>
+                        }
+
+                        { this.state.settings.ACTIVE < 0 &&
+                            <button className={'threed-btn warning'}
+                                onClick={() => this.startCalibrationSteps()}>
+                                <OnOffIcon size="md" /><span>{'Calibrate'}</span>
+                            </button>
+                        }
 
                         <Dialog open={this.state.showShutdownConfirmationDialog}
                             onClose={(ev) => this.handleShutDownDialogClose(ev, false)}
@@ -807,6 +844,50 @@ export default class Dashboard extends React.Component {
                                 <Button onClick={(ev) => this.handleBeepHeardClose(ev, true)} color="primary" autoFocus>
                                     Yes
                                 </Button>
+                            </DialogActions>
+                        </Dialog>
+
+                        <Dialog open={this.state.showCalibrationDialog}
+                            className={'calibration-dialog'}
+                            onClose={(ev) => this.handleCalibrationDialogClose(ev, false)}
+                            aria-labelledby="calibration-dialog-title"
+                            aria-describedby="calibration-dialog-description">
+                            <DialogTitle id="calibration-dialog-title">{'Perform calibration steps'}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    { (this.state.settings.ACTIVE === -4 || this.state.settings.ACTIVE === -3) &&
+                                        <span>We will now run through the calibration of the machine, this might take a few moments.</span>
+                                    }
+
+                                    { (this.state.settings.ACTIVE === -2 || this.state.settings.ACTIVE === -1) &&
+                                        <span>Do you want to start the machine with oxygen support? Click yes to calibrate the necessary sensors. This process might take a few moments to complete</span>
+                                    }
+
+                                    { (this.state.settings.ACTIVE === -3 || this.state.settings.ACTIVE === -1) &&
+                                        <div className={'center'}><img src="/loader.gif" /></div>
+                                    }
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={(ev) => this.handleCalibrationDialogClose(ev)} color="secondary">
+                                    Cancel
+                                </Button>
+                                { this.state.settings.ACTIVE === -4 &&
+                                    <Button onClick={(ev) => this.startCalibrationProcess(ev)} color="primary" autoFocus>
+                                        Start
+                                    </Button>
+                                }
+
+                                { this.state.settings.ACTIVE === -2 &&
+                                    [
+                                        <Button onClick={(ev) => this.endCalibrationSteps(ev)} color="primary" autoFocus>
+                                            Without O2
+                                        </Button>,
+                                        <Button onClick={(ev) => this.startFioCalibrationProcess(ev)} color="primary" autoFocus>
+                                            With O2
+                                        </Button>,
+                                    ]
+                                }
                             </DialogActions>
                         </Dialog>
 

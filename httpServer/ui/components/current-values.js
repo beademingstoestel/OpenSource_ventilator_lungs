@@ -58,14 +58,14 @@ const possibleValues = {
         displayFunction: (value, decimal) => (value * 100).toFixed(0) + '%',
     },
     fiO2i: {
-        active: true,
+        active: false,
         name: 'Current FiO2 exh. value',
         value: 'currentValues.fiO2InhaleValue',
         label: 'FiO2<br />exhale',
         displayFunction: (value, decimal) => (value * 100).toFixed(0) + '%',
     },
     fiO2e: {
-        active: true,
+        active: false,
         name: 'Current FiO2 inh. value',
         value: 'currentValues.fiO2ExhaleValue',
         label: 'FiO2<br />inhale',
