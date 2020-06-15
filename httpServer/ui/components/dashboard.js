@@ -464,10 +464,8 @@ export default class Dashboard extends React.Component {
                 return;
             }
 
-            if (newSettings.ACTIVE) {
-                if (newSettings.ACTIVE === 0) {
-                    self.setState({ showCalibrationDialog: false });
-                }
+            if (newSettings.ACTIVE === 0) {
+                self.setState({ showCalibrationDialog: false });
             }
 
             const oldSetttings = { ...self.state.settings };
@@ -752,7 +750,6 @@ export default class Dashboard extends React.Component {
     }
 
     endCalibrationSteps(ev) {
-        this.saveSetting('ACTIVE', 0);
         this.setState({ showCalibrationDialog: false });
     }
 
