@@ -77,6 +77,8 @@ export default class Dashboard extends React.Component {
                 volume: 5,
                 bpmValue: 20,
                 fiO2Value: 0.21,
+                fiO2InhaleValue: 0.21,
+                fiO2ExhaleValue: 0.21,
             },
             pressureStatus: 'normal',
             volumeStatus: 'normal',
@@ -111,7 +113,7 @@ export default class Dashboard extends React.Component {
                 ADVT: 0,
                 ADPP: 0,
                 MODE: 0,
-                ACTIVE: 0,
+                ACTIVE: -4,
                 MT: 0,
                 RA: 0,
                 FIO2: 0.2,
@@ -656,6 +658,8 @@ export default class Dashboard extends React.Component {
                 currentValues: {
                     bpmValue: 0,
                     fiO2Value: self.rawMeasurementsValues.length === 0 ? 0.2 : self.rawMeasurementsValues[self.rawMeasurementsValues.length - 1].fiO2,
+                    fiO2InhaleValue: self.rawMeasurementsValues.length === 0 ? 0.2 : self.rawMeasurementsValues[self.rawMeasurementsValues.length - 1].fiO2i,
+                    fiO2ExhaleValue: self.rawMeasurementsValues.length === 0 ? 0.2 : self.rawMeasurementsValues[self.rawMeasurementsValues.length - 1].fiO2e,
                     pressure: newPressureValues.length > 0 ? newPressureValues[newPressureValues.length - 1].y : 0.0,
                     volume: newVolumeValues.length > 0 ? newVolumeValues[newVolumeValues.length - 1].y : 0.0,
                 },
@@ -702,7 +706,7 @@ export default class Dashboard extends React.Component {
     askActiveStateChange() {
         console.log('ask to change active state');
         // if we are in active mode, show the dialog box to confirm deactivation
-        if (parseInt(this.state.settings.ACTIVE) === 2) {
+        if (parseInt(this.state.settings.ACTIVE) === 3) {
             this.setState({ showShutdownConfirmationDialog: true });
         } else {
             // go to active state 1 -> sounds beep

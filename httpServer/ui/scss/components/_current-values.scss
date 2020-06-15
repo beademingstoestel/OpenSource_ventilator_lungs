@@ -26,3 +26,26 @@ $b: 'current-values';
         }
     }
 }
+
+.settings-picker {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    flex-direction: row;
+    margin-top: 15px;
+
+    div {
+        display: flex;
+        flex: 0 0 33.333333%;
+
+        label {
+            margin: 10px;
+        }
+    }
+}
+
+.sidebar-settings-dialog {
+    .MuiDialog-paper {
+        width: 600px;
+    }
+}
