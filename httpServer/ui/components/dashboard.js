@@ -295,6 +295,8 @@ export default class Dashboard extends React.Component {
     }
 
     processIncomingPoints(newPoints) {
+
+        console.log(newPoints);
         newPoints.forEach((newPoint) => {
             const localTime = new Date(newPoint.loggedAt).getTime() - serverTimeCorrection;
 
@@ -305,6 +307,8 @@ export default class Dashboard extends React.Component {
                 triggery: newPoint.value.trigger,
                 pressurey: newPoint.value.pressure,
                 fiO2: newPoint.value.fiO2,
+                fiO2i: newPoint.value.fiO2i,
+                fiO2e: newPoint.value.fiO2e,
                 targetpressurey: newPoint.value.targetPressure,
                 volumey: newPoint.value.volume,
             });
