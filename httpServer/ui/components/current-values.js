@@ -43,6 +43,7 @@ const possibleValues = {
         name: 'Tidal volume',
         value: 'calculatedValues.tidalVolume',
         label: 'Tidal<br />volume (mL)',
+        displayFunction: (value, decimal) => value.toFixed(0),
     },
     volumePerMinute: {
         active: true,
