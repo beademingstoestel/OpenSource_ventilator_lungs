@@ -19,7 +19,7 @@
     "react": "16.13.1",
     "react-chartjs-2": "^2.9.0",
     "react-dom": "16.13.1",
-    "react-numpad": "^5.0.4",
+    "react-numpad": "^5.1.0",
     "react-toastify": "^5.5.0",
     "sass": "^1.26.3",
     "simple-keyboard": "^2.28.46"
