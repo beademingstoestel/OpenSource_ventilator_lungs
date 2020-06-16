@@ -9,12 +9,14 @@
     "export": "next export"
   },
   "dependencies": {
+    "@material-ui/core": "^4.10.2",
     "classnames": "^2.2.6",
     "mathjs": "^6.6.4",
     "next": "9.3.2",
     "next-transpile-modules": "^3.1.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-numpad": "^5.1.0",
     "sass": "^1.26.3",
     "ventilator-lungs-ui": "file:../ui"
   }
