@@ -745,7 +745,14 @@ export default class Dashboard extends React.Component {
     }
 
     startCalibrationSteps(ev) {
-        this.saveSetting('ACTIVE', -4);
+        if (this.state.ACTIVE === -3) {
+            this.saveSetting('ACTIVE', -4);
+        } else if (this.state.ACTIVE === -1) {
+            this.saveSetting('ACTIVE', -2);
+        } else {
+            this.saveSetting('ACTIVE', -4);
+        }
+
         this.setState({ showCalibrationDialog: true });
     }
 
