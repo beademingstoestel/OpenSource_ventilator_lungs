@@ -15,7 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { modeToAbbreviation, modeToBooleans } from '../helpers/modes';
+import { modeToAbbreviation, modeToBooleans, booleansToMode } from '../helpers/modes';
 
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
@@ -272,14 +272,6 @@ export default class Dashboard extends React.Component {
         return ((parseFloat(TInhale) * parseFloat(respiratoryRate)) / 60);
     }
 
-    toggleMode(isVolume) {
-        if (isVolume) {
-            this.state.updateSetting('MODE', 1);
-        } else {
-            this.state.updateSetting('MODE', 0);
-        }
-    }
-
     async toggleVolumeLimitingEnabled(volumeLimitingEnabled) {
         if (!volumeLimitingEnabled) {
             await this.state.updateSetting('VT', 10000);
@@ -370,7 +362,10 @@ export default class Dashboard extends React.Component {
             }
             this.saving = false;
         }
-        ev.preventDefault();
+
+        if (ev && ev.preventDefault) {
+            ev.preventDefault();
+        }
     }
 
     revertSettings() {
@@ -397,12 +392,9 @@ export default class Dashboard extends React.Component {
             });
         }
 
-        // todo: check whether this is usefull in the first place? They are overwritten by the machine settings anyway
         try {
             const settingsResponse = await fetch(`${getApiUrl()}/api/settings`);
             const settingsData = await settingsResponse.json();
-
-            settingsData.ACTIVE = -6;
 
             this.setState({
                 settings: { ...this.state.settings, ...settingsData },
@@ -743,18 +735,29 @@ export default class Dashboard extends React.Component {
     }
 
     startFioCalibrationProcess(ev) {
-        this.saveSetting('ACTIVE', -1);
+        const modeBooleans = modeToBooleans(this.state.settings.MODE);
+        const newMode = booleansToMode(modeBooleans.isFlowTriggered, modeBooleans.isPatientTriggered, modeBooleans.isVolumeLimited, true);
+
+        this.state.updateSetting('ACTIVE', -1);
+        this.state.updateSetting('MODE', newMode);
+        this.saveSettings();
     }
 
     skipFioCalibrationProcess(ev) {
-        this.saveSetting('ACTIVE', 0);
+        const modeBooleans = modeToBooleans(this.state.settings.MODE);
+        const newMode = booleansToMode(modeBooleans.isFlowTriggered, modeBooleans.isPatientTriggered, modeBooleans.isVolumeLimited, false);
+
         this.setState({ showCalibrationDialog: false });
+
+        this.state.updateSetting('ACTIVE', 0);
+        this.state.updateSetting('MODE', newMode);
+        this.saveSettings();
     }
 
     startCalibrationSteps(ev) {
         if (this.state.ACTIVE === -3) {
             this.saveSetting('ACTIVE', -4);
-        } else if (this.state.ACTIVE === -1) {
+        } else if (this.state.ACTIVE === -1 || this.state.ACTIVE === -2) {
             this.saveSetting('ACTIVE', -2);
         } else {
             this.saveSetting('ACTIVE', -4);

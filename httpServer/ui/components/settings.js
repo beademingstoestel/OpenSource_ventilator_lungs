@@ -31,7 +31,7 @@ const Settings = ({
     const [selectedModeSettings, setSelectedModeSettings] = useState(modeToBooleans(settings.MODE));
 
     function setMode(isFlowTriggered, isPatientTriggered, isVolumeLimited) {
-        const newMode = booleansToMode(isFlowTriggered, isPatientTriggered, isVolumeLimited);
+        const newMode = booleansToMode(isFlowTriggered, isPatientTriggered, isVolumeLimited, selectedModeSettings.hasOxygen);
         updateSetting('MODE', newMode);
     }
 

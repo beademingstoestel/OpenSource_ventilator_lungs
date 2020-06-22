@@ -3,10 +3,16 @@ const modeToBooleans = (mode) => {
         isFlowTriggered: (mode & 1) === 1,
         isPatientTriggered: (mode & 2) === 2,
         isVolumeLimited: (mode & 4) === 4,
+        isAprv: (mode & 8) === 8,
+        isInAutoFlow: (mode & 16) === 16,
+        hasOxygen: (mode & 32) === 32,
     };
 };
 
-const booleansToMode = (isFlowTriggered, isPatientTriggered, isVolumeLimited) => {
+const booleansToMode = (isFlowTriggered,
+    isPatientTriggered,
+    isVolumeLimited,
+    hasOxygen) => {
     let mode = 0;
 
     if (isFlowTriggered) {
@@ -19,6 +25,10 @@ const booleansToMode = (isFlowTriggered, isPatientTriggered, isVolumeLimited) =>
 
     if (isVolumeLimited) {
         mode |= 4;
+    }
+
+    if (hasOxygen) {
+        mode |= 32;
     }
 
     return mode;

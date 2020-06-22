@@ -84,6 +84,12 @@ const possibleValues = {
         value: 'currentValues.volume',
         label: 'Volume (ml)',
     },
+    residualVolume: {
+        active: false,
+        name: 'Residual Volume',
+        value: 'calculatedValues.residualVolume',
+        label: 'Residual<br />volume (ml)',
+    },
     bpm: {
         active: false,
         name: 'Breaths per minute',
