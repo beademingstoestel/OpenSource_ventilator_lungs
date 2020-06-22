@@ -10,7 +10,6 @@ import SaveIcon from '../components/icons/save';
 import GearIcon from '../components/icons/gear';
 import CaretIcon from '../components/icons/caret';
 import OnOffIcon from '../components/icons/onoff';
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -829,12 +828,12 @@ export default class Dashboard extends React.Component {
                                 </DialogContentText>
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={(ev) => this.handleShutDownDialogClose(ev, false)} color="secondary">
+                                <button onClick={(ev) => this.handleShutDownDialogClose(ev, false)} className="threed-btn base">
                                     No
-                                </Button>
-                                <Button onClick={(ev) => this.handleShutDownDialogClose(ev, true)} color="primary" autoFocus>
+                                </button>
+                                <button onClick={(ev) => this.handleShutDownDialogClose(ev, true)} className="threed-btn warning" autoFocus>
                                     Yes
-                                </Button>
+                                </button>
                             </DialogActions>
                         </Dialog>
 
@@ -875,12 +874,12 @@ export default class Dashboard extends React.Component {
                                 </DialogContentText>
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={(ev) => this.handleBeepHeardClose(ev, false)} color="secondary">
+                                <button onClick={(ev) => this.handleBeepHeardClose(ev, false)} className="threed-btn base">
                                     No
-                                </Button>
-                                <Button onClick={(ev) => this.handleBeepHeardClose(ev, true)} color="primary" autoFocus>
+                                </button>
+                                <button onClick={(ev) => this.handleBeepHeardClose(ev, true)} className="threed-btn success" autoFocus>
                                     Yes
-                                </Button>
+                                </button>
                             </DialogActions>
                         </Dialog>
 
@@ -906,23 +905,23 @@ export default class Dashboard extends React.Component {
                                 </DialogContentText>
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={(ev) => this.handleCalibrationDialogClose(ev)} color="secondary">
+                                <button onClick={(ev) => this.handleCalibrationDialogClose(ev)} className="threed-btn base">
                                     Cancel
-                                </Button>
+                                </button>
                                 { this.state.settings.ACTIVE === -4 &&
-                                    <Button onClick={(ev) => this.startCalibrationProcess(ev)} color="primary" autoFocus>
+                                    <button onClick={(ev) => this.startCalibrationProcess(ev)} className="threed-btn success" autoFocus>
                                         Start
-                                    </Button>
+                                    </button>
                                 }
 
                                 { this.state.settings.ACTIVE === -2 &&
                                     [
-                                        <Button onClick={(ev) => this.skipFioCalibrationProcess(ev)} color="primary" autoFocus>
+                                        <button onClick={(ev) => this.skipFioCalibrationProcess(ev)} className="threed-btn success" autoFocus>
                                             Without O2
-                                        </Button>,
-                                        <Button onClick={(ev) => this.startFioCalibrationProcess(ev)} color="primary" autoFocus>
+                                        </button>,
+                                        <button onClick={(ev) => this.startFioCalibrationProcess(ev)} className="threed-btn success" autoFocus>
                                             With O2
-                                        </Button>,
+                                        </button>,
                                     ]
                                 }
                             </DialogActions>
