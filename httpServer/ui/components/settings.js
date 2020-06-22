@@ -222,18 +222,20 @@ const Settings = ({
                         maxValue={settings.TI - 0.1}
                         updateValue={updateSetting}
                     />
-                    <SingleValueDisplaySettings
-                        name="FiO2"
-                        value={settings.FIO2}
-                        settingKey={'FIO2'}
-                        displayFunction={(value, decimal) => (value * 100).toFixed(0) + '%'}
-                        unit="%oxygen"
-                        decimal={2}
-                        step={0.1}
-                        minValue={0.2}
-                        maxValue={1.0}
-                        updateValue={updateSetting}
-                    />
+                    {selectedModeSettings.hasOxygen &&
+                        <SingleValueDisplaySettings
+                            name="FiO2"
+                            value={settings.FIO2}
+                            settingKey={'FIO2'}
+                            displayFunction={(value, decimal) => (value * 100).toFixed(0) + '%'}
+                            unit="%oxygen"
+                            decimal={2}
+                            step={0.1}
+                            minValue={0.2}
+                            maxValue={1.0}
+                            updateValue={updateSetting}
+                        />
+                    }
                 </SingleValueDisplaySettingsOnly>
             </div>
         </div>);
