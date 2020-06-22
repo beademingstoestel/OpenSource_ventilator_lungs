@@ -114,7 +114,7 @@ export default class Dashboard extends React.Component {
                 ADVT: 0,
                 ADPP: 0,
                 MODE: 0,
-                ACTIVE: -4,
+                ACTIVE: -6,
                 MT: 0,
                 RA: 0,
                 FIO2: 0.2,
@@ -398,9 +398,12 @@ export default class Dashboard extends React.Component {
             });
         }
 
+        // todo: check whether this is usefull in the first place? They are overwritten by the machine settings anyway
         try {
             const settingsResponse = await fetch(`${getApiUrl()}/api/settings`);
             const settingsData = await settingsResponse.json();
+
+            settingsData.ACTIVE = -6;
 
             this.setState({
                 settings: { ...this.state.settings, ...settingsData },
@@ -744,6 +747,11 @@ export default class Dashboard extends React.Component {
         this.saveSetting('ACTIVE', -1);
     }
 
+    skipFioCalibrationProcess(ev) {
+        this.saveSetting('ACTIVE', 0);
+        this.setState({ showCalibrationDialog: false });
+    }
+
     startCalibrationSteps(ev) {
         if (this.state.ACTIVE === -3) {
             this.saveSetting('ACTIVE', -4);
@@ -796,7 +804,6 @@ export default class Dashboard extends React.Component {
                         }}>
                             <GearIcon size="md" /><span>{ modeToAbbreviation(this.state.settings.MODE) }</span>
                         </button>
-                        { 'test: ' + this.state.settings.ACTIVE }
                         { this.state.settings.ACTIVE > -1 &&
                             <button className={'threed-btn ' + (parseInt(this.state.settings.ACTIVE) === 3 ? 'danger' : 'success')}
                                 onClick={() => this.askActiveStateChange()}>
@@ -804,7 +811,7 @@ export default class Dashboard extends React.Component {
                             </button>
                         }
 
-                        { this.state.settings.ACTIVE < 0 &&
+                        { (this.state.settings.ACTIVE < 0 && this.state.settings.ACTIVE > -5) &&
                             <button className={'threed-btn warning'}
                                 onClick={() => this.startCalibrationSteps()}>
                                 <OnOffIcon size="md" /><span>{'Calibrate'}</span>
@@ -829,6 +836,32 @@ export default class Dashboard extends React.Component {
                                     Yes
                                 </Button>
                             </DialogActions>
+                        </Dialog>
+
+                        <Dialog open={this.state.settings.ACTIVE === -6}
+                            className={'center-dialog-text'}
+                            aria-labelledby="connection-dialog-title"
+                            aria-describedby="connection-dialog-description">
+                            <DialogTitle id="connection-dialog-title">{'Waiting for connection'}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="connection-dialog-description">
+                                    <span>Connect the ventilator to the computer using the supplied USB cable.</span>
+
+                                    <div><img src="/loader.gif" /></div>
+                                </DialogContentText>
+                            </DialogContent>
+                        </Dialog>
+
+                        <Dialog open={this.state.settings.ACTIVE === -5}
+                            className={'center-dialog-text'}
+                            aria-labelledby="init-error-dialog-title"
+                            aria-describedby="init-error-dialog-description">
+                            <DialogTitle id="init-error-dialog-title">{'Error during initialization'}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="init-error-dialog-description">
+                                    <span>There was an error during the initialization phase of the ventilator. Please try rebooting the ventilator.</span>
+                                </DialogContentText>
+                            </DialogContent>
                         </Dialog>
 
                         <Dialog open={this.state.showBeepConfirmationDialog}
@@ -884,7 +917,7 @@ export default class Dashboard extends React.Component {
 
                                 { this.state.settings.ACTIVE === -2 &&
                                     [
-                                        <Button onClick={(ev) => this.endCalibrationSteps(ev)} color="primary" autoFocus>
+                                        <Button onClick={(ev) => this.skipFioCalibrationProcess(ev)} color="primary" autoFocus>
                                             Without O2
                                         </Button>,
                                         <Button onClick={(ev) => this.startFioCalibrationProcess(ev)} color="primary" autoFocus>
