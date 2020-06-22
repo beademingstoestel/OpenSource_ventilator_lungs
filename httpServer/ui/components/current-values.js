@@ -227,12 +227,12 @@ const CurrentValues = ({
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={(ev) => hideSettings()} color="secondary">
+                    <button onClick={(ev) => hideSettings()} className="threed-btn base">
                         Cancel
-                    </Button>
-                    <Button onClick={(ev) => saveSettings()} color="primary" autoFocus>
+                    </button>
+                    <button onClick={(ev) => saveSettings()} className="threed-btn success" autoFocus>
                         Save
-                    </Button>
+                    </button>
                 </DialogActions>
             </Dialog>
         </div>

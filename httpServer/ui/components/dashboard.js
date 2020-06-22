@@ -16,6 +16,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { modeToAbbreviation, modeToBooleans, booleansToMode } from '../helpers/modes';
+import { AlarmBitDefinitions, formatAlarmMessage } from '../helpers/alarm-definitions';
 
 import { getApiUrl, getWsUrl } from '../helpers/api-urls';
 
@@ -93,6 +94,7 @@ export default class Dashboard extends React.Component {
             maxPSupport: 35,
             showSettings: false,
             showAlarmSettings: false,
+            initializationAlarms: [],
             settings: {
                 RR: 20,
                 HRR: 30,
@@ -396,6 +398,10 @@ export default class Dashboard extends React.Component {
             const settingsResponse = await fetch(`${getApiUrl()}/api/settings`);
             const settingsData = await settingsResponse.json();
 
+            if (settingsData.ACTIVE === -5) {
+                this.getInitializationAlarms();
+            }
+
             this.setState({
                 settings: { ...this.state.settings, ...settingsData },
             });
@@ -460,6 +466,8 @@ export default class Dashboard extends React.Component {
 
             if (newSettings.ACTIVE === 0) {
                 self.setState({ showCalibrationDialog: false });
+            } else if (newSettings.ACTIVE === -5) {
+                this.getInitializationAlarms();
             }
 
             const oldSetttings = { ...self.state.settings };
@@ -726,6 +734,35 @@ export default class Dashboard extends React.Component {
         }
     }
 
+    async getInitializationAlarms() {
+        const newAlarms = [];
+
+        try {
+            const alarmsResponse = await fetch(`${getApiUrl()}/api/alarms?since=0`);
+            const alarms = await alarmsResponse.json();
+
+            alarms.reverse().forEach((alarm) => {
+                let shiftAlarm = alarm.data.raisedAlarms;
+
+                for (let i = 0; i < 32; i++) {
+                    if ((shiftAlarm & 1) > 0 && AlarmBitDefinitions[i].initError) {
+                        newAlarms.push({
+                            time: new Date(alarm.loggedAt),
+                            message: AlarmBitDefinitions[i].negativeMessage,
+                            id: alarm._id,
+                        });
+                    }
+
+                    shiftAlarm = shiftAlarm >> 1;
+                }
+            });
+
+            this.setState({
+                initializationAlarms: newAlarms,
+            });
+        } catch (exception) { console.log(exception); }
+    }
+
     handleCalibrationDialogClose(ev) {
         this.setState({ showCalibrationDialog: false });
     }
@@ -763,7 +800,7 @@ export default class Dashboard extends React.Component {
             this.saveSetting('ACTIVE', -4);
         }
 
-        this.setState({ showCalibrationDialog: true });
+        this.setState({ showCalibrationDialog: true, initializationAlarms: [] });
     }
 
     endCalibrationSteps(ev) {
@@ -862,6 +899,17 @@ export default class Dashboard extends React.Component {
                             <DialogContent>
                                 <DialogContentText id="init-error-dialog-description">
                                     <span>There was an error during the initialization phase of the ventilator. Please try rebooting the ventilator.</span>
+                                    <p className="initialization-alarms">
+                                        {
+                                            this.state.initializationAlarms.map((alarm) => {
+                                                return (
+                                                    <p key={alarm.id}>
+                                                        {alarm.time.toLocaleTimeString()}: {alarm.message}
+                                                    </p>
+                                                );
+                                            })
+                                        }
+                                    </p>
                                 </DialogContentText>
                             </DialogContent>
                         </Dialog>
