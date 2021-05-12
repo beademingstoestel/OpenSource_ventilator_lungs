@@ -11,7 +11,7 @@
   "dependencies": {
     "@hapi/nes": "^12.0.2",
     "@material-ui/core": "^4.10.2",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "classnames": "^2.2.6",
     "mathjs": "^6.6.4",
     "next": "9.3.2",
