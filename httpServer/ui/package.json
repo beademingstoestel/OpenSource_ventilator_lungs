@@ -14,7 +14,7 @@
     "chart.js": "^2.9.3",
     "classnames": "^2.2.6",
     "mathjs": "^6.6.4",
-    "next": "9.3.2",
+    "next": "9.5.5",
     "next-transpile-modules": "^3.1.0",
     "normalize.css": "^8.0.1",
     "react": "16.13.1",
